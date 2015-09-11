@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sub_pattern">
+        <item></item>
+        <item>xx</item>
+        <item>xxx</item>
+        <item>x-x</item>
+        <item>xx-</item>
+        <item>xxxx</item>
+        <item>x--x</item>
+        <item>x-xx</item>
+        <item>xx-x</item>
+        <item>xxx-</item>
+        <item>xx--</item>
+        <item>xxxxx</item>
+    </string-array>
+    <integer-array name="sub_value">
+        <item>0</item>
+        <item>21</item>
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>51</item>
+    </integer-array>
+    <string-array name="timesignature_beat">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+    </string-array>
+    <string-array name="timesignature_time">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="filterLayout_tekst">
+        <item>Edit</item>
+        <item>Sequence</item>
+    </string-array>
+    <string-array name="array_multi">
+        <item>multiple</item>
+        <item>single</item>
+    </string-array>
+
+</resources>
