@@ -47,10 +47,13 @@ public class TrackFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_track_play:
+                h.showToast("PLAY under development");
+                return true;
+            case R.id.action_track_settings:
                 h.showToast("settings under development");
                 return true;
-            case R.id.action_tracklist:
+            case R.id.action_track_tracklist:
                 doTrackList();
                 return true;
             default:

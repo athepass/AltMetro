@@ -94,6 +94,9 @@ public class TrackListFragment extends ListFragment {
             case R.id.action_tracklist_edit:
                 doEdit();
                 return true;
+            case R.id.action_tracklist_copy:
+                h.showToast("copy under development");
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -149,7 +152,7 @@ public class TrackListFragment extends ListFragment {
     private void doConfirmDelete() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Track track = trackData.tracks.get(positionDelete);
-        String pInfo = "[" + (positionDelete + 1) + "] " + track.toString();
+        String pInfo = "[" + (positionDelete + 1) + "] " + track.getTitle(trackData, positionDelete);
         builder.setMessage(
                 h.getString1(R.string.list_confirm_delete_item,
                         h.alfaNum(positionDelete) + ": " + pInfo))

@@ -14,21 +14,21 @@ import info.thepass.altmetro.tools.Keys;
  */
 public class Pattern {
     public final static String TAG = "TrakPattern";
-    private final static String KEYTEMPO = "PTtp";
+    private final static String KEYHASHPATTERN = "PThpat";
     private final static String KEYBARBEATS = "PTbt";
     private final static String KEYBARTIME = "PTtm";
     private final static String KEYBEATSTATE = "PTbs";
     private final static String KEYTITLE = "PTtt";
     private final static String KEYSUBS = "PTsub";
-    public int tempo;
+    public int hashPattern;
     public int barBeats;
     public int barTime;
     public int subs;
     public int[] beatState;
     public String title;
 
-    public Pattern() {
-        tempo = 70;
+    public Pattern(HelperMetro h) {
+        hashPattern = h.getHash();
         barBeats = 4;
         barTime = 4;
         subs = Keys.SUBDEFAULT;
@@ -44,7 +44,7 @@ public class Pattern {
     }
 
     public Pattern(Bundle b) {
-        tempo = b.getInt(KEYTEMPO);
+        hashPattern = b.getInt(KEYHASHPATTERN);
         barBeats = b.getInt(KEYBARBEATS);
         barTime = b.getInt(KEYBARTIME);
         beatState = b.getIntArray(KEYBEATSTATE);
@@ -54,7 +54,7 @@ public class Pattern {
 
     public Bundle toBundle() {
         Bundle b = new Bundle();
-        b.putInt(KEYTEMPO, tempo);
+        b.putInt(KEYHASHPATTERN, hashPattern);
         b.putInt(KEYBARBEATS, barBeats);
         b.putInt(KEYBARTIME, barTime);
         b.putInt(KEYSUBS, subs);
@@ -63,8 +63,8 @@ public class Pattern {
         return b;
     }
 
-    public void copyPattern(Pattern pattern) {
-        tempo = pattern.tempo;
+    public void clone(Pattern pattern, HelperMetro h) {
+        hashPattern = h.getHash();
         barBeats = pattern.barBeats;
         barTime = pattern.barTime;
         subs = pattern.subs;
@@ -108,8 +108,7 @@ public class Pattern {
 
     @Override
     public String toString() {
-        String s = "tempo=" + tempo;
-        s += " measure=" + barBeats + "/" + barTime
+        String s = "measure=" + barBeats + "/" + barTime
                 + ((subs > 0) ? " subs=" + subs : "");
         s += " title=" + title;
         s += " emphasis=" + statesToString();
@@ -117,8 +116,7 @@ public class Pattern {
     }
 
     public String toStringShort(HelperMetro h) {
-        String s = "t:" + tempo;
-        s += " m:" + barBeats + "/" + barTime;
+        String s = "m:" + barBeats + "/" + barTime;
         s += " e:" + statesToString();
         s += (subs == 0) ? "" : " s:" + h.subPattern[h.getSubIndex(subs)];
         s += (title.equals("")) ? "" : " t:" + title;
@@ -126,8 +124,7 @@ public class Pattern {
     }
 
     public String toStringShortText(HelperMetro h) {
-        String s = "t:" + tempo;
-        s += " m:" + barBeats + "/" + barTime;
+        String s = "m:" + barBeats + "/" + barTime;
         s += " e:" + statesToStringText();
 //		h.logD(TAG,"subs="+subs);
         s += (subs == 0) ? "" : " s:" + h.subPattern[h.getSubIndex(subs)];
@@ -146,7 +143,7 @@ public class Pattern {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-            json.put(KEYTEMPO, tempo);
+            json.put(KEYHASHPATTERN, hashPattern);
             json.put(KEYBARBEATS, barBeats);
             json.put(KEYBARTIME, barTime);
             json.put(KEYSUBS, subs);
@@ -164,7 +161,7 @@ public class Pattern {
 
     public void fromJson(JSONObject json) {
         try {
-            tempo = json.getInt(KEYTEMPO);
+            hashPattern = json.getInt(KEYHASHPATTERN);
             barBeats = json.getInt(KEYBARBEATS);
             barTime = json.getInt(KEYBARTIME);
             subs = (json.has(KEYSUBS)) ? json.getInt(KEYSUBS) : Keys.SUBDEFAULT;

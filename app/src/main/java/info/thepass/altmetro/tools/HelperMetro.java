@@ -74,7 +74,7 @@ public class HelperMetro {
                 .equals("1926d253b68016ba"));
     }
 
-    public int getRandom() {
+    public int getHash() {
         return random.nextInt(1000000);
     }
 

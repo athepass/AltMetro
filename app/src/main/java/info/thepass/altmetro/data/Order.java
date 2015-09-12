@@ -10,21 +10,25 @@ import info.thepass.altmetro.tools.HelperMetro;
 public class Order {
     public final static String TAG = "TrakOrder";
     private final static String KEYINDEX = "ORidx";
-    private final static String KEYHASH = "ORhash";
+    private final static String KEYHASH = "ORhpat";
+    private final static String KEYTEMPO = "ORtmp";
     private final static String KEYCOUNT = "ORcnt";
     public int index;
-    public int hash;
+    public int hashPattern;
+    public int tempo;
     public int count;
 
     public Order(HelperMetro h) {
         index = -1;
-        hash = h.getRandom();
+        hashPattern = h.getHash();
+        tempo = 90;
         count = 0;
     }
 
     public Order(Bundle b) {
         index = b.getInt(KEYINDEX);
-        hash = b.getInt(KEYHASH);
+        hashPattern = b.getInt(KEYHASH);
+        tempo= b.getInt(KEYTEMPO);
         count = b.getInt(KEYCOUNT);
     }
 
@@ -32,7 +36,8 @@ public class Order {
         JSONObject json = new JSONObject();
         try {
             json.put(KEYINDEX, index);
-            json.put(KEYHASH, hash);
+            json.put(KEYHASH, hashPattern);
+            json.put(KEYTEMPO, tempo);
             json.put(KEYCOUNT, count);
 
         } catch (Exception e) {
@@ -44,7 +49,8 @@ public class Order {
     public void fromJson(JSONObject json) {
         try {
             index = json.getInt(KEYINDEX);
-            hash = json.getInt(KEYHASH);
+            hashPattern = json.getInt(KEYHASH);
+            tempo = json.getInt(KEYTEMPO);
             count = json.getInt(KEYCOUNT);
         } catch (Exception e) {
             Log.e(TAG, "toJson exception" + e.getMessage(), e);
@@ -52,6 +58,6 @@ public class Order {
     }
 
     public String toString() {
-        return "i:" + index + ",h:" + hash + ",c:" + count;
+        return "i:" + index + ",h:" + hashPattern + ",c:" + count;
     }
 }

@@ -12,7 +12,7 @@ import info.thepass.altmetro.tools.HelperMetro;
 public class Track {
     public final static String TAG = "TrakTrack";
     public final static String KEYNR = "TRnr";
-    public final static String KEYHASH = "TRhash";
+    public final static String KEYHASHTRACK = "TRhtrk";
     public final static String KEYTITEL = "TRtit";
     public final static String KEYMULTI = "TRmul";
     public final static String KEYSTUDY = "TRstu";
@@ -21,7 +21,7 @@ public class Track {
     public final static String KEYORDERS = "TRord";
     public final static String KEYORDERSELECTED = "TRselord";
     public int nummer;
-    public int hash;
+    public int hashTrack;
     public String titel;
     public boolean multi;
     public Study study;
@@ -32,7 +32,7 @@ public class Track {
 
     public Track(HelperMetro h) {
         nummer = 0;
-        hash = h.getRandom();
+        hashTrack = h.getHash();
         titel = "";
         multi = false;
 
@@ -40,7 +40,7 @@ public class Track {
 
         pats = new ArrayList<Pattern>();
         patSelected = 0;
-        Pattern pat = new Pattern();
+        Pattern pat = new Pattern(h);
         pats.add(pat);
 
         orders = new ArrayList<Order>();
@@ -53,7 +53,7 @@ public class Track {
         JSONObject json = new JSONObject();
         try {
             json.put(KEYNR, nummer);
-            json.put(KEYHASH, hash);
+            json.put(KEYHASHTRACK, hashTrack);
             json.put(KEYTITEL, titel);
             json.put(KEYMULTI, multi);
 
@@ -82,7 +82,7 @@ public class Track {
     public void fromJson(JSONObject json) {
         try {
             nummer = json.getInt(KEYNR);
-            hash = json.getInt(KEYHASH);
+            hashTrack = json.getInt(KEYHASHTRACK);
             titel = json.getString(KEYTITEL);
             multi = json.getBoolean(KEYMULTI);
 
@@ -108,7 +108,7 @@ public class Track {
     }
 
     public String toStringH(HelperMetro h) {
-        String s = "n:" + nummer + ",h:" + hash + ",m:" + ((multi) ? "*" : "-") + ",t:" + titel;
+        String s = "n:" + nummer + ",h:" + hashTrack + ",m:" + ((multi) ? "*" : "-") + ",t:" + titel;
         s += "\nStudy:" + study.toString();
         for (int i = 0; i < pats.size(); i++) {
             s += "\npat " + i + ": " + ((i == patSelected) ? "*" : "") + pats.get(i).toStringShort(h);

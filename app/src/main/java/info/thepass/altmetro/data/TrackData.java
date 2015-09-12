@@ -137,7 +137,7 @@ public class TrackData {
 
     public void updateTrack(Track trackNew) {
         for (int i = 0; i < tracks.size(); i++) {
-            if (trackNew.hash==tracks.get(i).hash) {
+            if (trackNew.hashTrack ==tracks.get(i).hashTrack) {
                 tracks.remove(i);
                 tracks.add(i,trackNew);
             }
