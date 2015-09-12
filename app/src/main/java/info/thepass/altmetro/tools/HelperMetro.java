@@ -291,7 +291,7 @@ public class HelperMetro {
 
     public String getLogFilePath() {
         return Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/althLog/altmetro/";
+                + "/AlthLog/altmetro/";
     }
 
     public String getLogFileName() {

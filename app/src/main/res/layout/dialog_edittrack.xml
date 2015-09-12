@@ -1,9 +1,10 @@
-<LinearLayout android:id="@+id/edit_name"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:orientation="vertical">
+<LinearLayout
+    android:id="@+id/edit_name"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +18,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         <EditText
-            android:id="@+id/et_number"
+            android:id="@+id/edittrack_number"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:inputType="number"/>
@@ -36,7 +37,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         <EditText
-            android:id="@+id/txt_title"
+            android:id="@+id/edittrack_titel"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:inputType="text"/>
@@ -44,34 +45,31 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/label_multi"
-        android:id="@+id/textView"/>
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <RadioGroup
+        android:id="@+id/edittrack_rg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RadioButton
+            android:id="@+id/edittrack_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New RadioButton"
-            android:id="@+id/radioButton"/>
+            android:layout_marginLeft="80dp"
+            android:text="@string/label_multi_single"/>
 
         <RadioButton
+            android:id="@+id/edittrack_multi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New RadioButton"
-            android:id="@+id/radioButton2"/>
+            android:layout_marginLeft="80dp"
+            android:text="@string/label_multi_multi"    />
     </RadioGroup>
-
-    <Button
-        android:id="@+id/buttonOK"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/ok"/>
 
 </LinearLayout>

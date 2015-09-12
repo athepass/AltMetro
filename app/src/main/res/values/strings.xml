@@ -13,6 +13,8 @@
     <string name="label_title">Title</string>
     <string name="label_number">Number</string>
     <string name="label_multi">Multiple tempi</string>
+    <string name="label_multi_single">Single tempo</string>
+    <string name="label_multi_multi">Multiple tempos</string>
     <string name="list_add_item">Add item</string>
     <string name="list_select_track">Select a track</string>
     <string name="list_item_added">Item added</string>

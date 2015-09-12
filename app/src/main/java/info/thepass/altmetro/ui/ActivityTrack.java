@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.MetroData;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 
-public class ActivityTrack extends Activity implements TrackListFragment.OnTrackListListener {
-    public final static String TAG = "ActivityTrack";
-    public MetroData data;
+public class ActivityTrack extends Activity {
+    public final static String TAG = "ActivityTrak";
+    public TrackData trackData;
     private HelperMetro h = null;
-    private TrackFragment metroFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,25 +25,17 @@ public class ActivityTrack extends Activity implements TrackListFragment.OnTrack
             if (savedInstanceState != null) {
                 return;
             }
-            metroFragment = (TrackFragment) getFragmentManager().findFragmentByTag(TrackFragment.TAG);
-            if (metroFragment == null) {
-                metroFragment = new TrackFragment();
+            TrackFragment trackFragment = (TrackFragment) getFragmentManager().findFragmentByTag(TrackFragment.TAG);
+            if (trackFragment == null) {
+                trackFragment = new TrackFragment();
             }
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, metroFragment, TrackFragment.TAG).commit();
+                    .add(R.id.fragment_container, trackFragment, TrackFragment.TAG).commit();
         }
     }
 
     private void initMetroData() {
         h.logD(TAG, "InitMetroData start");
-        data = new MetroData(h);
-    }
-
-    public void onTrackSelected(int itemSelected) {
-        h.logD(TAG, "sel=" + itemSelected);
-        data.trackSelected = itemSelected;
-        if (metroFragment != null) {
-            metroFragment.setSelected(itemSelected);
-        }
+        trackData = new TrackData(h);
     }
 }

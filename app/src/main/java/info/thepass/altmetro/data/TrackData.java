@@ -16,11 +16,8 @@ import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.HelperMetro;
 
-/**
- * Created by nl03192 on 10-9-2015.
- */
-public class MetroData {
-    public final static String TAG = "MetroData";
+public class TrackData {
+    public final static String TAG = "TrakData";
     public final static String KEYTRACKS = "MDtrk";
     public final static String KEYTRACKSELECTED = "MDseltrk";
     private HelperMetro h;
@@ -31,7 +28,7 @@ public class MetroData {
     public ArrayList<Track> tracks;
     public int trackSelected;
 
-    public MetroData(HelperMetro hh) {
+    public TrackData(HelperMetro hh) {
         h = hh;
         trackSelected = 0;
         tracks = new ArrayList<Track>();
@@ -45,8 +42,8 @@ public class MetroData {
 
     private void initDataFile() {
         pad = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/altMetro/";
-        filenaam = pad + "data.txt";
+                + "/AltMetro/";
+        filenaam = pad + "trackData.txt";
         File p = new File(pad);
         p.mkdirs();
         dataFile = new File(filenaam);
@@ -84,7 +81,7 @@ public class MetroData {
     }
 
     public void save(String tag, boolean doDump) {
-         // van MetroData naar JSONobject
+         // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
             jsonRoot = toJson();
@@ -106,7 +103,6 @@ public class MetroData {
         } catch (Exception e) {
             Log.e(TAG, "write " + filenaam + ": " + e.getMessage());
         }
-        Log.d(TAG,"metrodata saved to "+dataFile.getName());
     }
 
     public JSONObject toJson() {
@@ -139,4 +135,13 @@ public class MetroData {
         }
     }
 
+    public void updateTrack(Track trackNew) {
+        for (int i = 0; i < tracks.size(); i++) {
+            if (trackNew.hash==tracks.get(i).hash) {
+                tracks.remove(i);
+                tracks.add(i,trackNew);
+            }
+        }
+
+    }
 }

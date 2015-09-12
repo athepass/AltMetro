@@ -16,4 +16,8 @@ public class Keys {
     public final static int MINTEMPO = 30;
     public final static int MAXEMPHASIS = 20;
     public final static int HALFEMPHASIS = 10;
+
+    public final static int TARGETTRACK = 1;
+    public final static int TARGETTRACKLIST = 2;
+
 }

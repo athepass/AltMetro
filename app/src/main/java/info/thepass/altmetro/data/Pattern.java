@@ -13,7 +13,7 @@ import info.thepass.altmetro.tools.Keys;
  * Created by nl03192 on 10-9-2015.
  */
 public class Pattern {
-    public final static String TAG = "Pattern";
+    public final static String TAG = "TrakPattern";
     private final static String KEYTEMPO = "PTtp";
     private final static String KEYBARBEATS = "PTbt";
     private final static String KEYBARTIME = "PTtm";

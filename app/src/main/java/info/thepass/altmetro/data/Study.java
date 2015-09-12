@@ -6,7 +6,7 @@ import android.util.Log;
 import org.json.JSONObject;
 
 public class Study {
-    private final static String TAG = "Study";
+    private final static String TAG = "TrakStudy";
     private final static String KEYTEMPOFROM = "STtpf";
     private final static String KEYTEMPOTO = "STtpt";
     private final static String KEYTEMPOINCREMENT = "STtpi";

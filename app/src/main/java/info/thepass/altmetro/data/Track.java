@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import info.thepass.altmetro.tools.HelperMetro;
 
 public class Track {
-    public final static String TAG = "Track";
+    public final static String TAG = "TrakTrack";
     public final static String KEYNR = "TRnr";
     public final static String KEYHASH = "TRhash";
     public final static String KEYTITEL = "TRtit";
@@ -46,6 +46,7 @@ public class Track {
         orders = new ArrayList<Order>();
         orderSelected = 0;
         Order order = new Order(h);
+        orders.add(order);
     }
 
     public JSONObject toJson() {
@@ -116,5 +117,21 @@ public class Track {
             s += "\norder " + i + ": " + ((i == orderSelected) ? "*" : "") + orders.get(i).toString();
         }
         return s;
+    }
+
+    public String getTitle(TrackData trackData, int sel) {
+        if ((trackData.tracks.size() == 1)
+                && (pats.size() == 1)
+                && (orders.size() == 1)
+                && (titel.equals(""))
+                && (nummer == 0)
+                ) {
+            return "";
+        } else {
+            return (sel + 1) + ((multi) ? "[*]:" : ":")
+                    + ((nummer != 0) ? " " + nummer : "")
+                    + " " + titel
+                    + ((multi) ? "[" + pats.size() + "|" + orders.size() + "]" : "");
+        }
     }
 }

@@ -12,22 +12,25 @@ import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 
 public class TrackListAdapter extends ArrayAdapter<Track> {
-	private final static String TAG = "TrackListAdapter";
+	private final static String TAG = "TrakListAdapter";
 	private Context context;
 	private ArrayList<Track> listTrack;
 	private HelperMetro h;
 	public int selectedItem = -1;
+    private TrackData trackData;
 
 	public TrackListAdapter(Context cont, int layout,
-                            ArrayList<Track> tracks, HelperMetro hConstructor) {
-		super(cont, layout, tracks);
+                            TrackData trackData2, HelperMetro hConstructor) {
+		super(cont, layout, trackData2.tracks);
 		h = hConstructor;
 		h.logD(TAG, "constructor");
+        trackData = trackData2;
 		context = cont;
-		listTrack = tracks;
+		listTrack = trackData.tracks;
 	}
 
 	public int getCount() {
@@ -44,25 +47,19 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 			rowView = inflater.inflate(R.layout.fragment_tracklist_row,
 					parent, false);
 			holder = new ViewHolderPattern();
-			holder.nummer = (TextView) rowView.findViewById(R.id.tv_tracklist_nummer);
             holder.titel = (TextView) rowView.findViewById(R.id.tv_tracklist_titel);
-            holder.multi = (TextView) rowView.findViewById(R.id.tv_tracklist_multi);
 			rowView.setTag(holder);
 		} else {
 			holder = (ViewHolderPattern) rowView.getTag();
 		}
 
 		Track track = (Track) listTrack.get(position);
-		holder.nummer.setText((position +1) + "");
-        holder.titel.setText(track.titel + "");
-		holder.multi.setText((track.multi) ? "*" : "-" );
+        holder.titel.setText(track.getTitle(trackData, position));
 		return rowView;
 	}
 
 	public static class ViewHolderPattern {
 		public LinearLayout rij;
-		public TextView nummer;
 		public TextView titel;
-		public TextView multi;
 	}
 }

@@ -1,70 +1,96 @@
 package info.thepass.altmetro.dialog;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.MetroData;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.tools.Keys;
 
 public class DialogEditTrack extends DialogFragment {
-    public final static String TAG = "DialogEditTrack";
-    private String oldTitle;
+    public final static String TAG = "DialogEditTrak";
     public HelperMetro h;
-    public DialogFragment frag;
-
-    public interface EditTrackListener {
-        void onFinishEditTrack(Track track);
-    }
-
+    private String oldTitle;
+    private Track track;
     private EditText etNummer;
     private EditText etTitel;
-    private Button buttonOK;
+    private RadioGroup rgMulti;
+    private RadioButton rbSingle;
+    private RadioButton rbMulti;
 
     public DialogEditTrack() {
         // Empty constructor required for DialogFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        h = new HelperMetro(getActivity());
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_edittrack, null);
+        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
+        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
+        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
+        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
+        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
 
-        frag = this;
-        View view = inflater.inflate(R.layout.dialog_edittrack, container);
-        mEditText = (EditText) view.findViewById(R.id.txt_title);
+
+        builder.setView(dialogView)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        // ophalen waardes uit view
+                        track.titel = etTitel.getText().toString();
+                        track.nummer = Integer.parseInt(etNummer.getText().toString());
+                        track.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
+
+                        // igv single verwijzen naar 1e pattern en 1e oorder
+                        // 1e order moet oneindig doorgaan: count <=0
+//                        if (!track.multi) {
+//                            track.patSelected = 0;
+//                            track.orderSelected = 0;
+//                            track.orders.get(0).count = 0;
+//                        }
+
+                        Intent intent = new Intent();
+                        intent.putExtra(TrackData.KEYTRACKS, track.toJson().toString());
+                        getTargetFragment().onActivityResult(Keys.TARGETTRACKLIST, Activity.RESULT_OK, intent);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        DialogEditTrack.this.getDialog().cancel();
+                    }
+                });
+
+
         Bundle b = getArguments();
         try {
-            JSONObject jTrack = new JSONObject(b.getString(MetroData.KEYTRACKS));
-            Track track = new Track(h);
-            track.fromJson(jTrack);
-            mEditText.setText(track.titel);
-            mEditText.requestFocus();
+            track = new Track(h);
+            track.fromJson(new JSONObject(b.getString(TrackData.KEYTRACKS)));
+            etNummer.setText(String.valueOf(track.nummer));
+            etTitel.setText(track.titel);
+            rbSingle.setChecked(!track.multi);
+            rbMulti.setChecked(track.multi);
         } catch (Exception e) {
-            h.logE(TAG,"json exception",e);
+            h.logE(TAG, "from Json", e);
         }
-//        getDialog().setTitle(h.getString(R.string.title_dlg_title));
-
-        buttonOK = (Button) view.findViewById(R.id.buttonOK);
-        buttonOK.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String newTitel = mEditText.getText().toString();
-                if (!newTitel.equals(oldTitle)) {
-                    BarTitleListener activity = (BarTitleListener) getActivity();
-                    activity.onFinishEditBarTitle(newTitel);
-                }
-                frag.dismiss();
-            }
-        });
-
-        return view;
+        return builder.create();
     }
-}
+
+ }
