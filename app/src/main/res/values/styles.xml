@@ -5,4 +5,32 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!-- MyTheme substijlen -->
+    <style name="AppTheme.EmphasisEditor">
+        <item name="android:layout_width">@dimen/emphasis_width</item>
+        <item name="android:layout_height">@dimen/emphasis_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_marginleft</item>
+        <item name="android:clickable">true</item>
+        <item name="android:contentDescription">@string/hw</item>
+        <item name="android:src">@drawable/levellist_emphasis</item>
+    </style>
+
+    <style name="AppTheme.EmphasisPlayer">
+        <item name="android:layout_width">@dimen/emphasis_width</item>
+        <item name="android:layout_height">@dimen/emphasis_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_marginleft</item>
+        <item name="android:clickable">true</item>
+        <item name="android:contentDescription">@string/hw</item>
+    </style>
+
+    <style name="AppTheme.TempoButton">
+        <item name="android:layout_width">@dimen/incdec_width</item>
+        <item name="android:layout_height">@dimen/incdec_height</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/textsize_timescale</item>
+    </style>
+
+
 </resources>

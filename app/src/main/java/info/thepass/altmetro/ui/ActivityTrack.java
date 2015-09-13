@@ -18,7 +18,7 @@ public class ActivityTrack extends Activity {
         h = new HelperMetro(this);
         h.logD(TAG, "onCreate");
         initMetroData();
-        setContentView(R.layout.activity_metro);
+        setContentView(R.layout.activity_track);
         getActionBar().setLogo(R.mipmap.ic_launcher);
 
         if (findViewById(R.id.fragment_container) != null) {

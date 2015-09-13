@@ -293,4 +293,8 @@ public class Pattern {
                 }
         }
     }
+
+    public String getTitle() {
+        return "een regel";
+    }
 }

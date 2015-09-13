@@ -42,6 +42,16 @@ public class Track {
         patSelected = 0;
         Pattern pat = new Pattern(h);
         pats.add(pat);
+        Pattern pat2 = new Pattern(h);
+        pats.add(pat2);
+        Pattern pat3 = new Pattern(h);
+        pats.add(pat3);
+        Pattern pat4 = new Pattern(h);
+        pats.add(pat4);
+        Pattern pat5 = new Pattern(h);
+        pats.add(pat5);
+        Pattern pat6 = new Pattern(h);
+        pats.add(pat6);
 
         orders = new ArrayList<Order>();
         orderSelected = 0;

@@ -26,7 +26,7 @@ import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackListAdapter;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.dialog.DialogEditTrack;
+import info.thepass.altmetro.dialog.DialogEditTrackInfo;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -127,7 +127,7 @@ public class TrackListFragment extends ListFragment {
     }
 
     private void doEdit() {
-        DialogEditTrack dlgEdit = new DialogEditTrack();
+        DialogEditTrackInfo dlgEdit = new DialogEditTrackInfo();
         dlgEdit.h = h;
         dlgEdit.setTargetFragment(this, Keys.TARGETTRACKLIST);
 

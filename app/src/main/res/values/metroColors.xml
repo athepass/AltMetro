@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="color_emphasis_high">#FFfb4c16</color>
+    <color name="color_emphasis_low">#FFffdf00</color>
+    <color name="color_emphasis_none">#FF1115f0</color>
+    <color name="color_emphasis_gradient">#FF00FF00</color>
+    <color name="color_emphasis_stroke_active">#FFFFFFFF</color>
+    <color name="color_emphasis_stroke_notactive">#FF000000</color>
+    <color name="color_text">#00008B</color>
+    <color name="color_seq">#fb4c16</color>
+    <color name="color_background_editor">#FFd6f0f0</color>
+    <color name="color_listview">#FFbce7e6</color>
+    <color name="color_listview_selected">#FF0ad7b8</color>
+    <color name="color_listview_selected_stroke">#FF000000</color>
+    <color name="layout_border_color">#FF111111</color>
+
+</resources>

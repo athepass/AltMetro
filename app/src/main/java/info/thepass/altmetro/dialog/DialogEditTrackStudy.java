@@ -21,8 +21,8 @@ import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class DialogEditTrack extends DialogFragment {
-    public final static String TAG = "DialogEditTrak";
+public class DialogEditTrackStudy extends DialogFragment {
+    public final static String TAG = "DialogEditTrakStudy";
     public HelperMetro h;
     private String oldTitle;
     private Track track;
@@ -32,7 +32,7 @@ public class DialogEditTrack extends DialogFragment {
     private RadioButton rbSingle;
     private RadioButton rbMulti;
 
-    public DialogEditTrack() {
+    public DialogEditTrackStudy() {
         // Empty constructor required for DialogFragment
     }
 
@@ -61,11 +61,11 @@ public class DialogEditTrack extends DialogFragment {
 
                         // igv single verwijzen naar 1e pattern en 1e oorder
                         // 1e order moet oneindig doorgaan: count <=0
-//                        if (!track.multi) {
-//                            track.patSelected = 0;
-//                            track.orderSelected = 0;
-//                            track.orders.get(0).count = 0;
-//                        }
+                        if (!track.multi) {
+                            track.patSelected = 0;
+                            track.orderSelected = 0;
+                            track.orders.get(0).count = 0;
+                        }
 
                         Intent intent = new Intent();
                         intent.putExtra(TrackData.KEYTRACKS, track.toJson().toString());
@@ -74,7 +74,7 @@ public class DialogEditTrack extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DialogEditTrack.this.getDialog().cancel();
+                        DialogEditTrackStudy.this.getDialog().cancel();
                     }
                 });
 

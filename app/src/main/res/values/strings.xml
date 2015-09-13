@@ -3,6 +3,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
+    <string name="hw">w</string>
     <string name="cancel">Cancel</string>
 
     <string name="action_settings">Settings</string>
@@ -11,11 +12,24 @@
     <string name="action_copy">Copy</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
-    <string name="label_title">Title</string>
-    <string name="label_number">Number</string>
     <string name="label_multi">Multiple tempi</string>
     <string name="label_multi_single">Single tempo</string>
     <string name="label_multi_multi">Multiple tempos</string>
+    <string name="label_number">Number</string>
+    <string name="label_practice">Practice</string>
+    <string name="label_study_off">No study</string>
+    <string name="label_study_on">Study</string>
+    <string name="label_tempo_tap">Tap for tempo</string>
+    <string name="label_tempo_tap2">Tap</string>
+    <string name="label_title">Title</string>
+    <string name="label_timesig">time sign</string>
+    <string name="label_timesigsep">/</string>
+    <string name="label_p1">+1</string>
+    <string name="label_p5">+5</string>
+    <string name="label_p20">+20</string>
+    <string name="label_m1">-1</string>
+    <string name="label_m5">-5</string>
+    <string name="label_m20">-20</string>
     <string name="list_add_item">Add item</string>
     <string name="list_select_track">Select a track</string>
     <string name="list_item_added">Item added</string>
