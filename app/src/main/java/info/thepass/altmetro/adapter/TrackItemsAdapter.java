@@ -20,11 +20,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     private final static String TAG = "TrakItemsAdapter";
     private final static int TYPESTUDY = 0;
     private final static int TYPEORDER = 1;
-    private final static int TYPEORDERADD = 2;
-    private final static int TYPEPAT = 3;
+    private final static int TYPEPAT = 2;
+    private final static int TYPEORDERADD = 3;
     private final static int TYPEPATADD = 4;
-    public int selectedPat = -1;
-    public int selectedOrder = -1;
+    public int selectedPat = 0;
+    public int selectedOrder = 0;
     private Context context;
     private HelperMetro h;
     private Track track;
@@ -38,25 +38,70 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         this.track = track;
     }
 
-    @Override
+//    @Override
     public int getCount() {
-        return track.items.size();
+        if (track.multi) {
+            return track.items.size();
+        } else {
+            return 3;
+        }
     }
 
     @Override
     public int getViewTypeCount() {
-        return 5;
+        return (track.multi) ? 5 : 3;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return this.getItemType(position);
+        if (track.multi) {
+            if (position == 0) {
+                return TYPESTUDY;
+            } else if (position < (1 + track.orders.size())) {
+                return TYPEORDER;
+            } else if (position == (1 + track.orders.size())) {
+                return TYPEORDERADD;
+            } else if (position < (1 + track.orders.size() + 1 + track.pats.size())) {
+                return TYPEPAT;
+            } else if (position == (1 + track.orders.size() + 1 + track.pats.size())) {
+                return TYPEPATADD;
+            } else {
+                throw new RuntimeException("invalid multi item type at position " + position);
+            }
+        } else {
+            switch (position) {
+                case 0:
+                    return TYPESTUDY;
+                case 1:
+                    return TYPEORDER;
+                case 2:
+                    return TYPEPAT;
+                default:
+                    throw new RuntimeException("invalid single item type at position " + position);
+            }
+        }
     }
 
     @Override
     public void notifyDataSetChanged() {
         Log.d(TAG, "notifyDataSetChanged");
         super.notifyDataSetChanged();
+    }
+
+    private int getItemOrderPosition(int position) {
+        if (track.multi) {
+            return position - 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getItemPatPosition(int position) {
+        if (track.multi) {
+            return position - 1 - track.orders.size() - 1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -91,7 +136,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.i("tap button clicked", "**********");
                     Toast.makeText(context, "TAP  button Clicked",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -101,7 +145,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.i("tap button clicked", "**********");
                     Toast.makeText(context, "STUDY  button Clicked",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -111,7 +154,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.i("tap button clicked", "**********");
                     Toast.makeText(context, "PRACTICE  button Clicked",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -140,7 +182,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         String s = "";
-        int index  = getItemOrderPosition(position);
+        int index = getItemOrderPosition(position);
         Order order = track.orders.get(index);
         s = "order " + order.toString();
         if (index == selectedOrder) {
@@ -165,7 +207,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.i("tap button clicked", "**********");
                     Toast.makeText(context, "OrderAdd  button Clicked",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -175,11 +216,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder = (ViewHolderOrderAdd) rowView.getTag();
         }
 
-        holder.rij.setVisibility((track.multi) ? LinearLayout.VISIBLE:  LinearLayout.GONE);
         String s = "add order";
         holder.titel.setText(s);
         return rowView;
     }
+
     private View getViewPat(int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
         ViewHolderPat holder;
@@ -221,7 +262,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.i("tap button clicked", "**********");
                     Toast.makeText(context, "Pattern ADD button Clicked",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -231,34 +271,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder = (ViewHolderPatAdd) rowView.getTag();
         }
 
-        holder.rij.setVisibility((track.multi) ? LinearLayout.VISIBLE:  LinearLayout.GONE);
         holder.titel.setText("add pattern");
         return rowView;
-    }
-
-    private int getItemOrderPosition(int position) {
-        return position - 1;
-    }
-
-    private int getItemPatPosition(int position) {
-        return position - 1 - track.orders.size() - 1;
-    }
-
-    private int getItemType(int position) {
-        String s;
-        if (position == 0) {
-            return TYPESTUDY;
-        } else if (position < (1 + track.orders.size())) {
-            return TYPEORDER;
-        } else if (position == (1 + track.orders.size())) {
-            return TYPEORDERADD;
-        } else if (position < (1 + track.orders.size() + 1 + track.pats.size())) {
-            return TYPEPAT;
-        } else if (position == (1 + track.orders.size() + 1 + track.pats.size())) {
-            return TYPEPATADD;
-        } else {
-            throw new RuntimeException("invalid item type at position " + position);
-        }
     }
 
     public static class ViewHolderStudy {
@@ -267,18 +281,22 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         public TextView tv_study;
         public TextView tv_practice;
     }
+
     public static class ViewHolderOrder {
         public LinearLayout rij;
         public TextView titel;
     }
+
     public static class ViewHolderOrderAdd {
         public LinearLayout rij;
         public TextView titel;
     }
+
     public static class ViewHolderPat {
         public LinearLayout rij;
         public TextView titel;
     }
+
     public static class ViewHolderPatAdd {
         public LinearLayout rij;
         public TextView titel;

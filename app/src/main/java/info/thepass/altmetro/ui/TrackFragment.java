@@ -139,10 +139,12 @@ public class TrackFragment extends Fragment {
         this.trackData = act.trackData;
         Log.d(TAG, "initData sel" + trackData.trackSelected);
         track = trackData.tracks.get(trackData.trackSelected);
+        track.syncItems();
         getActivity().setTitle(h.getString(R.string.app_name) + " " + track.getTitle(trackData, trackData.trackSelected));
     }
 
     private void initListView() {
+        Log.d(TAG,"initListView "+track.items.size());
         itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h);
 
         lvItems = (ListView) getActivity().findViewById(R.id.track_listView);

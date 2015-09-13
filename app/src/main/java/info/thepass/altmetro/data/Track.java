@@ -141,7 +141,9 @@ public class Track {
     }
 
     public void syncItems() {
-        int aantal = 1 + orders.size() + 1 + pats.size() + 1;
+        int aantal = 3;  // vaste aantal voor single items
+        if (multi) {
+            aantal = 1 + orders.size() + 1 + pats.size() + 1;}
         while (items.size() < aantal)
             items.add("+");
         while (items.size() > aantal)
