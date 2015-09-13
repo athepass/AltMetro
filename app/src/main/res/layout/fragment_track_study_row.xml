@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/ll_track_study"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="25dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_track_study_tap"
+        android:layout_width="100dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:background="#ff3a43"
+        android:clickable="true"
+        android:focusable="false"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/label_tempo_tap2"/>
+
+    <TextView
+        android:id="@+id/tv_track_study_study"
+        android:layout_width="100dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:background="#ff3a43"
+        android:clickable="true"
+        android:focusable="false"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/label_study_off"/>
+
+    <TextView
+        android:id="@+id/tv_track_study_practice"
+        android:layout_width="100dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:background="#ff3a43"
+        android:clickable="true"
+        android:focusable="false"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/label_practice"/>
+
+</LinearLayout>

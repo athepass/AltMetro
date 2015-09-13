@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.adapter.TrackItemsAdapter;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
@@ -33,8 +34,10 @@ public class TrackFragment extends Fragment {
     private TrackData trackData;
     private Track track;
 
+    private ListView lvItems;
+    private TrackItemsAdapter itemsAdapter;
     private TextView tvTempo;
-//    private TextView tvInfo;
+    //    private TextView tvInfo;
     private TextView tvTitle;
     private int maxTempo;
 
@@ -74,7 +77,6 @@ public class TrackFragment extends Fragment {
 
     private Button buttonStudy;
     private View.OnClickListener studyListener;
-    private ListView listview;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,6 +91,7 @@ public class TrackFragment extends Fragment {
         h.logD(TAG, "activityCreated");
         setHasOptionsMenu(true);
         initData();
+        initListView();
         initListeners();
 //        initEmphasis();
         initSpinner();
@@ -137,6 +140,24 @@ public class TrackFragment extends Fragment {
         Log.d(TAG, "initData sel" + trackData.trackSelected);
         track = trackData.tracks.get(trackData.trackSelected);
         getActivity().setTitle(h.getString(R.string.app_name) + " " + track.getTitle(trackData, trackData.trackSelected));
+    }
+
+    private void initListView() {
+        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h);
+
+        lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
+        lvItems.setAdapter(itemsAdapter);
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                h.showToast("listview click at position " + position + " id:" + id);
+            }
+        });
+        lvItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        itemsAdapter.selectedOrder = 0;
+        itemsAdapter.selectedPat = 0;
     }
 
     private void initListeners() {
@@ -228,7 +249,7 @@ public class TrackFragment extends Fragment {
                 R.id.tv_editor_currentbeat);
     }
 
-//    public void updateBeat(Bundle b) {
+    //    public void updateBeat(Bundle b) {
 //        tvTempo.setText(String.valueOf(b.getInt(Keys.KEYTEMPO)));
 ////        tvInfo.setText(b.getString(Keys.KEYBARINFO));
 //        currentBeat = b.getInt(Keys.KEYBEAT);
@@ -373,7 +394,7 @@ public class TrackFragment extends Fragment {
     }
 
     private void wijzigTempo(int iDelta) {
-        String s =tvTempo.getText().toString();
+        String s = tvTempo.getText().toString();
         int newTempo = Integer.parseInt(s) + iDelta;
         newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
         newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;

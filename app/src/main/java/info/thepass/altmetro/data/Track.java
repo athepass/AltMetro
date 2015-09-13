@@ -25,10 +25,11 @@ public class Track {
     public String titel;
     public boolean multi;
     public Study study;
-    public ArrayList<Pattern> pats;
+    public ArrayList<Pat> pats;
     public int patSelected;
     public ArrayList<Order> orders;
     public int orderSelected;
+    public ArrayList<String> items;
 
     public Track(HelperMetro h) {
         nummer = 0;
@@ -38,25 +39,19 @@ public class Track {
 
         study = new Study();
 
-        pats = new ArrayList<Pattern>();
-        patSelected = 0;
-        Pattern pat = new Pattern(h);
-        pats.add(pat);
-        Pattern pat2 = new Pattern(h);
-        pats.add(pat2);
-        Pattern pat3 = new Pattern(h);
-        pats.add(pat3);
-        Pattern pat4 = new Pattern(h);
-        pats.add(pat4);
-        Pattern pat5 = new Pattern(h);
-        pats.add(pat5);
-        Pattern pat6 = new Pattern(h);
-        pats.add(pat6);
-
+        pats = new ArrayList<Pat>();
         orders = new ArrayList<Order>();
+
+        patSelected = 0;
+        Pat pat = new Pat(h);
+        pats.add(pat);
+
         orderSelected = 0;
         Order order = new Order(h);
         orders.add(order);
+
+        items = new ArrayList<String>();
+        syncItems();
     }
 
     public JSONObject toJson() {
@@ -143,5 +138,13 @@ public class Track {
                     + " " + titel
                     + ((multi) ? "[" + pats.size() + "|" + orders.size() + "]" : "");
         }
+    }
+
+    public void syncItems() {
+        int aantal = 1 + orders.size() + 1 + pats.size() + 1;
+        while (items.size() < aantal)
+            items.add("+");
+        while (items.size() > aantal)
+            items.remove(0);
     }
 }

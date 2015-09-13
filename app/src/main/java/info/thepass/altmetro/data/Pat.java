@@ -12,8 +12,8 @@ import info.thepass.altmetro.tools.Keys;
 /**
  * Created by nl03192 on 10-9-2015.
  */
-public class Pattern {
-    public final static String TAG = "TrakPattern";
+public class Pat {
+    public final static String TAG = "TrakPat";
     private final static String KEYHASHPATTERN = "PThpat";
     private final static String KEYBARBEATS = "PTbt";
     private final static String KEYBARTIME = "PTtm";
@@ -27,7 +27,7 @@ public class Pattern {
     public int[] beatState;
     public String title;
 
-    public Pattern(HelperMetro h) {
+    public Pat(HelperMetro h) {
         hashPattern = h.getHash();
         barBeats = 4;
         barTime = 4;
@@ -43,7 +43,7 @@ public class Pattern {
         title = "";
     }
 
-    public Pattern(Bundle b) {
+    public Pat(Bundle b) {
         hashPattern = b.getInt(KEYHASHPATTERN);
         barBeats = b.getInt(KEYBARBEATS);
         barTime = b.getInt(KEYBARTIME);
@@ -63,7 +63,7 @@ public class Pattern {
         return b;
     }
 
-    public void clone(Pattern pattern, HelperMetro h) {
+    public void clone(Pat pattern, HelperMetro h) {
         hashPattern = h.getHash();
         barBeats = pattern.barBeats;
         barTime = pattern.barTime;
