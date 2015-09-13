@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Order;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
     private final static String TAG = "TrakItemsAdapter";
@@ -28,14 +28,16 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     private Context context;
     private HelperMetro h;
     private Track track;
+    private TrackFragment frag;
 
     public TrackItemsAdapter(Context cont, int layout,
-                             Track track, HelperMetro hConstructor) {
+                             Track track, HelperMetro hConstructor, TrackFragment frag2) {
         super(cont, layout, track.items);
         h = hConstructor;
         h.logD(TAG, "constructor");
         context = cont;
         this.track = track;
+        frag = frag2;
     }
 
 //    @Override
@@ -136,8 +138,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "TAP  button Clicked",
-                            Toast.LENGTH_SHORT).show();
+                    frag.editTempoTap();
                 }
             });
             holder.tv_study = (TextView) rowView.findViewById(R.id.tv_track_study_study);
@@ -145,8 +146,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "STUDY  button Clicked",
-                            Toast.LENGTH_SHORT).show();
+                    frag.editSpeedStudy();
                 }
             });
             holder.tv_practice = (TextView) rowView.findViewById(R.id.tv_track_study_practice);
@@ -154,8 +154,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "PRACTICE  button Clicked",
-                            Toast.LENGTH_SHORT).show();
+                    frag.editPractice();
                 }
             });
             rowView.setTag(holder);
@@ -207,8 +206,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "OrderAdd  button Clicked",
-                            Toast.LENGTH_SHORT).show();
+                    frag.addOrder();
                 }
             });
             rowView.setTag(holder);
@@ -262,8 +260,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Pattern ADD button Clicked",
-                            Toast.LENGTH_SHORT).show();
+                    frag.addPat();
                 }
             });
             rowView.setTag(holder);

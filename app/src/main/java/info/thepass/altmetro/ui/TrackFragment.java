@@ -145,7 +145,7 @@ public class TrackFragment extends Fragment {
 
     private void initListView() {
         Log.d(TAG,"initListView "+track.items.size());
-        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h);
+        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h, this);
 
         lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
         lvItems.setAdapter(itemsAdapter);
@@ -404,8 +404,8 @@ public class TrackFragment extends Fragment {
 //        doPatternEdited("wijzigTempo");
     }
 
-    private void editPractice() {
-        h.showToast("under development");
+    public void editPractice() {
+        h.showToast("EditPractice under development");
 //        Bundle b = new Bundle();
 //        b.putInt(Keys.KEYPRACTICE, data.practicePercentage);
 //
@@ -416,16 +416,16 @@ public class TrackFragment extends Fragment {
 //        editNameDialog.show(fm, DialogPracticeFragment.TAG);
     }
 
-    private void editTempoTap() {
-        h.showToast("under development");
+    public void editTempoTap() {
+        h.showToast("EditTap under development");
 //        FragmentManager fm = getFragmentManager();
 //        DialogTempoTapFragment editNameDialog = new DialogTempoTapFragment();
 //        editNameDialog.h = h;
 //        editNameDialog.show(fm, DialogTempoTapFragment.TAG);
     }
 
-    private void editSpeedStudy() {
-        h.showToast("under development");
+    public void editSpeedStudy() {
+        h.showToast("Edit Speed under development");
 //        if (!settingMetroData) {
 //            Bundle b = new Bundle();
 //            b.putBundle(Keys.KEYSPEEDSTUDY, data.sps.toBundle());
@@ -437,6 +437,14 @@ public class TrackFragment extends Fragment {
 //            editNameDialog.setArguments(b);
 //            editNameDialog.show(fm, DialogPracticeFragment.TAG);
 //        }
+    }
+
+    public void addOrder() {
+        h.showToast("add order under development");
+    }
+
+    public void addPat() {
+        h.showToast("add pat under development");
     }
 
     private void doTrackList() {
