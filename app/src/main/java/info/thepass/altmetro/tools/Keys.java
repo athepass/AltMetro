@@ -18,6 +18,10 @@ public class Keys {
     public final static int HALFEMPHASIS = 10;
 
     public final static int TARGETTRACK = 1;
-    public final static int TARGETTRACKLIST = 2;
+    public final static int TARGETTRACKLIST = 10;
+    public final static int TARGETEDITPATTERN = 11;
+
+    public final static String EDITACTION = "EditAction";
+    public final static String EDITPOSITION = "EditPosition";
 
 }

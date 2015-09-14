@@ -2,9 +2,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="emphasis_width">30dp</dimen>
-    <dimen name="emphasis_height">32dp</dimen>
-    <dimen name="emphasis_marginleft">5dp</dimen>
+    <dimen name="emphasis_list_width">10dp</dimen>
+    <dimen name="emphasis_list_height">10dp</dimen>
+    <dimen name="emphasis_list_marginleft">1dp</dimen>
+    <dimen name="emphasis_editor_width">30dp</dimen>
+    <dimen name="emphasis_editor_height">32dp</dimen>
+    <dimen name="emphasis_editor_marginleft">5dp</dimen>
     <dimen name="emphasis_corners">12dp</dimen>
     <dimen name="incdec_width">40dp</dimen>
     <dimen name="incdec_height">32dp</dimen>

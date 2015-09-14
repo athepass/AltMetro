@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,11 +19,11 @@ import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
     private final static String TAG = "TrakItemsAdapter";
-    private final static int TYPESTUDY = 0;
-    private final static int TYPEORDER = 1;
-    private final static int TYPEPAT = 2;
-    private final static int TYPEORDERADD = 3;
-    private final static int TYPEPATADD = 4;
+    public final static int TYPESTUDY = 0;
+    public final static int TYPEORDER = 1;
+    public final static int TYPEPAT = 2;
+    public final static int TYPEORDERADD = 3;
+    public final static int TYPEPATADD = 4;
     public int selectedPat = 0;
     public int selectedOrder = 0;
     private Context context;
@@ -114,11 +115,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             case TYPEORDER:
                 return getViewOrder(position, convertView, parent);
             case TYPEORDERADD:
-                return getViewOrderAdd(position, convertView, parent);
+                return getViewOrderAdd(convertView, parent);
             case TYPEPAT:
                 return getViewPat(position, convertView, parent);
             case TYPEPATADD:
-                return getViewPatAdd(position, convertView, parent);
+                return getViewPatAdd(convertView, parent);
             default:
                 return null;
         }
@@ -191,7 +192,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
-    private View getViewOrderAdd(int position, View convertView, ViewGroup parent) {
+    private View getViewOrderAdd(View convertView, ViewGroup parent) {
         View rowView = convertView;
         ViewHolderOrderAdd holder;
         if (rowView == null) {
@@ -206,7 +207,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    frag.addOrder();
+                    frag.editOrder(true);
                 }
             });
             rowView.setTag(holder);
@@ -219,7 +220,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
-    private View getViewPat(int position, View convertView, ViewGroup parent) {
+    private View getViewPat(final int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
         ViewHolderPat holder;
         if (rowView == null) {
@@ -228,24 +229,32 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_pat_row,
                     parent, false);
             holder = new ViewHolderPat();
-            holder.titel = (TextView) rowView.findViewById(R.id.tv_track_pat_titel);
+            holder.rij = (LinearLayout) rowView.findViewById(R.id.ll_track_pat);
+            holder.info= (TextView) rowView.findViewById(R.id.tv_track_pat_info);
+            holder.edit = (ImageView) rowView.findViewById(R.id.iv_track_pat_edit);
+            holder.edit.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    frag.editPattern(position, false);
+                }
+            });
+
             rowView.setTag(holder);
         } else {
             holder = (ViewHolderPat) rowView.getTag();
         }
 
-        String s = "";
         int index = getItemPatPosition(position);
         Pat pat = track.pats.get(index);
-        s = "pat " + pat.toString();
-        if (index == selectedPat) {
-            s = ">> " + s;
-        }
-        holder.titel.setText(s);
+        holder.info.setText(pat.toString2(h));
+
+//        holder.rij.setBackgroundColor((index == selectedPat) ? Color.BLUE : Color.TRANSPARENT);
+
         return rowView;
     }
 
-    private View getViewPatAdd(int position, View convertView, ViewGroup parent) {
+    private View getViewPatAdd(View convertView, ViewGroup parent) {
         View rowView = convertView;
         ViewHolderPatAdd holder;
         if (rowView == null) {
@@ -260,7 +269,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    frag.addPat();
+                    frag.editPattern (0, true);
                 }
             });
             rowView.setTag(holder);
@@ -291,7 +300,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     public static class ViewHolderPat {
         public LinearLayout rij;
-        public TextView titel;
+        public TextView info;
+        public ImageView edit;
     }
 
     public static class ViewHolderPatAdd {

@@ -7,20 +7,28 @@
 
     <!-- MyTheme substijlen -->
     <style name="AppTheme.EmphasisEditor">
-        <item name="android:layout_width">@dimen/emphasis_width</item>
-        <item name="android:layout_height">@dimen/emphasis_height</item>
-        <item name="android:layout_marginLeft">@dimen/emphasis_marginleft</item>
+        <item name="android:layout_width">@dimen/emphasis_editor_width</item>
+        <item name="android:layout_height">@dimen/emphasis_editor_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_editor_marginleft</item>
         <item name="android:clickable">true</item>
         <item name="android:contentDescription">@string/hw</item>
         <item name="android:src">@drawable/levellist_emphasis</item>
     </style>
 
     <style name="AppTheme.EmphasisPlayer">
-        <item name="android:layout_width">@dimen/emphasis_width</item>
-        <item name="android:layout_height">@dimen/emphasis_height</item>
-        <item name="android:layout_marginLeft">@dimen/emphasis_marginleft</item>
+        <item name="android:layout_width">@dimen/emphasis_editor_width</item>
+        <item name="android:layout_height">@dimen/emphasis_editor_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_editor_marginleft</item>
         <item name="android:clickable">true</item>
         <item name="android:contentDescription">@string/hw</item>
+    </style>
+
+    <style name="AppTheme.EmphasisList">
+        <item name="android:layout_width">@dimen/emphasis_list_width</item>
+        <item name="android:layout_height">@dimen/emphasis_list_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_list_marginleft</item>
+        <item name="android:contentDescription">@string/hw</item>
+        <item name="android:src">@drawable/levellist_emphasis_list</item>
     </style>
 
     <style name="AppTheme.TempoButton">

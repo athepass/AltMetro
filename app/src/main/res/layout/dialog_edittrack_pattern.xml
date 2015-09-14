@@ -1,0 +1,200 @@
+<LinearLayout
+    android:id="@+id/edit_track_pattern"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_ed_editor_emphasis0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis0"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv00"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis1"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv01"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis2"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv02"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis3"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv03"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis4"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv04"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis5"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv05"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis6"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv06"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis7"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv07"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_ed_editor_emphasis1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis8"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv08"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis9"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv09"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis10"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv10"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis11"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv11"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis12"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv12"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis13"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv13"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis14"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv14"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis15"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv15"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_ed_editor_emphasis2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis16"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv16"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis17"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv17"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis18"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv18"/>
+
+        <ImageView
+            android:id="@+id/iv_ed_editor_emphasis19"
+            style="@style/AppTheme.EmphasisEditor"
+            android:tag="iv19"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_beat"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_beat"/>
+
+        <Spinner
+            android:id="@+id/spinnerBeat"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/label_timesignature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_timesig"/>
+
+        <Spinner
+            android:id="@+id/spinnerTime"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSub"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_sub"/>
+
+        <Spinner
+            android:id="@+id/spinnerSub"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_tracktitel"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_title"/>
+
+        <EditText
+            android:id="@+id/et_tracktitel"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
+    </LinearLayout>
+
+</LinearLayout>

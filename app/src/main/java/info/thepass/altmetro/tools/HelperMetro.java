@@ -204,6 +204,10 @@ public class HelperMetro {
         return resources.getString(id);
     }
 
+    public String[] getStringArray(int id) {
+        return resources.getStringArray(id);
+    }
+
     public String getString1(int id, String arg1) {
         String s = resources.getString(id);
         return String.format(s, arg1);

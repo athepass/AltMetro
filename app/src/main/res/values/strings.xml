@@ -12,6 +12,10 @@
     <string name="action_copy">Copy</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
+    <string name="label_beat">Beats</string>
+    <string name="label_editpattern">Edit pattern</string>
+    <string name="label_addpattern">Add pattern</string>
+    <string name="label_sub">Subdivision</string>
     <string name="label_multi">Multiple tempi</string>
     <string name="label_multi_single">Single tempo</string>
     <string name="label_multi_multi">Multiple tempos</string>

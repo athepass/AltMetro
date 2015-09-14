@@ -1,15 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/ll_rij"
+    android:id="@+id/ll_track_pat"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="20dp"
-    android:background="?android:attr/activatedBackgroundIndicator"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tv_track_pat_titel"
+    <ImageView
+        android:id="@+id/iv_track_pat_edit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:src="@mipmap/ic_action_edit"/>
+
+    <LinearLayout
+        android:id="@+id/ll_track_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_list_emphasis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/iv_track_pat_edit"
+            android:layout_toRightOf="@+id/iv_track_pat_edit"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp">
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis0"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis1"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis2"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis3"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis4"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis5"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis6"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis7"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis8"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis9"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis10"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis11"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis12"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis13"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis14"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis15"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis16"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis17"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis18"
+                style="@style/AppTheme.EmphasisList"/>
+
+            <ImageView
+                android:id="@+id/iv_list_emphasis19"
+                style="@style/AppTheme.EmphasisList"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_track_pat_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_list_emphasis"
+            android:layout_toEndOf="@+id/iv_track_pat_edit"
+            android:layout_toRightOf="@+id/iv_track_pat_edit"
+            android:text="blabla"/>
+    </LinearLayout>
 
 </LinearLayout>

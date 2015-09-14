@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="sub_pattern">
-        <item></item>
+        <item>N</item>
         <item>xx</item>
         <item>xxx</item>
         <item>x-x</item>

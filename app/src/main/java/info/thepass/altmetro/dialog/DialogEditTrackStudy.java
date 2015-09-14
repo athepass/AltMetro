@@ -41,7 +41,7 @@ public class DialogEditTrackStudy extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edittrack, null);
+        final View dialogView = inflater.inflate(R.layout.dialog_edittrack_info, null);
         etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
         etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
         rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);

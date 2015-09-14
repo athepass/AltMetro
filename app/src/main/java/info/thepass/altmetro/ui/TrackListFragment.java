@@ -34,7 +34,8 @@ public class TrackListFragment extends ListFragment {
     public final static String TAG = "TrakListFragment";
     private HelperMetro h = null;
     private LinearLayout llList;
-    private Button buttonAddItem;
+    private Button buttonAddItem = (Button) getActivity().findViewById(
+            R.id.button_additem_track);
     private int positionDelete;
     private TrackListAdapter trackListAdapter = null;
     private TrackData trackData;
@@ -137,7 +138,7 @@ public class TrackListFragment extends ListFragment {
         b.putString(TrackData.KEYTRACKS, track.toJson().toString());
 
         dlgEdit.setArguments(b);
-        dlgEdit.show(getFragmentManager(), dlgEdit.TAG);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackInfo.TAG);
     }
 
     private void initData() {
@@ -178,7 +179,7 @@ public class TrackListFragment extends ListFragment {
             trackData.trackSelected--;
             doSetPosition(trackData.trackSelected, false);
         }
-        trackData.save("deleteRow", false);
+        trackData.save("deleteRow");
         updateTrackFragment();
         trackListAdapter.notifyDataSetChanged();
     }
@@ -193,7 +194,7 @@ public class TrackListFragment extends ListFragment {
                 trackData.trackSelected = trackData.tracks.size() - 1;
                 trackListAdapter.notifyDataSetChanged();
                 h.showToast(h.getString(R.string.list_item_added));
-                trackData.save("addTrack", true);
+                trackData.save("addTrack");
             }
         };
         buttonAddItem = (Button) getActivity().findViewById(
@@ -213,9 +214,8 @@ public class TrackListFragment extends ListFragment {
     }
 
     private void updateTrackFragment() {
-        trackData.save(TAG, false);
+        trackData.save(TAG);
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETTRACK, Activity.RESULT_OK, intent);
     }
-
 }

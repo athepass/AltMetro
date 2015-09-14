@@ -5,128 +5,11 @@
               android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/ll_ed_editor_emphasis0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="3dp">
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis0"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv00"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis1"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv01"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis2"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv02"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis3"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv03"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis4"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv04"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis5"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv05"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis6"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv06"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis7"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv07"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis8"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv08"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis9"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv09"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_ed_editor_emphasis1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="3dp">
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis10"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv10"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis11"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv11"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis12"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv12"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis13"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv13"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis14"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv14"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis15"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv15"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis16"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv16"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis17"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv17"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis18"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv18"/>
-
-        <ImageView
-            android:id="@+id/iv_ed_editor_emphasis19"
-            style="@style/AppTheme.EmphasisEditor"
-            android:tag="iv19"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/ll_ed_player_emphasis0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="3dp"
-        android:visibility="gone">
+        android:padding="3dp">
 
         <ImageView
             android:id="@+id/iv_ed_player_emphasis0"
@@ -184,8 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="3dp"
-        android:visibility="gone">
+        android:padding="3dp">
 
         <ImageView
             android:id="@+id/iv_ed_player_emphasis10"
@@ -307,89 +189,9 @@
         android:textColor="@color/color_text"
         android:textSize="@dimen/textsize_row"/>
 
-    <LinearLayout
-        android:id="@+id/ll_editor_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/label_timesignature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_timesig"/>
-
-        <Spinner
-            android:id="@+id/spinnerBeat"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_timesigsep"/>
-
-        <Spinner
-            android:id="@+id/spinnerTime"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/tvSub"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_timesigsep"/>
-
-        <Spinner
-            android:id="@+id/spinnerSub"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/tv_editor_buttonTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_title"/>
-
-        <TextView
-            android:id="@+id/tv_editor_currentbeat"
-            android:layout_width="35dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:background="#FFFFFF"
-            android:gravity="center_horizontal"
-            android:textSize="@dimen/textsize_row"
-            android:visibility="gone"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_editor_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/buttonTempoTap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_tempo_tap2"/>
-
-        <Button
-            android:id="@+id/buttonStudy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_study_off"/>
-
-        <Button
-            android:id="@+id/buttonPractice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_practice"/>
-    </LinearLayout>
 
     <ListView
         android:id="@+id/track_listView"
-        android:choiceMode="multipleChoice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

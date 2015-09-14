@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/button_additem_track"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="@string/list_add_item" >
-</TextView>
+</Button>

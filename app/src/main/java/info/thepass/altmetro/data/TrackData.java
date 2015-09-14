@@ -80,7 +80,7 @@ public class TrackData {
         }
     }
 
-    public void save(String tag, boolean doDump) {
+    public void save(String tag) {
          // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
@@ -88,11 +88,11 @@ public class TrackData {
         } catch (Exception e) {
             h.logD(TAG, "exception SaveData " + e.getMessage());
         }
-        if (doDump) {
-            h.logD(TAG, "saveData " + jsonRoot.toString());
-        } else {
-            h.logI(TAG, "saveData " + tag);
-        }
+//        if (doDump) {
+//            h.logD(TAG, "saveData " + jsonRoot.toString());
+//        } else {
+//            h.logI(TAG, "saveData " + tag);
+//        }
 
         // json object bewaren in file.
         try {

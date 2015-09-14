@@ -14,17 +14,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackItemsAdapter;
+import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.dialog.DialogEditTrackPattern;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -41,20 +43,7 @@ public class TrackFragment extends Fragment {
     private TextView tvTitle;
     private int maxTempo;
 
-//    private EmphasisViewManager evEditor;
 //    private EmphasisViewManager evPlayer;
-
-    private Spinner spBeat;
-    private ArrayAdapter<String> mBeatAdapter;
-    private AdapterView.OnItemSelectedListener beatListener;
-
-    private Spinner spTime;
-    private ArrayAdapter<String> mTimeAdapter;
-    private AdapterView.OnItemSelectedListener timeListener;
-
-    private Spinner spSub;
-    private ArrayAdapter<String> mSubAdapter;
-    private AdapterView.OnItemSelectedListener subListener;
 
     private SeekBar sbTempo;
     private SeekBar.OnSeekBarChangeListener tempoListener;
@@ -66,17 +55,6 @@ public class TrackFragment extends Fragment {
     private Button buttonP20;
 
     private View layout;
-    private Button buttonTitle;
-    private TextView tvCurrentBeat;
-
-    private Button buttonPractice;
-    private View.OnClickListener practiceListener;
-
-    private Button buttonTempoTap;
-    private View.OnClickListener tempoTapListener;
-
-    private Button buttonStudy;
-    private View.OnClickListener studyListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,12 +72,9 @@ public class TrackFragment extends Fragment {
         initListView();
         initListeners();
 //        initEmphasis();
-        initSpinner();
         initSeekBar();
         initTempo();
-        initTitle();
         initIncDec();
-        initPractice();
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -130,6 +105,9 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETTRACK:
                     initData();
                     return;
+                case Keys.TARGETEDITPATTERN:
+                    updatePattern(intent);
+                    return;
             }
         }
     }
@@ -144,7 +122,7 @@ public class TrackFragment extends Fragment {
     }
 
     private void initListView() {
-        Log.d(TAG,"initListView "+track.items.size());
+        Log.d(TAG, "initListView " + track.items.size());
         itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h, this);
 
         lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
@@ -154,10 +132,21 @@ public class TrackFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                h.showToast("listview click at position " + position + " id:" + id);
+                switch (itemsAdapter.getItemViewType(position)) {
+                    case TrackItemsAdapter.TYPEPAT:
+                        if (!track.multi)
+//                            editPattern(0, false);
+                        break;
+                    case TrackItemsAdapter.TYPEORDER:
+                        if (!track.multi)
+                            editOrder(false);
+                        break;
+                    default:
+                        h.showToast("listview click at position " + position + " id:" + id);
+                }
             }
         });
-        lvItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        lvItems.setChoiceMode(ListView.CHOICE_MODE_NONE);
         itemsAdapter.selectedOrder = 0;
         itemsAdapter.selectedPat = 0;
     }
@@ -180,75 +169,10 @@ public class TrackFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         };
-
-        beatListener = new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int pos, long id) {
-//                if (spBeat.getSelectedItemPosition() != getbarBeatsIndex()) {
-//                    p.barBeats = Integer.parseInt(spBeat.getSelectedItem()
-//                            .toString());
-//                    p.initBeatStates();
-//                    if (!settingMetroData)
-//                        doPatternEdited("beatListener");
-//                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        };
-
-        timeListener = new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int pos, long id) {
-//                if (spTime.getSelectedItemPosition() != getbarTimeIndex()) {
-//                    p.barTime = Integer.parseInt(spTime.getSelectedItem()
-//                            .toString());
-//                    p.initBeatStates();
-//                    if (!settingMetroData)
-//                        doPatternEdited("timeListener");
-//                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        };
-
-        subListener = new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int pos, long id) {
-//                if (spSub.getSelectedItemPosition() != h.getSubIndex(p.subs)) {
-//                    p.subs = h.subValue[pos];
-//                    if (!settingMetroData)
-//                        doPatternEdited("subListener");
-//                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        };
     }
 
     private void initTempo() {
         tvTempo = (TextView) getActivity().findViewById(R.id.tv_editor_tempo);
-    }
-
-    private void initTitle() {
-        buttonTitle = (Button) getActivity().findViewById(
-                R.id.tv_editor_buttonTitle);
-        buttonTitle.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-//                editBarTitle();
-            }
-        });
-
-//        tvInfo = (TextView) getActivity()
-//                .findViewById(R.id.tv_editor_studyinfo);
-        tvTitle = (TextView) getActivity().findViewById(R.id.tv_editor_title);
-        tvCurrentBeat = (TextView) getActivity().findViewById(
-                R.id.tv_editor_currentbeat);
     }
 
     //    public void updateBeat(Bundle b) {
@@ -261,7 +185,7 @@ public class TrackFragment extends Fragment {
 //    }
 //
 //    private void updateViewCurrentBeat() {
-//        switch (p.beatState[currentBeat - 1]) {
+//        switch (p.patBeatState[currentBeat - 1]) {
 //            case 0:
 //                tvCurrentBeat.setBackgroundColor(getResources().getColor(
 //                        R.color.color_emphasis_high));
@@ -324,76 +248,12 @@ public class TrackFragment extends Fragment {
         });
     }
 
-    private void initPractice() {
-        buttonPractice = (Button) getActivity().findViewById(
-                R.id.buttonPractice);
-        practiceListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editPractice();
-            }
-        };
-        buttonPractice.setOnClickListener(practiceListener);
-
-        buttonTempoTap = (Button) getActivity().findViewById(
-                R.id.buttonTempoTap);
-        tempoTapListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editTempoTap();
-            }
-
-        };
-        buttonTempoTap.setOnClickListener(tempoTapListener);
-
-        buttonStudy = (Button) getActivity().findViewById(R.id.buttonStudy);
-        studyListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editSpeedStudy();
-            }
-        };
-        buttonStudy.setOnClickListener(studyListener);
-    }
-
     private void initEmphasis() {
-//        evEditor = new EmphasisViewManager("ed_editor", h,
-//                (MetroActivity) getActivity(), false, layout);
-//        evEditor.useLow = true;
 //        evPlayer = new EmphasisViewManager("ed_player", h,
 //                (MetroActivity) getActivity(), true, layout);
 //        evPlayer.useLow = true;
     }
 
-    private void initSpinner() {
-        String[] mBeatOpties = {"1", "2", "3", "4", "5", "6", "7", "8", "9",
-                "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-                "20"};
-        mBeatAdapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.spinner_item, mBeatOpties);
-        spBeat = (Spinner) getActivity().findViewById(R.id.spinnerBeat);
-        spBeat.setAdapter(mBeatAdapter);
-//        spBeat.setSelection(getbarBeatsIndex());
-        spBeat.setSelection(0);
-        spBeat.setOnItemSelectedListener(beatListener);
-
-        String[] mTimeOpties = {"1", "2", "4", "8"};
-        mTimeAdapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.spinner_item, mTimeOpties);
-        spTime = (Spinner) getActivity().findViewById(R.id.spinnerTime);
-        spTime.setAdapter(mTimeAdapter);
-        spTime.setSelection(0);
-//        spTime.setSelection(getbarTimeIndex());
-        spTime.setOnItemSelectedListener(timeListener);
-
-        mSubAdapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.spinner_item, h.subPattern);
-        spSub = (Spinner) getActivity().findViewById(R.id.spinnerSub);
-        spSub.setAdapter(mSubAdapter);
-        spSub.setSelection(0);
-        spSub.setOnItemSelectedListener(subListener);
-
-    }
 
     private void wijzigTempo(int iDelta) {
         String s = tvTempo.getText().toString();
@@ -439,12 +299,52 @@ public class TrackFragment extends Fragment {
 //        }
     }
 
-    public void addOrder() {
+    public void editOrder(boolean add) {
         h.showToast("add order under development");
     }
 
-    public void addPat() {
-        h.showToast("add pat under development");
+    public void editPattern(final int position, boolean add) {
+        DialogEditTrackPattern dlgEdit = new DialogEditTrackPattern();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITPATTERN);
+
+        Bundle b = new Bundle();
+        b.putBoolean(Keys.EDITACTION, add);
+        b.putInt(Keys.EDITPOSITION, position);
+        Pat pat;
+        if (add) {
+            pat = new Pat(h);
+        } else {
+            pat = track.pats.get(itemsAdapter.selectedPat);
+        }
+        Log.d(TAG, "item " + position + ":" + pat.toString());
+        b.putString(Track.KEYPATS, pat.toJson().toString());
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackPattern.TAG);
+    }
+
+    private void updatePattern(Intent intent) {
+
+        boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
+        String sPat = intent.getStringExtra(TrackData.KEYTRACKS);
+        try {
+            Pat pat = new Pat(h);
+            pat.fromJson(new JSONObject(sPat));
+            Log.d(TAG, "updatePattern " + pat.getPatTitle());
+            if (actionAdd) {
+                track.pats.add(pat);
+            } else {
+                track.pats.remove(track.patSelected);
+                track.pats.add(track.patSelected, pat);
+            }
+            track.syncItems();
+            itemsAdapter.notifyDataSetChanged();
+            trackData.save("updatePattern");
+        } catch (Exception e) {
+            h.logE(TAG, "updatePattern json exception", e);
+        }
+        h.showToast("update pattern nog niet af");
     }
 
     private void doTrackList() {
