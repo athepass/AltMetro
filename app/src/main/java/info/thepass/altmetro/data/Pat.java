@@ -125,9 +125,10 @@ public class Pat {
     }
 
     public String toStringShort(HelperMetro h) {
+        String[] subPatterns = h.getStringArray(R.array.sub_pattern);
         String s = "m:" + patBeats + "/" + patTime;
         s += " e:" + statesToString();
-        s += (patSubs == 0) ? "" : " s:" + h.subPattern[h.getSubIndex(patSubs)];
+        s += (patSubs == 0) ? "" : " s:" + h.subPattern[patSubs];
         s += (patTitle.equals("")) ? "" : " t:" + patTitle;
         return s;
     }
@@ -301,9 +302,5 @@ public class Pat {
                     patBeatState[i] = Keys.SOUNDHIGH;
                 }
         }
-    }
-
-    public String getPatTitle() {
-        return "een regel";
     }
 }

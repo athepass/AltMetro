@@ -13,20 +13,20 @@ public class Order {
     private final static String KEYHASH = "ORhpat";
     private final static String KEYTEMPO = "ORtmp";
     private final static String KEYCOUNT = "ORcnt";
-    public int index;
+    public int indexPattern;
     public int hashPattern;
     public int tempo;
     public int count;
 
     public Order(HelperMetro h) {
-        index = -1;
+        indexPattern = 0;
         hashPattern = h.getHash();
         tempo = 90;
         count = 0;
     }
 
     public Order(Bundle b) {
-        index = b.getInt(KEYINDEX);
+        indexPattern = b.getInt(KEYINDEX);
         hashPattern = b.getInt(KEYHASH);
         tempo = b.getInt(KEYTEMPO);
         count = b.getInt(KEYCOUNT);
@@ -35,7 +35,7 @@ public class Order {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-            json.put(KEYINDEX, index);
+            json.put(KEYINDEX, indexPattern);
             json.put(KEYHASH, hashPattern);
             json.put(KEYTEMPO, tempo);
             json.put(KEYCOUNT, count);
@@ -48,7 +48,7 @@ public class Order {
 
     public void fromJson(JSONObject json) {
         try {
-            index = json.getInt(KEYINDEX);
+            indexPattern = json.getInt(KEYINDEX);
             hashPattern = json.getInt(KEYHASH);
             tempo = json.getInt(KEYTEMPO);
             count = json.getInt(KEYCOUNT);
@@ -58,7 +58,7 @@ public class Order {
     }
 
     public String toString() {
-        return "i:" + index + ",h:" + hashPattern + ",c:" + count;
+        return "i:" + indexPattern + ",h:" + hashPattern + ",c:" + count;
     }
 
     public String toString2() {

@@ -13,12 +13,12 @@ public class Track {
     public final static String TAG = "TrakTrack";
     public final static String KEYNR = "TRnr";
     public final static String KEYHASHTRACK = "TRhtrk";
-    public final static String KEYTITEL = "TRtit";
-    public final static String KEYMULTI = "TRmul";
-    public final static String KEYSTUDY = "TRstu";
-    public final static String KEYPATS = "TRpat";
+    public final static String KEYTITEL = "TRtitel";
+    public final static String KEYMULTI = "TRmulti";
+    public final static String KEYSTUDY = "TRstudy";
+    public final static String KEYPATS = "TRpats";
     public final static String KEYPATSELECTED = "TRselpat";
-    public final static String KEYORDERS = "TRord";
+    public final static String KEYORDERS = "TRorders";
     public final static String KEYORDERSELECTED = "TRselord";
     public int nummer;
     public int hashTrack;
@@ -49,6 +49,10 @@ public class Track {
         orderSelected = 0;
         Order order = new Order(h);
         orders.add(order);
+
+        //Laat de order meteen verwijzen naar de 0e pattern
+        order.indexPattern = 0;
+        order.hashPattern = pat.patHash;
 
         items = new ArrayList<String>();
         syncItems();
@@ -143,12 +147,14 @@ public class Track {
     public void syncItems() {
         int aantal = 3;  // vaste aantal voor single items
         if (multi) {
-            aantal = 1 + orders.size() + 1 + pats.size() + 1;}
+            aantal = 1 + orders.size() + 1 + pats.size() + 1;
+        }
         while (items.size() < aantal)
             items.add("+");
         while (items.size() > aantal)
             items.remove(0);
     }
+
     public int getItemOrderPosition(int position) {
         if (multi) {
             return position - 1;

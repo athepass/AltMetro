@@ -18,15 +18,14 @@ import info.thepass.altmetro.tools.HelperMetro;
 
 public class TrackData {
     public final static String TAG = "TrakData";
-    public final static String KEYTRACKS = "MDtrk";
+    public final static String KEYTRACKS = "MDtrack";
     public final static String KEYTRACKSELECTED = "MDseltrk";
+    public ArrayList<Track> tracks;
+    public int trackSelected;
     private HelperMetro h;
     private String pad;
     private String filenaam;
     private File dataFile;
-
-    public ArrayList<Track> tracks;
-    public int trackSelected;
 
     public TrackData(HelperMetro hh) {
         h = hh;
@@ -81,25 +80,26 @@ public class TrackData {
     }
 
     public void save(String tag) {
-         // van TrackData naar JSONobject
+        // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
             jsonRoot = toJson();
+//        if (doDump) {
+//            h.logD(TAG, "saveData " + jsonRoot.toString(3));
+//        } else {
+              h.logI(TAG, "saveData " + tag);
+//        }
         } catch (Exception e) {
             h.logD(TAG, "exception SaveData " + e.getMessage());
         }
-//        if (doDump) {
-            h.logD(TAG, "saveData " + jsonRoot.toString());
-//        } else {
-//            h.logI(TAG, "saveData " + tag);
-//        }
 
         // json object bewaren in file.
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(
                     dataFile, false));
-            bufferedWriter.write(jsonRoot.toString());
+            bufferedWriter.write(jsonRoot.toString(3));
             bufferedWriter.close();
+            h.logD(TAG,"save, data written "+tag);
         } catch (Exception e) {
             Log.e(TAG, "write " + filenaam + ": " + e.getMessage());
         }
@@ -137,9 +137,9 @@ public class TrackData {
 
     public void updateTrack(Track trackNew) {
         for (int i = 0; i < tracks.size(); i++) {
-            if (trackNew.hashTrack ==tracks.get(i).hashTrack) {
+            if (trackNew.hashTrack == tracks.get(i).hashTrack) {
                 tracks.remove(i);
-                tracks.add(i,trackNew);
+                tracks.add(i, trackNew);
             }
         }
 

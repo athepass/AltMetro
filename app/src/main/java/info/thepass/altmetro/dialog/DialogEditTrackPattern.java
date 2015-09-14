@@ -26,22 +26,21 @@ import info.thepass.altmetro.tools.Keys;
 public class DialogEditTrackPattern extends DialogFragment {
     public final static String TAG = "DialogEditTrakPattern";
     public HelperMetro h;
-    private String oldTitle;
     private Pat pat;
     private boolean actionAdd;
     private int position;
     private int index = 0;
 
     private Spinner spBeat;
-    private ArrayAdapter<String> mBeatAdapter;
+    private ArrayAdapter<String> beatAdapter;
     private AdapterView.OnItemSelectedListener beatListener;
     private int lastBeatIndex;
 
     private Spinner spTime;
-    private ArrayAdapter<String> mTimeAdapter;
+    private ArrayAdapter<String> timeAdapter;
 
     private Spinner spSub;
-    private ArrayAdapter<String> mSubAdapter;
+    private ArrayAdapter<String> subAdapter;
 
     private EmphasisViewManager evEditor;
 
@@ -53,17 +52,17 @@ public class DialogEditTrackPattern extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Bundle b = getArguments();
-        actionAdd = b.getBoolean(Keys.EDITACTION);
-        position = b.getInt(Keys.EDITPOSITION);
-        index = b.getInt(Keys.EDITINDEX);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_pattern, null);
-        initListener();
+
+        initData();
         initViews(dialogView);
+        initBeat(dialogView);
+        initTime(dialogView);
+        initSub(dialogView);
         initEmphasis(dialogView);
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -84,8 +83,8 @@ public class DialogEditTrackPattern extends DialogFragment {
 
                         Intent intent = new Intent();
                         intent.putExtra(Track.KEYPATS, pat.toJson().toString());
-                        intent.putExtra(Keys.EDITPOSITION, position);
                         intent.putExtra(Keys.EDITACTION, actionAdd);
+                        intent.putExtra(Keys.EDITPOSITION, position);
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
                     }
                 })
@@ -94,33 +93,39 @@ public class DialogEditTrackPattern extends DialogFragment {
                         DialogEditTrackPattern.this.getDialog().cancel();
                     }
                 });
-
-
-        try {
-            pat = new Pat(h);
-            pat.fromJson(new JSONObject(b.getString(Track.KEYPATS)));
-
-            evEditor.setPattern(pat);
-            lastBeatIndex = getbarBeatsIndex(pat.patBeats);
-            spBeat.setSelection(lastBeatIndex);
-            spTime.setSelection(getbarTimeIndex(pat.patTime));
-            spSub.setSelection(pat.patSubs);
-            etTitel.setText(pat.patTitle);
-        } catch (Exception e) {
-            h.logE(TAG, "from Json", e);
-        }
-
         char a = 'a';
         a += index;
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addpattern)
-                : h.getString(R.string.label_editpattern) + " "+ Character.toString(a);
+                : h.getString(R.string.label_editpattern) + " " + Character.toString(a);
         builder.setTitle(dlgTitle);
 
         return builder.create();
     }
 
-    private void initListener() {
+    private void initData() {
+        Bundle b = getArguments();
+        actionAdd = b.getBoolean(Keys.EDITACTION);
+        position = b.getInt(Keys.EDITPOSITION);
+        index = b.getInt(Keys.EDITINDEX);
+        try {
+            pat = new Pat(h);
+            pat.fromJson(new JSONObject(b.getString(Track.KEYPATS)));
+        } catch (Exception e) {
+            h.logE(TAG, "from Json", e);
+        }
+    }
+
+    private void initViews(View dialogView) {
+        etTitel = (EditText) dialogView.findViewById(R.id.et_tracktitel);
+        etTitel.setText(pat.patTitle);
+    }
+
+    private void initBeat(View dialogView) {
+        String[] mBeatOpties = {"1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+                "20"};
+
         beatListener = new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int pos, long id) {
@@ -137,39 +142,43 @@ public class DialogEditTrackPattern extends DialogFragment {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         };
-    }
 
-    private void initViews(View dialogView) {
-        etTitel = (EditText) dialogView.findViewById(R.id.et_tracktitel);
-
-        String[] mBeatOpties = {"1", "2", "3", "4", "5", "6", "7", "8", "9",
-                "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-                "20"};
-        mBeatAdapter = new ArrayAdapter<String>(getActivity(),
+        beatAdapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.spinner_item, mBeatOpties);
+
         spBeat = (Spinner) dialogView.findViewById(R.id.spinnerBeat);
-        spBeat.setAdapter(mBeatAdapter);
-//        spBeat.setSelection(getbarBeatsIndex());
-        spBeat.setSelection(0);
+        spBeat.setAdapter(beatAdapter);
         spBeat.setOnItemSelectedListener(beatListener);
 
-        String[] mTimeOpties = {"1", "2", "4", "8"};
-        mTimeAdapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.spinner_item, mTimeOpties);
-        spTime = (Spinner) dialogView.findViewById(R.id.spinnerTime);
-        spTime.setAdapter(mTimeAdapter);
-        spTime.setSelection(0);
+        lastBeatIndex = getbarBeatsIndex(pat.patBeats);
+        spBeat.setSelection(lastBeatIndex);
+    }
 
-        mSubAdapter = new ArrayAdapter<String>(getActivity(),
+    private void initTime(View dialogView) {
+        String[] mTimeOpties = {"1", "2", "4", "8"};
+        timeAdapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.spinner_item, mTimeOpties);
+
+        spTime = (Spinner) dialogView.findViewById(R.id.spinnerTime);
+        spTime.setAdapter(timeAdapter);
+
+        spTime.setSelection(getbarTimeIndex(pat.patTime));
+    }
+
+    private void initSub(View dialogView) {
+        subAdapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.spinner_item, h.subPattern);
+
         spSub = (Spinner) dialogView.findViewById(R.id.spinnerSub);
-        spSub.setAdapter(mSubAdapter);
-        spSub.setSelection(0);
+        spSub.setAdapter(subAdapter);
+
+        spSub.setSelection(pat.patSubs);
     }
 
     private void initEmphasis(View view) {
         evEditor = new EmphasisViewManager("ed_editor", Keys.EVMEDITOR, view, h);
         evEditor.useLow = true;
+        evEditor.setPattern(pat);
     }
 
     private int getbarBeatsIndex(int barBeats) {

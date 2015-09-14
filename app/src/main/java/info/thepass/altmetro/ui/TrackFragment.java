@@ -249,6 +249,7 @@ public class TrackFragment extends Fragment {
     public void editOrder(int position, boolean add) {
         DialogEditTrackOrder dlgEdit = new DialogEditTrackOrder();
         dlgEdit.h = h;
+        dlgEdit.track = this.track;
         dlgEdit.setTargetFragment(this, Keys.TARGETEDITORDER);
 
         Bundle b = new Bundle();
@@ -307,11 +308,10 @@ public class TrackFragment extends Fragment {
         int position = intent.getIntExtra(Keys.EDITPOSITION,-1);
         int index = track.getItemPatPosition(position);
         String sPat = intent.getStringExtra(Track.KEYPATS);
-        Log.d(TAG, "UpdatePattern hasAction=" + intent.hasExtra(Keys.EDITACTION) + "\n" + sPat);
         try {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));
-            Log.d(TAG, "updatePattern " + pat.getPatTitle());
+            Log.d(TAG, "updatePattern " + pat.toString());
             if (actionAdd) {
                 track.pats.add(pat);
                 itemsAdapter.selectedPat = track.pats.size()-1;
