@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
@@ -37,6 +37,17 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/textsize_timescale</item>
+    </style>
+
+    <style name="AppTheme.ListviewButton">
+        <item name="android:layout_width">@dimen/listitem_button_width</item>
+        <item name="android:layout_height">@dimen/listitem_button_height</item>
+        <item name="android:layout_marginLeft">@dimen/listitem_button_marginleft</item>
+        <item name="android:background">@color/color_listitem_button_background</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:textSize">@dimen/textsize_timescale</item>
     </style>
 

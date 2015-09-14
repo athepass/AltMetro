@@ -175,7 +175,7 @@ public class TrackListFragment extends ListFragment {
 
     private void doDeleteRow() {
         trackData.tracks.remove(positionDelete);
-        if (trackData.trackSelected>=positionDelete) {
+        if (trackData.trackSelected>positionDelete) {
             trackData.trackSelected--;
             doSetPosition(trackData.trackSelected, false);
         }

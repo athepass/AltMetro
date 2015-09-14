@@ -1,6 +1,7 @@
 package info.thepass.altmetro.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,9 @@ import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Order;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.tools.Keys;
 import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
@@ -87,24 +90,16 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public void notifyDataSetChanged() {
-        Log.d(TAG, "notifyDataSetChanged");
+//        Log.d(TAG, "notifyDataSetChanged");
         super.notifyDataSetChanged();
     }
 
-    private int getItemOrderPosition(int position) {
-        if (track.multi) {
-            return position - 1;
-        } else {
-            return 0;
-        }
-    }
+    public String getItemPatNumber(int position) {
+        int index = track.getItemPatPosition(position);
+        char a = 'a';
+        a += index;
+        return Character.toString(a);
 
-    private int getItemPatPosition(int position) {
-        if (track.multi) {
-            return position - 1 - track.orders.size() - 1;
-        } else {
-            return 0;
-        }
     }
 
     @Override
@@ -175,7 +170,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_order_row,
                     parent, false);
             holder = new ViewHolderOrder();
-            holder.rij = (LinearLayout) rowView.findViewById(R.id.ll_track_order);
+            holder.rijAlles = (LinearLayout) rowView.findViewById(R.id.ll_track_order_alles);
+            holder.rijEmphasis = (LinearLayout) rowView.findViewById(R.id.ll_list_order_emphasis);
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_order_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_order_info);
             holder.edit = (ImageView) rowView.findViewById(R.id.iv_track_order_edit);
@@ -183,6 +179,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
+                    Log.d(TAG, "Order edit onclicklistener " + position);
                     frag.editOrder(position, false);
                 }
             });
@@ -191,12 +188,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder = (ViewHolderOrder) rowView.getTag();
         }
 
-        int index = getItemOrderPosition(position);
+        int index = track.getItemOrderPosition(position);
         Order order = track.orders.get(index);
         String s = order.toString2();
         holder.info.setText(s);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
+        holder.rijEmphasis.setVisibility((track.multi) ? View.VISIBLE : View.GONE);
 //        holder.rij.setBackgroundColor((index == selectedPat) ? Color.BLUE : Color.TRANSPARENT);
         return rowView;
     }
@@ -241,27 +239,31 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.rij = (LinearLayout) rowView.findViewById(R.id.ll_track_pat);
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_pat_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_pat_info);
+
             holder.edit = (ImageView) rowView.findViewById(R.id.iv_track_pat_edit);
             holder.edit.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    frag.editPattern(position, false);
+                    frag.editPatternStart(v);
                 }
             });
 
+            holder.evPatList = new EmphasisViewManager("listpat", Keys.EVMLIST, rowView, h);
+            holder.evPatList.useLow = true;
             rowView.setTag(holder);
         } else {
             holder = (ViewHolderPat) rowView.getTag();
         }
 
-        int index = getItemPatPosition(position);
+        int index = track.getItemPatPosition(position);
         Pat pat = track.pats.get(index);
-        String s = pat.toString2(h);
+        String s = getItemPatNumber(position) + ": " + pat.toString2(h);
         holder.info.setText(s);
+        holder.evPatList.setPattern(pat);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
-//        holder.rij.setBackgroundColor((index == selectedPat) ? Color.BLUE : Color.TRANSPARENT);
+        holder.rij.setBackgroundColor((index == selectedPat) ? Color.RED : Color.TRANSPARENT);
 
         return rowView;
     }
@@ -301,7 +303,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     }
 
     public static class ViewHolderOrder {
-        public LinearLayout rij;
+        public LinearLayout rijAlles;
+        public LinearLayout rijEmphasis;
         public TextView header;
         public TextView info;
         public ImageView edit;
@@ -317,6 +320,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         public TextView header;
         public TextView info;
         public ImageView edit;
+        public EmphasisViewManager evPatList;
     }
 
     public static class ViewHolderPatAdd {

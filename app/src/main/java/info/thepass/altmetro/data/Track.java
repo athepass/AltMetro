@@ -149,4 +149,20 @@ public class Track {
         while (items.size() > aantal)
             items.remove(0);
     }
+    public int getItemOrderPosition(int position) {
+        if (multi) {
+            return position - 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public int getItemPatPosition(int position) {
+        if (multi) {
+            return position - 1 - orders.size() - 1;
+        } else {
+            return 0;
+        }
+    }
+
 }

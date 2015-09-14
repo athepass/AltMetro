@@ -77,9 +77,10 @@ public class DialogEditTrackOrder extends DialogFragment {
 
         try {
             order = new Order(h);
-            order.fromJson(new JSONObject(b.getString(Track.KEYORDERS)));
+            String s = b.getString(Track.KEYORDERS);
+            order.fromJson(new JSONObject(s));
 //            spPat.setSelection(0);
-            etCount.setText(order.count);
+            etCount.setText(String.valueOf(order.count));
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }

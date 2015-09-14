@@ -89,7 +89,7 @@ public class TrackData {
             h.logD(TAG, "exception SaveData " + e.getMessage());
         }
 //        if (doDump) {
-//            h.logD(TAG, "saveData " + jsonRoot.toString());
+            h.logD(TAG, "saveData " + jsonRoot.toString());
 //        } else {
 //            h.logI(TAG, "saveData " + tag);
 //        }

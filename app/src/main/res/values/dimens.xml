@@ -14,4 +14,7 @@
     <dimen name="incdec_marginleft">-9dp</dimen>
     <dimen name="textsize_timescale">20sp</dimen>
     <dimen name="textsize_row">16sp</dimen>
+    <dimen name="listitem_button_width">100dp</dimen>
+    <dimen name="listitem_button_height">25dp</dimen>
+    <dimen name="listitem_button_marginleft">10dp</dimen>
 </resources>

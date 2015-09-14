@@ -24,5 +24,10 @@ public class Keys {
 
     public final static String EDITACTION = "EditAction";
     public final static String EDITPOSITION = "EditPosition";
+    public final static String EDITINDEX = "EditIndex";
+
+    public final static int EVMEDITOR = 1;
+    public final static int EVMPLAYER = 2;
+    public final static int EVMLIST = 3;
 
 }

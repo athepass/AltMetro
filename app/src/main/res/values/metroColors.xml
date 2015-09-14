@@ -14,5 +14,6 @@
     <color name="color_listview_selected">#FF0ad7b8</color>
     <color name="color_listview_selected_stroke">#FF000000</color>
     <color name="layout_border_color">#FF111111</color>
+    <color name="color_listitem_button_background">#FF1115f0</color>
 
 </resources>

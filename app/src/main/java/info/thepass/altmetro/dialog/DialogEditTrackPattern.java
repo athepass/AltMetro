@@ -29,6 +29,8 @@ public class DialogEditTrackPattern extends DialogFragment {
     private String oldTitle;
     private Pat pat;
     private boolean actionAdd;
+    private int position;
+    private int index = 0;
 
     private Spinner spBeat;
     private ArrayAdapter<String> mBeatAdapter;
@@ -53,6 +55,8 @@ public class DialogEditTrackPattern extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
+        position = b.getInt(Keys.EDITPOSITION);
+        index = b.getInt(Keys.EDITINDEX);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
@@ -61,9 +65,6 @@ public class DialogEditTrackPattern extends DialogFragment {
         initListener();
         initViews(dialogView);
         initEmphasis(dialogView);
-        builder.setTitle((actionAdd)
-                ? h.getString(R.string.label_addpattern)
-                : h.getString(R.string.label_editpattern));
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -83,6 +84,7 @@ public class DialogEditTrackPattern extends DialogFragment {
 
                         Intent intent = new Intent();
                         intent.putExtra(Track.KEYPATS, pat.toJson().toString());
+                        intent.putExtra(Keys.EDITPOSITION, position);
                         intent.putExtra(Keys.EDITACTION, actionAdd);
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
                     }
@@ -107,6 +109,14 @@ public class DialogEditTrackPattern extends DialogFragment {
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
+
+        char a = 'a';
+        a += index;
+        String dlgTitle = (actionAdd)
+                ? h.getString(R.string.label_addpattern)
+                : h.getString(R.string.label_editpattern) + " "+ Character.toString(a);
+        builder.setTitle(dlgTitle);
+
         return builder.create();
     }
 
@@ -158,7 +168,7 @@ public class DialogEditTrackPattern extends DialogFragment {
     }
 
     private void initEmphasis(View view) {
-        evEditor = new EmphasisViewManager("ed_editor", h, false, view);
+        evEditor = new EmphasisViewManager("ed_editor", Keys.EVMEDITOR, view, h);
         evEditor.useLow = true;
     }
 
