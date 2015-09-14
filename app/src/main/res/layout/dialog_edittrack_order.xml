@@ -1,0 +1,46 @@
+<LinearLayout
+    android:id="@+id/edit_track_pattern"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_spinnerPat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_pattern"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_pattern"/>
+
+        <Spinner
+            android:id="@+id/spinnerPat"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_count"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_count"/>
+
+        <EditText
+            android:id="@+id/et_track_order_count"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"/>
+    </LinearLayout>
+
+</LinearLayout>

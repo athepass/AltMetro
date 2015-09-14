@@ -23,9 +23,11 @@ import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackItemsAdapter;
+import info.thepass.altmetro.data.Order;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.dialog.DialogEditTrackOrder;
 import info.thepass.altmetro.dialog.DialogEditTrackPattern;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -134,12 +136,14 @@ public class TrackFragment extends Fragment {
                                     int position, long id) {
                 switch (itemsAdapter.getItemViewType(position)) {
                     case TrackItemsAdapter.TYPEPAT:
-                        if (!track.multi)
-//                            editPattern(0, false);
                         break;
                     case TrackItemsAdapter.TYPEORDER:
-                        if (!track.multi)
-                            editOrder(false);
+                        break;
+                    case TrackItemsAdapter.TYPEPATADD:
+                        editPattern(0, true);
+                        break;
+                    case TrackItemsAdapter.TYPEORDERADD:
+                        editOrder(0, true);
                         break;
                     default:
                         h.showToast("listview click at position " + position + " id:" + id);
@@ -299,8 +303,27 @@ public class TrackFragment extends Fragment {
 //        }
     }
 
-    public void editOrder(boolean add) {
-        h.showToast("add order under development");
+    public void editOrder(int position, boolean add) {
+        DialogEditTrackOrder dlgEdit = new DialogEditTrackOrder();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITORDER);
+
+        Bundle b = new Bundle();
+        b.putBoolean(Keys.EDITACTION, add);
+        b.putInt(Keys.EDITPOSITION, itemsAdapter.selectedOrder);
+        Order order;
+        b.putBoolean(Track.KEYMULTI, track.multi);
+
+        if (add) {
+            order = new Order(h);
+        } else {
+            order = track.orders.get(itemsAdapter.selectedOrder);
+        }
+        Log.d(TAG, "item " + position + ":" + order.toString());
+        b.putString(Track.KEYPATS, order.toJson().toString());
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackOrder.TAG);
     }
 
     public void editPattern(final int position, boolean add) {
@@ -327,7 +350,7 @@ public class TrackFragment extends Fragment {
     private void updatePattern(Intent intent) {
 
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
-        String sPat = intent.getStringExtra(TrackData.KEYTRACKS);
+        String sPat = intent.getStringExtra(Track.KEYPATS);
         try {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));

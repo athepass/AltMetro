@@ -28,7 +28,7 @@ public class Order {
     public Order(Bundle b) {
         index = b.getInt(KEYINDEX);
         hashPattern = b.getInt(KEYHASH);
-        tempo= b.getInt(KEYTEMPO);
+        tempo = b.getInt(KEYTEMPO);
         count = b.getInt(KEYCOUNT);
     }
 
@@ -59,5 +59,9 @@ public class Order {
 
     public String toString() {
         return "i:" + index + ",h:" + hashPattern + ",c:" + count;
+    }
+
+    public String toString2() {
+        return "count:" + count;
     }
 }

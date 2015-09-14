@@ -18,12 +18,12 @@ import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
-    private final static String TAG = "TrakItemsAdapter";
     public final static int TYPESTUDY = 0;
     public final static int TYPEORDER = 1;
     public final static int TYPEPAT = 2;
     public final static int TYPEORDERADD = 3;
     public final static int TYPEPATADD = 4;
+    private final static String TAG = "TrakItemsAdapter";
     public int selectedPat = 0;
     public int selectedOrder = 0;
     private Context context;
@@ -41,7 +41,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         frag = frag2;
     }
 
-//    @Override
+    //    @Override
     public int getCount() {
         if (track.multi) {
             return track.items.size();
@@ -166,7 +166,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
-    private View getViewOrder(int position, View convertView, ViewGroup parent) {
+    private View getViewOrder(final int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
         ViewHolderOrder holder;
         if (rowView == null) {
@@ -175,20 +175,29 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_order_row,
                     parent, false);
             holder = new ViewHolderOrder();
-            holder.titel = (TextView) rowView.findViewById(R.id.tv_track_order_titel);
+            holder.rij = (LinearLayout) rowView.findViewById(R.id.ll_track_order);
+            holder.header = (TextView) rowView.findViewById(R.id.tv_track_order_header);
+            holder.info = (TextView) rowView.findViewById(R.id.tv_track_order_info);
+            holder.edit = (ImageView) rowView.findViewById(R.id.iv_track_order_edit);
+            holder.edit.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    frag.editOrder(position, false);
+                }
+            });
             rowView.setTag(holder);
         } else {
             holder = (ViewHolderOrder) rowView.getTag();
         }
 
-        String s = "";
         int index = getItemOrderPosition(position);
         Order order = track.orders.get(index);
-        s = "order " + order.toString();
-        if (index == selectedOrder) {
-            s = ">> " + s;
-        }
-        holder.titel.setText(s);
+        String s = order.toString2();
+        holder.info.setText(s);
+
+        holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
+//        holder.rij.setBackgroundColor((index == selectedPat) ? Color.BLUE : Color.TRANSPARENT);
         return rowView;
     }
 
@@ -207,7 +216,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    frag.editOrder(true);
+                    frag.editOrder(0, true);
                 }
             });
             rowView.setTag(holder);
@@ -230,7 +239,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     parent, false);
             holder = new ViewHolderPat();
             holder.rij = (LinearLayout) rowView.findViewById(R.id.ll_track_pat);
-            holder.info= (TextView) rowView.findViewById(R.id.tv_track_pat_info);
+            holder.header = (TextView) rowView.findViewById(R.id.tv_track_pat_header);
+            holder.info = (TextView) rowView.findViewById(R.id.tv_track_pat_info);
             holder.edit = (ImageView) rowView.findViewById(R.id.iv_track_pat_edit);
             holder.edit.setOnClickListener(new View.OnClickListener() {
 
@@ -247,8 +257,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         int index = getItemPatPosition(position);
         Pat pat = track.pats.get(index);
-        holder.info.setText(pat.toString2(h));
+        String s = pat.toString2(h);
+        holder.info.setText(s);
 
+        holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
 //        holder.rij.setBackgroundColor((index == selectedPat) ? Color.BLUE : Color.TRANSPARENT);
 
         return rowView;
@@ -269,7 +281,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    frag.editPattern (0, true);
+                    frag.editPattern(0, true);
                 }
             });
             rowView.setTag(holder);
@@ -290,7 +302,9 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     public static class ViewHolderOrder {
         public LinearLayout rij;
-        public TextView titel;
+        public TextView header;
+        public TextView info;
+        public ImageView edit;
     }
 
     public static class ViewHolderOrderAdd {
@@ -300,6 +314,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     public static class ViewHolderPat {
         public LinearLayout rij;
+        public TextView header;
         public TextView info;
         public ImageView edit;
     }

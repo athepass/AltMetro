@@ -34,8 +34,7 @@ public class TrackListFragment extends ListFragment {
     public final static String TAG = "TrakListFragment";
     private HelperMetro h = null;
     private LinearLayout llList;
-    private Button buttonAddItem = (Button) getActivity().findViewById(
-            R.id.button_additem_track);
+    private Button buttonAddItem;
     private int positionDelete;
     private TrackListAdapter trackListAdapter = null;
     private TrackData trackData;
@@ -65,6 +64,7 @@ public class TrackListFragment extends ListFragment {
         });
 
         llList = (LinearLayout) getActivity().findViewById(R.id.ll_tracklist);
+        buttonAddItem = (Button) getActivity().findViewById(R.id.button_additem_track);
 
         initData();
         getActivity().setTitle(h.getString(R.string.list_select_track));
