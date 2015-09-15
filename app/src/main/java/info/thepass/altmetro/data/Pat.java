@@ -33,7 +33,7 @@ public class Pat {
         patBeats = 4;
         patTime = 4;
         patSubs = Keys.SUBDEFAULT;
-        patSubs = 1;
+        patSubs = 0;
         patBeatState = new int[Keys.MAXEMPHASIS];
         for (int i = 0; i < Keys.MAXEMPHASIS; i++) {
             if (i == 0)

@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/tv_track_study_tap"
         style="@style/AppTheme.ListviewButton"
-        android:text="@string/label_tempo_tap2"/>
+        android:text="@string/label_tap"/>
 
     <TextView
         android:id="@+id/tv_track_study_study"

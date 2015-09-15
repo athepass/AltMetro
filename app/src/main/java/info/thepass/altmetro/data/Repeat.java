@@ -5,27 +5,28 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 
-public class Order {
-    public final static String TAG = "TrakOrder";
-    private final static String KEYINDEX = "ORidx";
-    private final static String KEYHASH = "ORhpat";
-    private final static String KEYTEMPO = "ORtmp";
-    private final static String KEYCOUNT = "ORcnt";
+public class Repeat {
+    public final static String TAG = "TrakRepeat";
+    private final static String KEYINDEX = "RPidx";
+    private final static String KEYHASH = "RPhpat";
+    private final static String KEYTEMPO = "RPtmp";
+    private final static String KEYCOUNT = "RPcnt";
     public int indexPattern;
     public int hashPattern;
     public int tempo;
     public int count;
 
-    public Order(HelperMetro h) {
+    public Repeat(HelperMetro h) {
         indexPattern = 0;
         hashPattern = h.getHash();
         tempo = 90;
         count = 0;
     }
 
-    public Order(Bundle b) {
+    public Repeat(Bundle b) {
         indexPattern = b.getInt(KEYINDEX);
         hashPattern = b.getInt(KEYHASH);
         tempo = b.getInt(KEYTEMPO);
@@ -61,7 +62,9 @@ public class Order {
         return "i:" + indexPattern + ",h:" + hashPattern + ",c:" + count;
     }
 
-    public String toString2() {
-        return "count:" + count;
+    public String toString2(boolean showTempo, HelperMetro h) {
+        String s = h.getString(R.string.label_count) + ": " + count;
+        s += ((showTempo)? " " + h.getString(R.string.label_tempo) + ": " + tempo : "" );
+        return s;
     }
 }

@@ -42,12 +42,9 @@ public class DialogEditTrackStudy extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_info, null);
-        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
-        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
-        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
-        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
-        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
 
+        initData();
+        initView(dialogView);
 
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -63,8 +60,8 @@ public class DialogEditTrackStudy extends DialogFragment {
                         // 1e order moet oneindig doorgaan: count <=0
                         if (!track.multi) {
                             track.patSelected = 0;
-                            track.orderSelected = 0;
-                            track.orders.get(0).count = 0;
+                            track.repeatSelected = 0;
+                            track.repeats.get(0).count = 0;
                         }
 
                         Intent intent = new Intent();
@@ -79,10 +76,14 @@ public class DialogEditTrackStudy extends DialogFragment {
                 });
 
 
+        return builder.create();
+    }
+
+    private void initData() {
         Bundle b = getArguments();
         try {
             track = new Track(h);
-            track.fromJson(new JSONObject(b.getString(TrackData.KEYTRACKS)));
+            track.fromJson(new JSONObject(b.getString(TrackData.KEYTRACKS)), h);
             etNummer.setText(String.valueOf(track.nummer));
             etTitel.setText(track.titel);
             rbSingle.setChecked(!track.multi);
@@ -90,7 +91,13 @@ public class DialogEditTrackStudy extends DialogFragment {
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
-        return builder.create();
     }
 
- }
+    private void initView(View dialogView) {
+        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
+        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
+        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
+        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
+        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
+    }
+}

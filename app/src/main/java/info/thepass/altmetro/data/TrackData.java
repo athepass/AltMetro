@@ -73,7 +73,7 @@ public class TrackData {
             // convert json string to JsonObject
             // vul data vanuit JSON object
             JSONObject jsonRoot = new JSONObject(sb.toString());
-            fromJson(jsonRoot);
+            fromJson(jsonRoot, h);
         } catch (Exception e) {
             h.logE(TAG, "readPattern", e);
         }
@@ -121,13 +121,13 @@ public class TrackData {
         return json;
     }
 
-    public void fromJson(JSONObject json) {
+    public void fromJson(JSONObject json, HelperMetro h) {
         try {
             trackSelected = json.getInt(KEYTRACKSELECTED);
             JSONArray tracksArray = json.getJSONArray(KEYTRACKS);
             for (int i = 0; i < tracksArray.length(); i++) {
                 Track track = new Track(h);
-                track.fromJson(tracksArray.getJSONObject(i));
+                track.fromJson(tracksArray.getJSONObject(i), h);
                 tracks.add(track);
             }
         } catch (Exception e) {

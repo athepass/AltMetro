@@ -7,89 +7,89 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/ll_dlgorderpat_emphasis"
+        android:id="@+id/ll_dlgrepeatpat_emphasis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis0"
+            android:id="@+id/iv_dlgrepeatpat_emphasis0"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis1"
+            android:id="@+id/iv_dlgrepeatpat_emphasis1"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis2"
+            android:id="@+id/iv_dlgrepeatpat_emphasis2"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis3"
+            android:id="@+id/iv_dlgrepeatpat_emphasis3"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis4"
+            android:id="@+id/iv_dlgrepeatpat_emphasis4"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis5"
+            android:id="@+id/iv_dlgrepeatpat_emphasis5"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis6"
+            android:id="@+id/iv_dlgrepeatpat_emphasis6"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis7"
+            android:id="@+id/iv_dlgrepeatpat_emphasis7"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis8"
+            android:id="@+id/iv_dlgrepeatpat_emphasis8"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis9"
+            android:id="@+id/iv_dlgrepeatpat_emphasis9"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis10"
+            android:id="@+id/iv_dlgrepeatpat_emphasis10"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis11"
+            android:id="@+id/iv_dlgrepeatpat_emphasis11"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis12"
+            android:id="@+id/iv_dlgrepeatpat_emphasis12"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis13"
+            android:id="@+id/iv_dlgrepeatpat_emphasis13"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis14"
+            android:id="@+id/iv_dlgrepeatpat_emphasis14"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis15"
+            android:id="@+id/iv_dlgrepeatpat_emphasis15"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis16"
+            android:id="@+id/iv_dlgrepeatpat_emphasis16"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis17"
+            android:id="@+id/iv_dlgrepeatpat_emphasis17"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis18"
+            android:id="@+id/iv_dlgrepeatpat_emphasis18"
             style="@style/AppTheme.EmphasisList"/>
 
         <ImageView
-            android:id="@+id/iv_dlgorderpat_emphasis19"
+            android:id="@+id/iv_dlgrepeatpat_emphasis19"
             style="@style/AppTheme.EmphasisList"/>
     </LinearLayout>
 
@@ -118,13 +118,30 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/label_tempo"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_count"/>
+
+        <EditText
+            android:id="@+id/et_dlg_repeat_tempo"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
             android:id="@+id/label_count"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="@string/label_count"/>
 
         <EditText
-            android:id="@+id/et_track_order_count"
+            android:id="@+id/et_dlg_repeat_count"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:inputType="number"/>

@@ -88,16 +88,21 @@ public class DialogEditTrackPattern extends DialogFragment {
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
                     }
                 })
+                .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent();
+                        intent.putExtra(Keys.EDITINDEX, index);
+                        getTargetFragment().onActivityResult(Keys.TARGETDELETEPATTERN, Activity.RESULT_OK, intent);
+                    }
+                })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         DialogEditTrackPattern.this.getDialog().cancel();
                     }
                 });
-        char a = 'a';
-        a += index;
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addpattern)
-                : h.getString(R.string.label_editpattern) + " " + Character.toString(a);
+                : h.getString(R.string.label_editpattern) + " p" + (index + 1);
         builder.setTitle(dlgTitle);
 
         return builder.create();

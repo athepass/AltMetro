@@ -21,8 +21,8 @@ import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class DialogEditTrackInfo extends DialogFragment {
-    public final static String TAG = "DialogEditTrakInfo";
+public class DialogEditTrackPractice extends DialogFragment {
+    public final static String TAG = "DialogEditTrakPracice";
     public HelperMetro h;
     private String oldTitle;
     private Track track;
@@ -32,7 +32,7 @@ public class DialogEditTrackInfo extends DialogFragment {
     private RadioButton rbSingle;
     private RadioButton rbMulti;
 
-    public DialogEditTrackInfo() {
+    public DialogEditTrackPractice() {
         // Empty constructor required for DialogFragment
     }
 
@@ -42,12 +42,9 @@ public class DialogEditTrackInfo extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_info, null);
-        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
-        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
-        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
-        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
-        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
 
+        initData();
+        initView(dialogView);
 
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -59,8 +56,8 @@ public class DialogEditTrackInfo extends DialogFragment {
                         track.nummer = Integer.parseInt(etNummer.getText().toString());
                         track.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
 
-                        // igv single verwijzen naar 1e pattern en 1e repeat
-                        // 1e repeat moet oneindig doorgaan: count <=0
+                        // igv single verwijzen naar 1e pattern en 1e oorder
+                        // 1e order moet oneindig doorgaan: count <=0
                         if (!track.multi) {
                             track.patSelected = 0;
                             track.repeatSelected = 0;
@@ -74,11 +71,15 @@ public class DialogEditTrackInfo extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DialogEditTrackInfo.this.getDialog().cancel();
+                        DialogEditTrackPractice.this.getDialog().cancel();
                     }
                 });
 
 
+        return builder.create();
+    }
+
+    private void initData() {
         Bundle b = getArguments();
         try {
             track = new Track(h);
@@ -90,7 +91,13 @@ public class DialogEditTrackInfo extends DialogFragment {
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
-        return builder.create();
     }
 
+    private void initView(View dialogView) {
+        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
+        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
+        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
+        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
+        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
+    }
 }

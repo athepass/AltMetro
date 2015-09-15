@@ -10,10 +10,11 @@
     <color name="color_text">#00008B</color>
     <color name="color_seq">#fb4c16</color>
     <color name="color_background_editor">#FFd6f0f0</color>
-    <color name="color_listview">#FFbce7e6</color>
     <color name="color_listview_selected">#FF0ad7b8</color>
     <color name="color_listview_selected_stroke">#FF000000</color>
     <color name="layout_border_color">#FF111111</color>
-    <color name="color_listitem_button_background">#FF1115f0</color>
+    <color name="color_listitem_header_background">#A4C639</color>
+    <color name="color_listitem_button_background">#FF00008B</color>
+    <color name="color_listitem_selected_background">#006699</color>
 
 </resources>

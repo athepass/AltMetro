@@ -10,10 +10,9 @@
         android:id="@+id/tv_track_pat_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_listview"
+        android:background="#ADD2FF"
         android:text="@string/label_pattern"
-        android:visibility="gone"
-        android:textColor="@android:color/black"/>
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/ll_track_pat"

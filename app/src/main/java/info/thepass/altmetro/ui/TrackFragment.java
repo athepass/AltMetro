@@ -23,12 +23,16 @@ import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackItemsAdapter;
-import info.thepass.altmetro.data.Order;
+import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Pat;
+import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.dialog.DialogEditTrackOrder;
+import info.thepass.altmetro.dialog.DialogEditTrackRepeat;
 import info.thepass.altmetro.dialog.DialogEditTrackPattern;
+import info.thepass.altmetro.dialog.DialogEditTrackPractice;
+import info.thepass.altmetro.dialog.DialogEditTrackStudy;
+import info.thepass.altmetro.dialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -90,7 +94,7 @@ public class TrackFragment extends Fragment {
                 h.showToast("PLAY under development");
                 return true;
             case R.id.action_track_settings:
-                h.showToast("settings under development");
+                h.showToast("SETTINGS under development");
                 return true;
             case R.id.action_track_tracklist:
                 doTrackList();
@@ -110,6 +114,20 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETEDITPATTERN:
                     updatePattern(intent);
                     return;
+                case Keys.TARGETDELETEPATTERN:
+                    deletePattern(intent);
+                    return;
+                case Keys.TARGETEDITREPEAT:
+                case Keys.TARGETEDITTAP:
+                    updateRepeat(intent);
+                    return;
+                case Keys.TARGETDELETEREPEAT:
+                    deleteRepeat(intent);
+                    return;
+                case Keys.TARGETEDITSTUDY:
+                case Keys.TARGETEDITPRACTICE:
+                    updateStudy(intent);
+                    return;
             }
         }
     }
@@ -120,7 +138,8 @@ public class TrackFragment extends Fragment {
         Log.d(TAG, "initData sel" + trackData.trackSelected);
         track = trackData.tracks.get(trackData.trackSelected);
         track.syncItems();
-        getActivity().setTitle(h.getString(R.string.app_name) + " " + track.getTitle(trackData, trackData.trackSelected));
+        String s = track.getTitle(trackData, trackData.trackSelected);
+        getActivity().setTitle(s.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + s);
     }
 
     private void initListView() {
@@ -134,17 +153,20 @@ public class TrackFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                Log.d(TAG, "listclick" + position);
                 switch (itemsAdapter.getItemViewType(position)) {
-                    case TrackItemsAdapter.TYPEORDER:
-                        itemsAdapter.selectedOrder = track.getItemOrderPosition(position);
+                    case TrackItemsAdapter.TYPEREPEAT:
+                        itemsAdapter.selectedRepeat = track.getItemRepeatPosition(position);
+                        itemsAdapter.notifyDataSetChanged();
+//                        Log.d(TAG, "listclick repeat" + position + " sel" + itemsAdapter.selectedRepeat);
                         break;
-                    case TrackItemsAdapter.TYPEORDERADD:
-                        editOrder(0, true);
+                    case TrackItemsAdapter.TYPEREPEATADD:
+                        editRepeat(0, true);
                         break;
                     case TrackItemsAdapter.TYPEPAT:
                         itemsAdapter.selectedPat = track.getItemPatPosition(position);
                         itemsAdapter.notifyDataSetChanged();
-//                        Log.d(TAG, "list click pat pos=" + position + " sel=" + itemsAdapter.selectedPat + " id=" + id);
+//                        Log.d(TAG, "list click pat " + position + " sel" + itemsAdapter.selectedPat);
                         break;
                     case TrackItemsAdapter.TYPEPATADD:
                         editPattern(0, true);
@@ -155,7 +177,7 @@ public class TrackFragment extends Fragment {
             }
         });
         lvItems.setChoiceMode(ListView.CHOICE_MODE_NONE);
-        itemsAdapter.selectedOrder = 0;
+        itemsAdapter.selectedRepeat = 0;
         itemsAdapter.selectedPat = 0;
     }
 
@@ -181,6 +203,7 @@ public class TrackFragment extends Fragment {
 
     private void initTempo() {
         tvTempo = (TextView) getActivity().findViewById(R.id.tv_editor_tempo);
+        tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
     }
 
     private void initSeekBar() {
@@ -246,35 +269,75 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
-    public void editOrder(int position, boolean add) {
-        DialogEditTrackOrder dlgEdit = new DialogEditTrackOrder();
+    public void editRepeatView(View v) {
+        int pos = lvItems.getPositionForView(v);
+        int index = track.getItemRepeatPosition(pos);
+        Log.d(TAG, "editRepeatView " + pos + " index=" + index);
+        editRepeat(pos, false);
+    }
+
+    public void editRepeat(int position, boolean add) {
+        DialogEditTrackRepeat dlgEdit = new DialogEditTrackRepeat();
         dlgEdit.h = h;
         dlgEdit.track = this.track;
-        dlgEdit.setTargetFragment(this, Keys.TARGETEDITORDER);
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITREPEAT);
 
         Bundle b = new Bundle();
         b.putBoolean(Keys.EDITACTION, add);
-        b.putInt(Keys.EDITPOSITION, itemsAdapter.selectedOrder);
-        Order order;
+        b.putInt(Keys.EDITPOSITION, position);
+        int index = track.getItemRepeatPosition(position);
+        b.putInt(Keys.EDITINDEX, index);
         b.putBoolean(Track.KEYMULTI, track.multi);
 
+        Repeat repeat;
         if (add) {
-            order = new Order(h);
+            repeat = new Repeat(h);
         } else {
-            order = track.orders.get(itemsAdapter.selectedOrder);
+            repeat = track.repeats.get(index);
         }
-        Log.d(TAG, "item " + position + ":" + order.toString());
-        b.putString(Track.KEYORDERS, order.toJson().toString());
+        Log.d(TAG, "item " + position + ":" + repeat.toString());
+        b.putString(Track.KEYREPEATS, repeat.toJson().toString());
 
         dlgEdit.setArguments(b);
-        dlgEdit.show(getFragmentManager(), DialogEditTrackOrder.TAG);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackRepeat.TAG);
     }
 
-    public void editPatternStart(View v) {
+    public void editPatternView(View v) {
         int pos = lvItems.getPositionForView(v);
         int index = track.getItemPatPosition(pos);
-        Log.d(TAG, "editPatternStart " + pos + " index=" + index);
+        Log.d(TAG, "editPatternView " + pos + " index=" + index);
         editPattern(pos, false);
+    }
+
+    public void updateRepeat(Intent intent) {
+        boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
+        int position = intent.getIntExtra(Keys.EDITPOSITION, -1);
+        int index = intent.getIntExtra(Keys.EDITINDEX, -1);
+        String sRepeat = intent.getStringExtra(Track.KEYREPEATS);
+        try {
+            Repeat repeat = new Repeat(h);
+            repeat.fromJson(new JSONObject(sRepeat));
+            Log.d(TAG, "updateRepeat " + repeat.toString() + " index=index");
+            if (actionAdd) {
+                track.repeats.add(repeat);
+                itemsAdapter.selectedRepeat = track.repeats.size() - 1;
+            } else {
+                track.repeats.remove(index);
+                track.repeats.add(index, repeat);
+                itemsAdapter.selectedRepeat = index;
+            }
+            track.syncItems();
+            itemsAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            h.logE(TAG, "updateRepeat json exception", e);
+            throw new RuntimeException("updateRepeat json exception");
+        }
+        trackData.save("updatePattern");
+        h.dumpToLog(TAG, trackData.toString());
+    }
+
+    private void deleteRepeat(Intent intent) {
+        h.showToast("delete repeat nog niet af");
     }
 
     public void editPattern(final int position, boolean add) {
@@ -305,7 +368,7 @@ public class TrackFragment extends Fragment {
 
     private void updatePattern(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
-        int position = intent.getIntExtra(Keys.EDITPOSITION,-1);
+        int position = intent.getIntExtra(Keys.EDITPOSITION, -1);
         int index = track.getItemPatPosition(position);
         String sPat = intent.getStringExtra(Track.KEYPATS);
         try {
@@ -314,7 +377,7 @@ public class TrackFragment extends Fragment {
             Log.d(TAG, "updatePattern " + pat.toString());
             if (actionAdd) {
                 track.pats.add(pat);
-                itemsAdapter.selectedPat = track.pats.size()-1;
+                itemsAdapter.selectedPat = track.pats.size() - 1;
             } else {
                 track.pats.remove(index);
                 track.pats.add(index, pat);
@@ -324,8 +387,71 @@ public class TrackFragment extends Fragment {
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             h.logE(TAG, "updatePattern json exception", e);
+            throw new RuntimeException("updatePattern json exception");
         }
         trackData.save("updatePattern");
+        h.dumpToLog(TAG, trackData.toString());
+    }
+
+    private void deletePattern(Intent intent) {
+        h.showToast("delete pattern nog niet af");
+    }
+
+    public void editTap() {
+        DialogEditTrackTap dlgEdit = new DialogEditTrackTap();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITTAP);
+
+        Bundle b = new Bundle();
+        int position = itemsAdapter.selectedRepeat;
+        b.putInt(Keys.EDITPOSITION, position);
+        int index = itemsAdapter.selectedRepeat;
+        b.putInt(Keys.EDITINDEX, index);
+        Repeat repeat = track.repeats.get(position);
+        b.putString(Track.KEYREPEATS, repeat.toJson().toString());
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackTap.TAG);
+    }
+
+    public void editPractice() {
+        DialogEditTrackPractice dlgEdit = new DialogEditTrackPractice();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITPRACTICE);
+
+        Bundle b = new Bundle();
+        Study study = track.study;
+        b.putString(Track.KEYSTUDY, study.toJson().toString());
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackPractice.TAG);
+    }
+
+    public void editSpeedStudy() {
+        DialogEditTrackStudy dlgEdit = new DialogEditTrackStudy();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITSTUDY);
+
+        Bundle b = new Bundle();
+        Study study = track.study;
+        b.putString(Track.KEYPATS, study.toJson().toString());
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
+    }
+
+    public void updateStudy(Intent intent) {
+        String sStudy = intent.getStringExtra(Track.KEYREPEATS);
+        try {
+            Study newStudy = new Study();
+            newStudy.fromJson(new JSONObject(sStudy));
+            Log.d(TAG, "updateRepeat " + newStudy.toString());
+            track.study = newStudy;
+        } catch (Exception e) {
+            h.logE(TAG, "updateStudy json exception", e);
+            throw new RuntimeException("updateStudy json exception");
+        }
+        trackData.save("updateStudy");
         h.dumpToLog(TAG, trackData.toString());
     }
 
@@ -336,41 +462,6 @@ public class TrackFragment extends Fragment {
         newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
 //        displayTempo(newTempo);
 //        doPatternEdited("wijzigTempo");
-    }
-
-    public void editPractice() {
-        h.showToast("EditPractice under development");
-//        Bundle b = new Bundle();
-//        b.putInt(Keys.KEYPRACTICE, data.practicePercentage);
-//
-//        FragmentManager fm = getFragmentManager();
-//        DialogPracticeFragment editNameDialog = new DialogPracticeFragment();
-//        editNameDialog.h = h;
-//        editNameDialog.setArguments(b);
-//        editNameDialog.show(fm, DialogPracticeFragment.TAG);
-    }
-
-    public void editTempoTap() {
-        h.showToast("EditTap under development");
-//        FragmentManager fm = getFragmentManager();
-//        DialogTempoTapFragment editNameDialog = new DialogTempoTapFragment();
-//        editNameDialog.h = h;
-//        editNameDialog.show(fm, DialogTempoTapFragment.TAG);
-    }
-
-    public void editSpeedStudy() {
-        h.showToast("Edit Speed under development");
-//        if (!settingMetroData) {
-//            Bundle b = new Bundle();
-//            b.putBundle(Keys.KEYSPEEDSTUDY, data.sps.toBundle());
-//            b.putInt(Keys.KEYTEMPO, data.getBarPatternSelected().tempo);
-//
-//            FragmentManager fm = getFragmentManager();
-//            DialogSpeedStudyFragment editNameDialog = new DialogSpeedStudyFragment();
-//            editNameDialog.h = h;
-//            editNameDialog.setArguments(b);
-//            editNameDialog.show(fm, DialogPracticeFragment.TAG);
-//        }
     }
 
     //    public void updateBeat(Bundle b) {

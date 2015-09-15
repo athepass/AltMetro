@@ -20,17 +20,17 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.Order;
+import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class DialogEditTrackOrder extends DialogFragment {
-    public final static String TAG = "DialogEditTrakOrder";
+public class DialogEditTrackRepeat extends DialogFragment {
+    public final static String TAG = "DialogEditTrakRepeat";
     public HelperMetro h;
     public Track track;
-    private Order order;
+    private Repeat repeat;
     private boolean actionAdd;
     private int position;
     private int index = 0;
@@ -44,8 +44,9 @@ public class DialogEditTrackOrder extends DialogFragment {
     private ArrayAdapter<String> patSelAdapter;
     private AdapterView.OnItemSelectedListener patSelListener;
     private EditText etCount;
+    private EditText etTempo;
 
-    public DialogEditTrackOrder() {
+    public DialogEditTrackRepeat() {
         // Empty constructor required for DialogFragment
     }
 
@@ -55,7 +56,7 @@ public class DialogEditTrackOrder extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edittrack_order, null);
+        final View dialogView = inflater.inflate(R.layout.dialog_edittrack_repeat, null);
 
         initData();
         initEmphasis(dialogView);
@@ -66,23 +67,36 @@ public class DialogEditTrackOrder extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        //todo update order
-                        order.indexPattern = spPat.getSelectedItemPosition();
-                        order.hashPattern = track.pats.get(order.indexPattern).patHash;
-                        order.count = Integer.parseInt(etCount.getText().toString());
+                        //todo update repeat
+                        repeat.indexPattern = spPat.getSelectedItemPosition();
+                        repeat.hashPattern = track.pats.get(repeat.indexPattern).patHash;
+                        repeat.count = Integer.parseInt(etCount.getText().toString());
+                        repeat.tempo = Integer.parseInt(etTempo.getText().toString());
                         Intent intent = new Intent();
-                        intent.putExtra(Track.KEYORDERS, order.toJson().toString());
                         intent.putExtra(Keys.EDITACTION, actionAdd);
                         intent.putExtra(Keys.EDITPOSITION, position);
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITORDER, Activity.RESULT_OK, intent);
+                        intent.putExtra(Keys.EDITINDEX, index);
+                        intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
+                        getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DialogEditTrackOrder.this.getDialog().cancel();
+                        DialogEditTrackRepeat.this.getDialog().cancel();
+                    }
+                })
+                .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent();
+                        intent.putExtra(Keys.EDITINDEX, index);
+                        getTargetFragment().onActivityResult(Keys.TARGETDELETEREPEAT, Activity.RESULT_OK, intent);
                     }
                 });
 
+        String dlgTitle = (actionAdd)
+                ? h.getString(R.string.label_addrepeat)
+                : h.getString(R.string.label_editrepeat) + " r" + (index + 1);
+        builder.setTitle(dlgTitle);
 
         return builder.create();
     }
@@ -94,16 +108,16 @@ public class DialogEditTrackOrder extends DialogFragment {
         position = b.getInt(Keys.EDITPOSITION);
         index = b.getInt(Keys.EDITINDEX);
         try {
-            order = new Order(h);
-            String s = b.getString(Track.KEYORDERS);
-            order.fromJson(new JSONObject(s));
+            repeat = new Repeat(h);
+            String s = b.getString(Track.KEYREPEATS);
+            repeat.fromJson(new JSONObject(s));
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
     }
 
     private void initEmphasis(View dialogView) {
-        evmPats = new EmphasisViewManager("dlgorderpat", Keys.EVMLIST, dialogView, h);
+        evmPats = new EmphasisViewManager("dlgrepeatpat", Keys.EVMLIST, dialogView, h);
         evmPats.useLow = true;
     }
 
@@ -111,11 +125,13 @@ public class DialogEditTrackOrder extends DialogFragment {
         llSpinner = (LinearLayout) dialogView.findViewById((R.id.ll_spinnerPat));
         llSpinner.setVisibility((multi) ? View.VISIBLE : View.GONE);
 
-        llEmphasis = (LinearLayout) dialogView.findViewById((R.id.ll_dlgorderpat_emphasis));
+        llEmphasis = (LinearLayout) dialogView.findViewById((R.id.ll_dlgrepeatpat_emphasis));
         llEmphasis.setVisibility((multi) ? View.VISIBLE : View.GONE);
 
-        etCount = (EditText) dialogView.findViewById(R.id.et_track_order_count);
-        etCount.setText(String.valueOf(order.count));
+        etCount = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_count);
+        etCount.setText(String.valueOf(repeat.count));
+        etTempo = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_tempo);
+        etTempo.setText(String.valueOf(repeat.count));
     }
 
     private void initSpinner(View dialogView) {
@@ -140,7 +156,7 @@ public class DialogEditTrackOrder extends DialogFragment {
         spPat = (Spinner) dialogView.findViewById(R.id.spinnerPat);
         spPat.setAdapter(patSelAdapter);
         spPat.setOnItemSelectedListener(patSelListener);
-        updatePat(order.indexPattern);
+        updatePat(repeat.indexPattern);
     }
 
     private void updatePat(int position) {

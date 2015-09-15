@@ -115,7 +115,7 @@ public class TrackListFragment extends ListFragment {
                 case Keys.TARGETTRACKLIST:
                     try {
                         Track track = new Track(h);
-                        track.fromJson(new JSONObject(intent.getStringExtra(TrackData.KEYTRACKS)));
+                        track.fromJson(new JSONObject(intent.getStringExtra(TrackData.KEYTRACKS)),h);
                         trackData.updateTrack(track);
                         trackListAdapter.notifyDataSetChanged();
                         updateTrackFragment();
