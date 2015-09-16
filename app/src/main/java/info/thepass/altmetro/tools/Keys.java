@@ -17,18 +17,18 @@ public class Keys {
     public final static int MAXEMPHASIS = 20;
     public final static int HALFEMPHASIS = 10;
 
-    public final static int TARGETTRACK = 1;
-    public final static int TARGETTRACKLIST = 10;
-    public final static int TARGETEDITPATTERN = 11;
-    public final static int TARGETDELETEPATTERN = 12;
-    public final static int TARGETEDITREPEAT = 21;
-    public final static int TARGETDELETEREPEAT = 22;
-    public final static int TARGETEDITSTUDY = 31;
-    public final static int TARGETEDITPRACTICE = 32;
-    public final static int TARGETEDITTAP = 33;
+    public final static int TARGETTRACKFRAGMENT = 1;
+    public final static int TARGETEDITTRACK = 11;
+    public final static int TARGETDELETETRACK = 12;
+    public final static int TARGETEDITPATTERN = 21;
+    public final static int TARGETDELETEPATTERN = 22;
+    public final static int TARGETEDITREPEAT = 31;
+    public final static int TARGETDELETEREPEAT = 32;
+    public final static int TARGETEDITSTUDY = 41;
+    public final static int TARGETEDITPRACTICE = 42;
+    public final static int TARGETEDITTAP = 43;
 
     public final static String EDITACTION = "EditAction";
-    public final static String EDITPOSITION = "EditPosition";
     public final static String EDITINDEX = "EditIndex";
 
     public final static int EVMEDITOR = 1;

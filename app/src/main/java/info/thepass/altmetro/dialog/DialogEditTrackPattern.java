@@ -84,7 +84,7 @@ public class DialogEditTrackPattern extends DialogFragment {
                         Intent intent = new Intent();
                         intent.putExtra(Track.KEYPATS, pat.toJson().toString());
                         intent.putExtra(Keys.EDITACTION, actionAdd);
-                        intent.putExtra(Keys.EDITPOSITION, position);
+                        intent.putExtra(Keys.EDITINDEX, index);
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
                     }
                 })
@@ -111,7 +111,6 @@ public class DialogEditTrackPattern extends DialogFragment {
     private void initData() {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
-        position = b.getInt(Keys.EDITPOSITION);
         index = b.getInt(Keys.EDITINDEX);
         try {
             pat = new Pat(h);

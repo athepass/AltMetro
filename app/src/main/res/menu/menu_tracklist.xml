@@ -5,21 +5,4 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/action_play"/>
-    <item
-        android:id="@+id/action_tracklist_edit"
-        android:icon="@mipmap/ic_action_edit"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_edit"/>
-    <item
-        android:id="@+id/action_tracklist_copy"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_copy"/>
-    <item
-        android:id="@+id/action_tracklist_delete"
-        android:icon="@mipmap/icon_trash_white"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_delete"/>
 </menu>

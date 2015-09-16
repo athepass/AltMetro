@@ -31,7 +31,7 @@ public class EmphasisViewManager {
     public EmphasisViewManager(String prefx,
                                int type, View llayout, HelperMetro hh) {
         h = hh;
-        h.logD(TAG, "constructor " + prefx + " type=" + type);
+//        h.logD(TAG, "constructor " + prefx + " type=" + type);
 
         empType = type;
         prefix = prefx;

@@ -15,6 +15,8 @@
     <string name="action_delete">Delete</string>
     <string name="label_beat">Beats</string>
     <string name="label_count">count repeats</string>
+    <string name="label_edittrack">Edit track</string>
+    <string name="label_addtrack">Add track</string>
     <string name="label_editpattern">Edit pattern</string>
     <string name="label_addpattern">Add pattern</string>
     <string name="label_editrepeat">Edit repeat</string>
@@ -45,5 +47,5 @@
     <string name="list_add_item">Add item</string>
     <string name="list_select_track">Select a track</string>
     <string name="list_item_added">Item added</string>
-    <string name="list_confirm_delete_item">Confirm delete item %s</string>
+    <string name="list_confirm_delete_item">Confirm delete item </string>
 </resources>

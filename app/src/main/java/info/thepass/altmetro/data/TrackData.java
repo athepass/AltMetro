@@ -49,6 +49,7 @@ public class TrackData {
     }
 
     private void addDefaultData() {
+        Log.d(TAG, "addDefaultData");
         Track track = new Track(h);
         tracks.add(track);
         trackSelected = 0;
@@ -87,7 +88,7 @@ public class TrackData {
 //        if (doDump) {
 //            h.logD(TAG, "saveData " + jsonRoot.toString(3));
 //        } else {
-              h.logI(TAG, "saveData " + tag);
+            h.logI(TAG, "saveData " + tag);
 //        }
         } catch (Exception e) {
             h.logD(TAG, "exception SaveData " + e.getMessage());
@@ -97,9 +98,14 @@ public class TrackData {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(
                     dataFile, false));
-            bufferedWriter.write(jsonRoot.toString(3));
+            bufferedWriter.write(jsonRoot.toString());
             bufferedWriter.close();
-            h.logD(TAG,"save, data written "+tag);
+            String s = "save, data written " + tag + "sel=" + trackSelected + " size=" + tracks.size();
+            for (int i = 0; i < tracks.size(); i++) {
+                Track track = tracks.get(i);
+                s += " t" + i + ":r" + track.repeats.size() + "p" + track.pats.size();
+            }
+            h.logD(TAG, s);
         } catch (Exception e) {
             Log.e(TAG, "write " + filenaam + ": " + e.getMessage());
         }
@@ -125,6 +131,7 @@ public class TrackData {
         try {
             trackSelected = json.getInt(KEYTRACKSELECTED);
             JSONArray tracksArray = json.getJSONArray(KEYTRACKS);
+            tracks.clear();
             for (int i = 0; i < tracksArray.length(); i++) {
                 Track track = new Track(h);
                 track.fromJson(tracksArray.getJSONObject(i), h);

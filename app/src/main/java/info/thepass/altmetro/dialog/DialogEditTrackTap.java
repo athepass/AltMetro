@@ -55,7 +55,6 @@ public class DialogEditTrackTap extends DialogFragment {
                         repeat.tempo = Integer.parseInt(tvTap.getText().toString());
 
                         Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITPOSITION, position);
                         intent.putExtra(Keys.EDITINDEX, index);
                         intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
                         getTargetFragment().onActivityResult(Keys.TARGETEDITTAP, Activity.RESULT_OK, intent);
@@ -76,7 +75,6 @@ public class DialogEditTrackTap extends DialogFragment {
 
     private void initData() {
         Bundle b = getArguments();
-        position = b.getInt(Keys.EDITPOSITION);
         index = b.getInt(Keys.EDITINDEX);
         try {
             repeat = new Repeat(h);

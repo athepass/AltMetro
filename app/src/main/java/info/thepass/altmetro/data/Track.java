@@ -19,7 +19,7 @@ public class Track {
     public final static String KEYPATS = "TRpats";
     public final static String KEYPATSELECTED = "TRselpat";
     public final static String KEYREPEATS = "TRrepeats";
-    public final static String KEYREPEATSELECTED = "TRselord";
+    public final static String KEYREPEATSELECTED = "TRselrep";
     public int nummer;
     public int hashTrack;
     public String titel;
@@ -81,6 +81,7 @@ public class Track {
                 repeatsArray.put(repeats.get(i).toJson());
             }
             json.put(KEYREPEATS, repeatsArray);
+//            Log.d(TAG,"toJson repeats " + repeatsArray.toString(3));
 
         } catch (Exception e) {
             Log.e(TAG, "toJson exception" + e.getMessage(), e);
@@ -98,6 +99,7 @@ public class Track {
             study.fromJson(json.getJSONObject(KEYSTUDY));
 
             patSelected = json.getInt(KEYPATSELECTED);
+            pats.clear();
             JSONArray patsArray = json.getJSONArray(KEYPATS);
             for (int i = 0; i < patsArray.length(); i++) {
                 Pat pat = new Pat(h);
@@ -106,6 +108,7 @@ public class Track {
             }
 
             repeatSelected = json.getInt(KEYREPEATSELECTED);
+            repeats.clear();
             JSONArray repeatsArray = json.getJSONArray(KEYREPEATS);
             for (int i = 0; i < repeatsArray.length(); i++) {
                 Repeat rep = new Repeat(h);
@@ -172,5 +175,4 @@ public class Track {
             return 0;
         }
     }
-
 }

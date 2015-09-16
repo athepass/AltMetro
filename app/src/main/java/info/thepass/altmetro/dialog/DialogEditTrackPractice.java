@@ -66,7 +66,7 @@ public class DialogEditTrackPractice extends DialogFragment {
 
                         Intent intent = new Intent();
                         intent.putExtra(TrackData.KEYTRACKS, track.toJson().toString());
-                        getTargetFragment().onActivityResult(Keys.TARGETTRACKLIST, Activity.RESULT_OK, intent);
+                        getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

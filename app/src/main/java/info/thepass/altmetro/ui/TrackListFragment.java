@@ -35,9 +35,9 @@ public class TrackListFragment extends ListFragment {
     private HelperMetro h = null;
     private LinearLayout llList;
     private Button buttonAddItem;
-    private int positionDelete;
     private TrackListAdapter trackListAdapter = null;
     private TrackData trackData;
+    private int indexDel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,18 +86,6 @@ public class TrackListFragment extends ListFragment {
             case R.id.action_tracklist_play:
                 getFragmentManager().popBackStack();
                 return true;
-            case R.id.action_tracklist_delete:
-                if (trackListAdapter.getCount() > 1) {
-                    positionDelete = trackListAdapter.selectedItem;
-                    doConfirmDelete();
-                }
-                return true;
-            case R.id.action_tracklist_edit:
-                doEdit();
-                return true;
-            case R.id.action_tracklist_copy:
-                h.showToast("copy under development");
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -105,96 +93,42 @@ public class TrackListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        doSetPosition(position, true);
+        setPosition(position, true);
     }
 
-     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
-            Log.d(TAG,"onActivityResult OK="+ resultCode+ " req="+requestCode);
+            Log.d(TAG, "onActivityResult OK=" + resultCode + " req=" + requestCode);
             switch (requestCode) {
-                case Keys.TARGETTRACKLIST:
-                    try {
-                        Track track = new Track(h);
-                        track.fromJson(new JSONObject(intent.getStringExtra(TrackData.KEYTRACKS)),h);
-                        trackData.updateTrack(track);
-                        trackListAdapter.notifyDataSetChanged();
-                        updateTrackFragment();
-                    } catch (Exception e) {
-                        h.logE(TAG, "fromJson", e);
-                    }
+                case Keys.TARGETEDITTRACK:
+                    updateTrackList(intent);
+                    return;
+                case Keys.TARGETDELETETRACK:
+                    confirmDeleteItem(intent);
                     return;
             }
         }
     }
 
-    private void doEdit() {
-        DialogEditTrackInfo dlgEdit = new DialogEditTrackInfo();
-        dlgEdit.h = h;
-        dlgEdit.setTargetFragment(this, Keys.TARGETTRACKLIST);
-
-        Bundle b = new Bundle();
-        Track track = trackData.tracks.get(trackListAdapter.selectedItem);
-        Log.d(TAG, "item " + trackListAdapter.selectedItem + " i=" + track.toString());
-        b.putString(TrackData.KEYTRACKS, track.toJson().toString());
-
-        dlgEdit.setArguments(b);
-        dlgEdit.show(getFragmentManager(), DialogEditTrackInfo.TAG);
-    }
-
+    /********************************************************************/
     private void initData() {
         ActivityTrack act = (ActivityTrack) getActivity();
         this.trackData = act.trackData;
         trackListAdapter = new TrackListAdapter(getActivity(),
                 R.layout.fragment_tracklist_row, trackData, h);
+        trackListAdapter.frag = this;
         setListAdapter(this.trackListAdapter);
-        doSetPosition(trackData.trackSelected, false);
+        setPosition(trackData.trackSelected, false);
     }
 
-    private void doConfirmDelete() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Track track = trackData.tracks.get(positionDelete);
-        String pInfo = "[" + (positionDelete + 1) + "] " + track.getTitle(trackData, positionDelete);
-        builder.setMessage(
-                h.getString1(R.string.list_confirm_delete_item,
-                        h.alfaNum(positionDelete) + ": " + pInfo))
-                .setCancelable(false)
-                .setPositiveButton(h.getString(R.string.yes),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                doDeleteRow();
-                            }
-                        })
-                .setNegativeButton(h.getString(R.string.no),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void doDeleteRow() {
-        trackData.tracks.remove(positionDelete);
-        if (trackData.trackSelected>positionDelete) {
-            trackData.trackSelected--;
-            doSetPosition(trackData.trackSelected, false);
-        }
-        trackData.save("deleteRow");
-        updateTrackFragment();
-        trackListAdapter.notifyDataSetChanged();
-    }
 
     private void initFooter() {
         getListView().addFooterView(buttonAddItem);
         OnClickListener addItemClick = new OnClickListener() {
             // @Override
             public void onClick(View v) {
-                Track track = new Track(h);
-                trackData.tracks.add(track);
-                trackData.trackSelected = trackData.tracks.size() - 1;
-                trackListAdapter.notifyDataSetChanged();
-                h.showToast(h.getString(R.string.list_item_added));
-                trackData.save("addTrack");
+                Log.d(TAG,"footer on click add");
+                editTrackList(0, true);
             }
         };
         buttonAddItem = (Button) getActivity().findViewById(
@@ -202,7 +136,8 @@ public class TrackListFragment extends ListFragment {
         buttonAddItem.setOnClickListener(addItemClick);
     }
 
-    private void doSetPosition(int position, boolean updateData) {
+    /***************************************************************************************/
+    private void setPosition(int position, boolean updateData) {
         // werk de user interface bij
         trackListAdapter.selectedItem = position;
         getListView().setItemChecked(position, true);
@@ -216,6 +151,100 @@ public class TrackListFragment extends ListFragment {
     private void updateTrackFragment() {
         trackData.save(TAG);
         Intent intent = new Intent();
-        getTargetFragment().onActivityResult(Keys.TARGETTRACK, Activity.RESULT_OK, intent);
+        getTargetFragment().onActivityResult(Keys.TARGETTRACKFRAGMENT, Activity.RESULT_OK, intent);
+    }
+
+    /***************************************************************************************/
+    public void editTrackListItem(View v) {
+        int position = getListView().getPositionForView(v);
+        setPosition(position,false);
+        Log.d(TAG, "editTrackListItem " + position);
+        editTrackList(position, false);
+    }
+
+    private void editTrackList(int position, boolean add) {
+
+        DialogEditTrackInfo dlgEdit = new DialogEditTrackInfo();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITTRACK);
+
+        Bundle b = new Bundle();
+        b.putBoolean(Keys.EDITACTION, add);
+        b.putInt(Keys.EDITINDEX, position);
+        Track track;
+        if (add) {
+            track = new Track(h);
+        } else {
+            track = trackData.tracks.get(position);
+        }
+        String sTrack = track.toJson().toString();
+        Log.d(TAG, "editTrackList " + trackListAdapter.selectedItem + " pos=" + position + "add=" +add + " track\n"+sTrack);
+        b.putString(TrackData.KEYTRACKS, sTrack);
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackInfo.TAG);
+    }
+
+    private void updateTrackList(Intent intent) {
+        boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
+        Log.d(TAG,"updaeTrackList: actionAdd"+actionAdd);
+        int index = intent.getIntExtra(Keys.EDITINDEX, -1);
+        String sTrack = intent.getStringExtra(TrackData.KEYTRACKS);
+        try {
+            Track track = new Track(h);
+            if (actionAdd) {
+                trackData.tracks.add(track);
+                setPosition(trackData.tracks.size() - 1, true);
+            } else {
+                track.fromJson(new JSONObject(sTrack), h);
+                trackData.tracks.set(index, track);
+                setPosition(index, true);
+            }
+            getListView().setItemChecked(trackListAdapter.selectedItem, true);
+            trackListAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            h.logE(TAG, "updateTrackList json exception", e);
+            throw new RuntimeException("updateTrackList json exception");
+        }
+        trackData.save("updateTrackList");
+    }
+
+    /***************************************************************************************/
+    private void confirmDeleteItem(Intent intent) {
+        if (trackData.tracks.size() == 1) {
+            return;
+        }
+        indexDel = intent.getIntExtra(Keys.EDITINDEX, -1);
+        trackListAdapter.selectedItem = indexDel;
+        getListView().setItemChecked(trackListAdapter.selectedItem, true);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Track track = trackData.tracks.get(indexDel);
+        String pInfo = "t" + (indexDel + 1) + "L " + track.getTitle(trackData, indexDel);
+        builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
+                .setCancelable(false)
+                .setPositiveButton(h.getString(R.string.yes),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                deleteItem();
+                            }
+                        })
+                .setNegativeButton(h.getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void deleteItem() {
+        trackData.tracks.remove(indexDel);
+        if (indexDel >= trackData.tracks.size() - 1) {
+            setPosition(trackData.tracks.size() - 1, true);
+        }
+        trackData.save("deleteRow");
+        updateTrackFragment();
+        trackListAdapter.notifyDataSetChanged();
     }
 }

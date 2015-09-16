@@ -74,7 +74,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
                         repeat.tempo = Integer.parseInt(etTempo.getText().toString());
                         Intent intent = new Intent();
                         intent.putExtra(Keys.EDITACTION, actionAdd);
-                        intent.putExtra(Keys.EDITPOSITION, position);
                         intent.putExtra(Keys.EDITINDEX, index);
                         intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
                         getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
@@ -105,7 +104,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
         multi = b.getBoolean(Track.KEYMULTI);
-        position = b.getInt(Keys.EDITPOSITION);
         index = b.getInt(Keys.EDITINDEX);
         try {
             repeat = new Repeat(h);
