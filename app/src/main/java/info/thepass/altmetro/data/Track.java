@@ -133,6 +133,14 @@ public class Track {
         return s;
     }
 
+    public String display(HelperMetro h) {
+        String s = (nummer!=0) ? "nr:" + nummer : "" ;
+        s += (titel.length()>0) ? " titel:" + titel : "";
+        s += (multi) ? "[*]" : "[-]";
+        s += " repeats:" + repeats.size();
+        return s;
+    }
+
     public String getTitle(TrackData trackData, int sel) {
         if ((trackData.tracks.size() == 1)
                 && (pats.size() == 1)

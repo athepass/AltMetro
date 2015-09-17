@@ -62,6 +62,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public int getItemViewType(int position) {
+//        h.logD(TAG,"getItemViewType "+ track.display(h));
         if (track.multi) {
             if (position == 0) {
                 return TYPESTUDY;

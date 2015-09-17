@@ -171,6 +171,7 @@ public class TrackListFragment extends ListFragment {
         Bundle b = new Bundle();
         b.putBoolean(Keys.EDITACTION, add);
         b.putInt(Keys.EDITINDEX, position);
+        b.putInt(Keys.EDITSIZE, trackData.tracks.size());
         Track track;
         if (add) {
             track = new Track(h);
@@ -220,7 +221,7 @@ public class TrackListFragment extends ListFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Track track = trackData.tracks.get(indexDel);
-        String pInfo = "t" + (indexDel + 1) + "L " + track.getTitle(trackData, indexDel);
+        String pInfo = "t" + (indexDel + 1) + " " + track.display(h);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
                 .setPositiveButton(h.getString(R.string.yes),

@@ -294,6 +294,7 @@ public class TrackFragment extends Fragment {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemRepeatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
+        b.putInt(Keys.EDITSIZE, track.repeats.size());
         b.putBoolean(Track.KEYMULTI, track.multi);
 
         Repeat repeat;
@@ -388,6 +389,7 @@ public class TrackFragment extends Fragment {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemPatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
+        b.putInt(Keys.EDITSIZE, track.pats.size());
 
         Pat pat;
         if (add) {

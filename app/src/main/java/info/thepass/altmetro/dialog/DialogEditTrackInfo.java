@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -34,7 +33,7 @@ public class DialogEditTrackInfo extends DialogFragment {
     private RadioButton rbMulti;
     private boolean actionAdd;
     private int index = 0;
-
+    private int editSize = -1;
 
     public DialogEditTrackInfo() {
         // Empty constructor required for DialogFragment
@@ -75,19 +74,21 @@ public class DialogEditTrackInfo extends DialogFragment {
                         getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
                     }
                 })
-                .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        getTargetFragment().onActivityResult(Keys.TARGETDELETETRACK, Activity.RESULT_OK, intent);
-                    }
-                })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         DialogEditTrackInfo.this.getDialog().cancel();
                     }
                 });
 
+        if ((editSize > 1) && (!actionAdd)) {
+            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = new Intent();
+                    intent.putExtra(Keys.EDITINDEX, index);
+                    getTargetFragment().onActivityResult(Keys.TARGETDELETETRACK, Activity.RESULT_OK, intent);
+                }
+            });
+        }
 
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addtrack)
@@ -101,6 +102,7 @@ public class DialogEditTrackInfo extends DialogFragment {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
         index = b.getInt(Keys.EDITINDEX);
+        editSize = b.getInt(Keys.EDITSIZE);
         try {
             trak = new Track(h);
             String sTrack = b.getString(TrackData.KEYTRACKS);

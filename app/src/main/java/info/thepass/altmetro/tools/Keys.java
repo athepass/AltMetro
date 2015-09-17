@@ -30,6 +30,7 @@ public class Keys {
 
     public final static String EDITACTION = "EditAction";
     public final static String EDITINDEX = "EditIndex";
+    public final static String EDITSIZE = "EditSize";
 
     public final static int EVMEDITOR = 1;
     public final static int EVMPLAYER = 2;

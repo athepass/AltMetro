@@ -34,6 +34,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private boolean actionAdd;
     private int position;
     private int index = 0;
+    private int editSize = -1;
     private boolean multi;
 
     private LinearLayout llSpinner;
@@ -83,14 +84,17 @@ public class DialogEditTrackRepeat extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         DialogEditTrackRepeat.this.getDialog().cancel();
                     }
-                })
-                .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        getTargetFragment().onActivityResult(Keys.TARGETDELETEREPEAT, Activity.RESULT_OK, intent);
-                    }
                 });
+
+        if ((editSize > 1) && (!actionAdd)) {
+            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = new Intent();
+                    intent.putExtra(Keys.EDITINDEX, index);
+                    getTargetFragment().onActivityResult(Keys.TARGETDELETEREPEAT, Activity.RESULT_OK, intent);
+                }
+            });
+        }
 
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addrepeat)
@@ -103,8 +107,10 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private void initData() {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
-        multi = b.getBoolean(Track.KEYMULTI);
         index = b.getInt(Keys.EDITINDEX);
+        editSize = b.getInt(Keys.EDITSIZE);
+        multi = b.getBoolean(Track.KEYMULTI);
+
         try {
             repeat = new Repeat(h);
             String s = b.getString(Track.KEYREPEATS);

@@ -30,6 +30,7 @@ public class DialogEditTrackPattern extends DialogFragment {
     private boolean actionAdd;
     private int position;
     private int index = 0;
+    private int editSize = -1;
 
     private Spinner spBeat;
     private ArrayAdapter<String> beatAdapter;
@@ -88,18 +89,22 @@ public class DialogEditTrackPattern extends DialogFragment {
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
                     }
                 })
-                .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        getTargetFragment().onActivityResult(Keys.TARGETDELETEPATTERN, Activity.RESULT_OK, intent);
-                    }
-                })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         DialogEditTrackPattern.this.getDialog().cancel();
                     }
                 });
+
+        if ((editSize > 1) && (!actionAdd)) {
+            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent intent = new Intent();
+                    intent.putExtra(Keys.EDITINDEX, index);
+                    getTargetFragment().onActivityResult(Keys.TARGETDELETEPATTERN, Activity.RESULT_OK, intent);
+                }
+            });
+        }
+
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addpattern)
                 : h.getString(R.string.label_editpattern) + " p" + (index + 1);
@@ -112,6 +117,7 @@ public class DialogEditTrackPattern extends DialogFragment {
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
         index = b.getInt(Keys.EDITINDEX);
+        editSize = b.getInt(Keys.EDITSIZE);
         try {
             pat = new Pat(h);
             pat.fromJson(new JSONObject(b.getString(Track.KEYPATS)));
