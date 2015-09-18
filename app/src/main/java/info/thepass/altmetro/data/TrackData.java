@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -18,10 +20,17 @@ import info.thepass.altmetro.tools.HelperMetro;
 
 public class TrackData {
     public final static String TAG = "TrakData";
-    public final static String KEYTRACKS = "MDtrack";
-    public final static String KEYTRACKSELECTED = "MDseltrk";
+    public final static String KEYTRACKS = "TDtrack";
+    public final static String KEYTRACKSELECTED = "TDseltrk";
+    public final static String KEYPATS = "TDpats";
+    public final static String KEYPATSELECTED = "TDselpat";
+
     public ArrayList<Track> tracks;
     public int trackSelected;
+
+    public ArrayList<Pat> pats;
+    public int patSelected;
+
     private HelperMetro h;
     private String pad;
     private String filenaam;
@@ -31,6 +40,7 @@ public class TrackData {
         h = hh;
         trackSelected = 0;
         tracks = new ArrayList<Track>();
+        pats = new ArrayList<Pat>();
         initDataFile();
         if (!dataFile.exists()) {
             addDefaultData();
@@ -50,9 +60,14 @@ public class TrackData {
 
     private void addDefaultData() {
         Log.d(TAG, "addDefaultData");
+
         Track track = new Track(h);
         tracks.add(track);
         trackSelected = 0;
+
+        patSelected = 0;
+        Pat pat = new Pat(h);
+        pats.add(pat);
     }
 
     private void readData(String tag, boolean doDump) {
@@ -75,23 +90,26 @@ public class TrackData {
             // vul data vanuit JSON object
             JSONObject jsonRoot = new JSONObject(sb.toString());
             fromJson(jsonRoot, h);
-        } catch (Exception e) {
-            h.logE(TAG, "readPattern", e);
+
+        } catch (IOException e) {
+            throw new RuntimeException("ReadPattern IOException " + e.getMessage());
+        } catch (JSONException e) {
+            throw new RuntimeException("ReadPattern JSONException " + e.getMessage());
         }
     }
 
-    public void save(String tag) {
+    public void saveData(String tag, boolean doDump) {
         // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
             jsonRoot = toJson();
-//        if (doDump) {
-//            h.logD(TAG, "saveData " + jsonRoot.toString(3));
-//        } else {
-            h.logI(TAG, "saveData " + tag);
-//        }
+            if (doDump) {
+                h.logD(TAG, "saveData\n" + jsonRoot.toString());
+            } else {
+                h.logI(TAG, "saveData " + tag);
+            }
         } catch (Exception e) {
-            h.logD(TAG, "exception SaveData " + e.getMessage());
+            throw new RuntimeException("saveData " + e.getMessage());
         }
 
         // json object bewaren in file.
@@ -100,15 +118,15 @@ public class TrackData {
                     dataFile, false));
             bufferedWriter.write(jsonRoot.toString());
             bufferedWriter.close();
-            String s = "save, data written " + tag + "sel=" + trackSelected + " size=" + tracks.size();
-            for (int i = 0; i < tracks.size(); i++) {
-                Track track = tracks.get(i);
-                s += " t" + i + ":r" + track.repeats.size() + "p" + track.pats.size();
-            }
-            h.logD(TAG, s);
+            String s = "saveData, data written " + tag + saveInfo();
         } catch (Exception e) {
             Log.e(TAG, "write " + filenaam + ": " + e.getMessage());
         }
+    }
+
+    public String saveInfo() {
+        return " Track sel=" + trackSelected + " size=" + tracks.size()
+                + "Pat sel=" + patSelected + " size=" + pats.size();
     }
 
     public JSONObject toJson() {
@@ -121,8 +139,16 @@ public class TrackData {
             }
             json.put(KEYTRACKS, tracksArray);
 
+            json.put(KEYPATSELECTED, patSelected);
+            JSONArray patsArray = new JSONArray();
+            for (int i = 0; i < pats.size(); i++) {
+                patsArray.put(pats.get(i).toJson());
+            }
+            json.put(KEYPATS, patsArray);
+
         } catch (Exception e) {
             Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            throw new RuntimeException("toJson " + e.getMessage());
         }
         return json;
     }
@@ -137,8 +163,18 @@ public class TrackData {
                 track.fromJson(tracksArray.getJSONObject(i), h);
                 tracks.add(track);
             }
-        } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+
+            patSelected = json.getInt(KEYPATSELECTED);
+            pats.clear();
+            JSONArray patsArray = json.getJSONArray(KEYPATS);
+            for (int i = 0; i < patsArray.length(); i++) {
+                Pat pat = new Pat(h);
+                pat.fromJson(patsArray.getJSONObject(i));
+                pats.add(pat);
+            }
+
+        } catch (JSONException e) {
+            throw new RuntimeException("fromJson " + e.getMessage());
         }
     }
 

@@ -1,7 +1,6 @@
 package info.thepass.altmetro.data;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -42,7 +41,7 @@ public class Repeat {
             json.put(KEYCOUNT, count);
 
         } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            throw new RuntimeException("toJson exception" + e.getMessage());
         }
         return json;
     }
@@ -54,7 +53,7 @@ public class Repeat {
             tempo = json.getInt(KEYTEMPO);
             count = json.getInt(KEYCOUNT);
         } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            throw new RuntimeException("toJson exception" + e.getMessage());
         }
     }
 
@@ -64,7 +63,16 @@ public class Repeat {
 
     public String toString2(boolean showTempo, HelperMetro h) {
         String s = h.getString(R.string.label_count) + ": " + count;
-        s += ((showTempo)? " " + h.getString(R.string.label_tempo) + ": " + tempo : "" );
+        s += ((showTempo) ? " " + h.getString(R.string.label_tempo) + ": " + tempo : "");
+        return s;
+    }
+
+    public String display(HelperMetro h, int index, String patDisplay) {
+        String s = "";
+        s += (index >= 0) ? "r" + (index + 1) + " " : "";
+        s += h.getString(R.string.label_tempo) + " " + tempo;
+        s += ", " + ((count == 0) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeats, String.valueOf(count)));
+        s += ", " + patDisplay;
         return s;
     }
 }

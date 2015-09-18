@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
@@ -142,8 +143,8 @@ public class TrackFragment extends Fragment {
     }
 
     private void initListView() {
-        Log.d(TAG, "initListView " + track.items.size());
-        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, track, h, this);
+        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row,
+                track, trackData, h, this);
 
         lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
         lvItems.setAdapter(itemsAdapter);
@@ -152,7 +153,6 @@ public class TrackFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Log.d(TAG, "listclick" + position);
                 switch (itemsAdapter.getItemViewType(position)) {
                     case TrackItemsAdapter.TYPEREPEAT:
                         itemsAdapter.selectedRepeat = track.getItemRepeatPosition(position);
@@ -255,10 +255,9 @@ public class TrackFragment extends Fragment {
     }
 
     private void setData() {
-        Log.d(TAG, "initData sel" + trackData.trackSelected + ":" + trackData.tracks.size());
         track = trackData.tracks.get(trackData.trackSelected);
 
-        track.syncItems();
+        track.syncItems(trackData.pats);
         String s = track.getTitle(trackData, trackData.trackSelected);
         getActivity().setTitle(s.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + s);
 
@@ -280,14 +279,12 @@ public class TrackFragment extends Fragment {
     public void editRepeatView(View v) {
         int pos = lvItems.getPositionForView(v);
         int index = track.getItemRepeatPosition(pos);
-        Log.d(TAG, "editRepeatView " + pos + " index=" + index);
         editRepeat(pos, false);
     }
 
     public void editRepeat(int position, boolean add) {
         DialogEditTrackRepeat dlgEdit = new DialogEditTrackRepeat();
         dlgEdit.h = h;
-        dlgEdit.track = this.track;
         dlgEdit.setTargetFragment(this, Keys.TARGETEDITREPEAT);
 
         Bundle b = new Bundle();
@@ -297,13 +294,18 @@ public class TrackFragment extends Fragment {
         b.putInt(Keys.EDITSIZE, track.repeats.size());
         b.putBoolean(Track.KEYMULTI, track.multi);
 
+        JSONArray patsArray = new JSONArray();
+        for (int i = 0; i < trackData.pats.size(); i++) {
+            patsArray.put(trackData.pats.get(i).toJson());
+        }
+        b.putString(TrackData.KEYPATS, patsArray.toString());
+
         Repeat repeat;
         if (add) {
             repeat = new Repeat(h);
         } else {
             repeat = track.repeats.get(index);
         }
-        Log.d(TAG, "item " + position + ":" + repeat.toString());
         b.putString(Track.KEYREPEATS, repeat.toJson().toString());
 
         dlgEdit.setArguments(b);
@@ -313,7 +315,6 @@ public class TrackFragment extends Fragment {
     public void editPatternView(View v) {
         int pos = lvItems.getPositionForView(v);
         int index = track.getItemPatPosition(pos);
-        Log.d(TAG, "editPatternView " + pos + " index=" + index);
         editPattern(pos, false);
     }
 
@@ -324,7 +325,6 @@ public class TrackFragment extends Fragment {
         try {
             Repeat repeat = new Repeat(h);
             repeat.fromJson(new JSONObject(sRepeat));
-            Log.d(TAG, "updateRepeat " + repeat.toString() + " index=index");
             if (actionAdd) {
                 track.repeats.add(repeat);
                 itemsAdapter.selectedRepeat = track.repeats.size() - 1;
@@ -332,13 +332,13 @@ public class TrackFragment extends Fragment {
                 track.repeats.set(index, repeat);
                 itemsAdapter.selectedRepeat = index;
             }
-            track.syncItems();
+            track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             h.logE(TAG, "updateRepeat json exception", e);
             throw new RuntimeException("updateRepeat json exception");
         }
-        trackData.save("updatePattern");
+        trackData.saveData("updatePattern", false);
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -374,13 +374,12 @@ public class TrackFragment extends Fragment {
         if (indexDelRepeat >= track.repeats.size() - 1) {
             itemsAdapter.selectedRepeat = track.repeats.size() - 1;
         }
-        trackData.save("deleteRepeat");
+        trackData.saveData("deleteRepeat", false);
         itemsAdapter.notifyDataSetChanged();
     }
 
     public void editPattern(final int position, boolean add) {
         itemsAdapter.selectedPat = track.getItemPatPosition(position);
-        Log.d(TAG, "editPattern pos=" + position + " selPat=" + itemsAdapter.selectedPat);
         DialogEditTrackPattern dlgEdit = new DialogEditTrackPattern();
         dlgEdit.h = h;
         dlgEdit.setTargetFragment(this, Keys.TARGETEDITPATTERN);
@@ -389,16 +388,15 @@ public class TrackFragment extends Fragment {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemPatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
-        b.putInt(Keys.EDITSIZE, track.pats.size());
+        b.putInt(Keys.EDITSIZE, trackData.pats.size());
 
         Pat pat;
         if (add) {
             pat = new Pat(h);
         } else {
-            pat = track.pats.get(index);
+            pat = trackData.pats.get(index);
         }
-        Log.d(TAG, "item " + position + ":" + pat.toString());
-        b.putString(Track.KEYPATS, pat.toJson().toString());
+        b.putString(TrackData.KEYPATS, pat.toJson().toString());
 
         dlgEdit.setArguments(b);
         dlgEdit.show(getFragmentManager(), DialogEditTrackPattern.TAG);
@@ -407,38 +405,37 @@ public class TrackFragment extends Fragment {
     private void updatePattern(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
-        String sPat = intent.getStringExtra(Track.KEYPATS);
+        String sPat = intent.getStringExtra(TrackData.KEYPATS);
         try {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));
-            Log.d(TAG, "updatePattern " + pat.toString());
             if (actionAdd) {
-                track.pats.add(pat);
-                itemsAdapter.selectedPat = track.pats.size() - 1;
+                trackData.pats.add(pat);
+                itemsAdapter.selectedPat = trackData.pats.size() - 1;
             } else {
-                track.pats.set(index, pat);
+                trackData.pats.set(index, pat);
                 itemsAdapter.selectedPat = index;
             }
-            track.syncItems();
+            track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             h.logE(TAG, "updatePattern json exception", e);
             throw new RuntimeException("updatePattern json exception");
         }
-        trackData.save("updatePattern");
+        trackData.saveData("updatePattern", false);
         itemsAdapter.notifyDataSetChanged();
     }
 
     private void confirmDeletePattern(Intent intent) {
-        if (track.pats.size() == 1) {
+        if (trackData.pats.size() == 1) {
             return;
         }
         indexDelPattern = intent.getIntExtra(Keys.EDITINDEX, -1);
         itemsAdapter.selectedPat = indexDelPattern;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Pat pat = track.pats.get(indexDelPattern);
-        String pInfo = "t" + (indexDelPattern + 1) + " " + pat.toString();
+        Pat pat = trackData.pats.get(indexDelPattern);
+        String pInfo = pat.display(h, indexDelPattern, true);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
                 .setPositiveButton(h.getString(R.string.yes),
@@ -457,11 +454,11 @@ public class TrackFragment extends Fragment {
     }
 
     private void deleteItemPattern() {
-        track.pats.remove(indexDelPattern);
-        if (indexDelPattern >= track.pats.size() - 1) {
-            itemsAdapter.selectedPat = track.pats.size() - 1;
+        trackData.pats.remove(indexDelPattern);
+        if (indexDelPattern >= trackData.pats.size() - 1) {
+            itemsAdapter.selectedPat = trackData.pats.size() - 1;
         }
-        trackData.save("deletePattern");
+        trackData.saveData("deletePattern", false);
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -502,7 +499,7 @@ public class TrackFragment extends Fragment {
 
         Bundle b = new Bundle();
         Study study = track.study;
-        b.putString(Track.KEYPATS, study.toJson().toString());
+        b.putString(TrackData.KEYPATS, study.toJson().toString());
 
         dlgEdit.setArguments(b);
         dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
@@ -513,14 +510,11 @@ public class TrackFragment extends Fragment {
         try {
             Study newStudy = new Study();
             newStudy.fromJson(new JSONObject(sStudy));
-            Log.d(TAG, "updateRepeat " + newStudy.toString());
             track.study = newStudy;
         } catch (Exception e) {
-            h.logE(TAG, "updateStudy json exception", e);
             throw new RuntimeException("updateStudy json exception");
         }
-        trackData.save("updateStudy");
-
+        trackData.saveData("updateStudy", false);
     }
 
     private void wijzigTempo(int iDelta) {

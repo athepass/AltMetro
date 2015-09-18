@@ -61,7 +61,6 @@ public class DialogEditTrackInfo extends DialogFragment {
                         // igv single verwijzen naar 1e pattern en 1e repeat
                         // 1e repeat moet oneindig doorgaan: count <=0
                         if (!trak.multi) {
-                            trak.patSelected = 0;
                             trak.repeatSelected = 0;
                             trak.repeats.get(0).count = 0;
                         }

@@ -127,7 +127,6 @@ public class TrackListFragment extends ListFragment {
         OnClickListener addItemClick = new OnClickListener() {
             // @Override
             public void onClick(View v) {
-                Log.d(TAG,"footer on click add");
                 editTrackList(0, true);
             }
         };
@@ -149,7 +148,7 @@ public class TrackListFragment extends ListFragment {
     }
 
     private void updateTrackFragment() {
-        trackData.save(TAG);
+        trackData.saveData(TAG, false);
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETTRACKFRAGMENT, Activity.RESULT_OK, intent);
     }
@@ -158,7 +157,6 @@ public class TrackListFragment extends ListFragment {
     public void editTrackListItem(View v) {
         int position = getListView().getPositionForView(v);
         setPosition(position,false);
-        Log.d(TAG, "editTrackListItem " + position);
         editTrackList(position, false);
     }
 
@@ -179,7 +177,6 @@ public class TrackListFragment extends ListFragment {
             track = trackData.tracks.get(position);
         }
         String sTrack = track.toJson().toString();
-        Log.d(TAG, "editTrackList " + trackListAdapter.selectedItem + " pos=" + position + "add=" +add + " track\n"+sTrack);
         b.putString(TrackData.KEYTRACKS, sTrack);
 
         dlgEdit.setArguments(b);
@@ -188,7 +185,6 @@ public class TrackListFragment extends ListFragment {
 
     private void updateTrackList(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
-        Log.d(TAG,"updaeTrackList: actionAdd"+actionAdd);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
         String sTrack = intent.getStringExtra(TrackData.KEYTRACKS);
         try {
@@ -204,10 +200,9 @@ public class TrackListFragment extends ListFragment {
             getListView().setItemChecked(trackListAdapter.selectedItem, true);
             trackListAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-            h.logE(TAG, "updateTrackList json exception", e);
             throw new RuntimeException("updateTrackList json exception");
         }
-        trackData.save("updateTrackList");
+        trackData.saveData("updateTrackList", false);
     }
 
     /***************************************************************************************/
@@ -221,7 +216,7 @@ public class TrackListFragment extends ListFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Track track = trackData.tracks.get(indexDel);
-        String pInfo = "t" + (indexDel + 1) + " " + track.display(h);
+        String pInfo = track.display(h, indexDel);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
                 .setPositiveButton(h.getString(R.string.yes),
@@ -244,7 +239,7 @@ public class TrackListFragment extends ListFragment {
         if (indexDel >= trackData.tracks.size() - 1) {
             setPosition(trackData.tracks.size() - 1, true);
         }
-        trackData.save("deleteRow");
+        trackData.saveData("deleteRow", false);
         updateTrackFragment();
         trackListAdapter.notifyDataSetChanged();
     }

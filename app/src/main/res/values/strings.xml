@@ -23,6 +23,7 @@
     <string name="label_addrepeat">Add repeat</string>
     <string name="label_edittap">Tap tempo</string>
     <string name="label_sub">Subdivision</string>
+    <string name="label_sub2">Subdiv</string>
     <string name="label_multi">Multiple tempi</string>
     <string name="label_multi_single">Single tempo</string>
     <string name="label_multi_multi">Multiple tempos</string>
@@ -38,6 +39,8 @@
     <string name="label_timesig">time sign</string>
     <string name="label_timesigsep">/</string>
     <string name="label_track">Track</string>
+    <string name="label_repeats">Repeat %s times</string>
+    <string name="label_noend">no end</string>
     <string name="label_p1">+1</string>
     <string name="label_p5">+5</string>
     <string name="label_p20">+20</string>

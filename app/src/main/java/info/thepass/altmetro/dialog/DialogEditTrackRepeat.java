@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,13 +16,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -29,8 +33,8 @@ import info.thepass.altmetro.tools.Keys;
 public class DialogEditTrackRepeat extends DialogFragment {
     public final static String TAG = "DialogEditTrakRepeat";
     public HelperMetro h;
-    public Track track;
     private Repeat repeat;
+    private ArrayList<Pat> pats;
     private boolean actionAdd;
     private int position;
     private int index = 0;
@@ -70,7 +74,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         //todo update repeat
                         repeat.indexPattern = spPat.getSelectedItemPosition();
-                        repeat.hashPattern = track.pats.get(repeat.indexPattern).patHash;
+                        repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
                         repeat.count = Integer.parseInt(etCount.getText().toString());
                         repeat.tempo = Integer.parseInt(etTempo.getText().toString());
                         Intent intent = new Intent();
@@ -115,6 +119,15 @@ public class DialogEditTrackRepeat extends DialogFragment {
             repeat = new Repeat(h);
             String s = b.getString(Track.KEYREPEATS);
             repeat.fromJson(new JSONObject(s));
+
+            pats = new ArrayList<Pat>();
+            JSONArray patsArray = new JSONArray(b.getString(TrackData.KEYPATS));
+            for (int i = 0; i < patsArray.length(); i++) {
+                Pat pat = new Pat(h);
+                pat.fromJson(patsArray.getJSONObject(i));
+                pats.add(pat);
+            }
+            Log.d(TAG, "init pats=" + pats.size());
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
@@ -140,8 +153,8 @@ public class DialogEditTrackRepeat extends DialogFragment {
 
     private void initSpinner(View dialogView) {
         ArrayList<String> patsList = new ArrayList<String>();
-        for (int i = 0; i < track.pats.size(); i++) {
-            patsList.add(track.pats.get(i).toStringShort(h));
+        for (int i = 0; i < pats.size(); i++) {
+            patsList.add(pats.get(i).display(h,i, true));
         }
 
         patSelListener = new AdapterView.OnItemSelectedListener() {
@@ -165,6 +178,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
 
     private void updatePat(int position) {
         spPat.setSelection(position);
-        evmPats.setPattern(track.pats.get(position));
+        evmPats.setPattern(pats.get(position));
     }
 }

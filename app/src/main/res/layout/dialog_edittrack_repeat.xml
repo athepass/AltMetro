@@ -121,7 +121,7 @@
             android:id="@+id/label_tempo"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="@string/label_count"/>
+            android:text="@string/label_tempo"/>
 
         <EditText
             android:id="@+id/et_dlg_repeat_tempo"

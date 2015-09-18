@@ -2,7 +2,6 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Pat;
+import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -22,47 +22,45 @@ import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
     public final static int TYPESTUDY = 0;
-    public final static int TYPEREPEAT = 1;
-    public final static int TYPEPAT = 2;
-    public final static int TYPEREPEATADD = 3;
-    public final static int TYPEPATADD = 4;
+    public final static int TYPEPAT = 1;
+    public final static int TYPEPATADD = 2;
+    public final static int TYPEREPEAT = 3;
+    public final static int TYPEREPEATADD = 4;
     private final static String TAG = "TrakItemsAdapter";
     public int selectedPat = 0;
     public int selectedRepeat = 0;
     private Context context;
     private HelperMetro h;
     private Track track;
+    private TrackData trackData;
     private TrackFragment frag;
     private int lvSelColor;
 
     public TrackItemsAdapter(Context cont, int layout,
-                             Track track, HelperMetro hConstructor, TrackFragment frag2) {
-        super(cont, layout, track.items);
+                             Track track2, TrackData trackData2,
+                             HelperMetro hConstructor, TrackFragment frag2) {
+        super(cont, layout, track2.items);
         h = hConstructor;
         h.logD(TAG, "constructor");
         context = cont;
-        this.track = track;
+        this.track = track2;
+        this.trackData = trackData2;
         frag = frag2;
         lvSelColor = h.getColor(R.color.color_listitem_selected_background);
     }
 
     //    @Override
     public int getCount() {
-        if (track.multi) {
-            return track.items.size();
-        } else {
-            return 3;
-        }
+        return track.items.size();
     }
 
     @Override
     public int getViewTypeCount() {
-        return (track.multi) ? 5 : 3;
+        return (track.multi) ? 5 : 4;
     }
 
     @Override
     public int getItemViewType(int position) {
-//        h.logD(TAG,"getItemViewType "+ track.display(h));
         if (track.multi) {
             if (position == 0) {
                 return TYPESTUDY;
@@ -70,9 +68,9 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 return TYPEREPEAT;
             } else if (position == (1 + track.repeats.size())) {
                 return TYPEREPEATADD;
-            } else if (position < (1 + track.repeats.size() + 1 + track.pats.size())) {
+            } else if (position < (1 + track.repeats.size() + 1 + trackData.pats.size())) {
                 return TYPEPAT;
-            } else if (position == (1 + track.repeats.size() + 1 + track.pats.size())) {
+            } else if (position == (1 + track.repeats.size() + 1 + trackData.pats.size())) {
                 return TYPEPATADD;
             } else {
                 throw new RuntimeException("invalid multi item type at position " + position);
@@ -83,17 +81,21 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     return TYPESTUDY;
                 case 1:
                     return TYPEREPEAT;
-                case 2:
-                    return TYPEPAT;
                 default:
-                    throw new RuntimeException("invalid single item type at position " + position);
+                    if (position < (2 + trackData.pats.size())) {
+                        return TYPEPAT;
+                    } else if (position == (2 + trackData.pats.size())) {
+                        return TYPEPATADD;
+                    } else {
+                        throw new RuntimeException("invalid single item type at position " + position);
+                    }
             }
         }
     }
 
+
     @Override
     public void notifyDataSetChanged() {
-//        Log.d(TAG, "notifyDataSetChanged");
         super.notifyDataSetChanged();
     }
 
@@ -184,7 +186,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "Repeat edit onclicklistener " + position);
                     frag.editRepeatView(v);
                 }
             });
@@ -196,13 +197,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         int index = track.getItemRepeatPosition(position);
 
         Repeat repeat = track.repeats.get(index);
-        String s = "r" + getItemRepeatNumber(position) + ": " + repeat.toString2((index != selectedRepeat), h);
+        Pat pat = trackData.pats.get(repeat.indexPattern);
+        String patDisplay = pat.display(h,repeat.indexPattern, false);
+        String s = repeat.display(h, index, patDisplay);
         holder.info.setText(s);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
-        holder.rijEmphasis.setVisibility((track.multi) ? View.VISIBLE : View.GONE);
-//        holder.info.setTextColor((index == selectedRepeat) ? Color.YELLOW : Color.WHITE);
         holder.rijAlles.setBackgroundColor((index == selectedRepeat) ? lvSelColor : Color.TRANSPARENT);
         return rowView;
     }
@@ -265,8 +266,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         int index = track.getItemPatPosition(position);
-        Pat pat = track.pats.get(index);
-        String s = "p" + getItemPatNumber(position) + ": " + pat.toString2(h);
+        Pat pat = trackData.pats.get(index);
+        String s = pat.display(h, position, false);
         holder.info.setText(s);
         holder.evPatList.setPattern(pat);
 
@@ -338,4 +339,5 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         public LinearLayout rij;
         public TextView titel;
     }
+
 }

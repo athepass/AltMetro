@@ -59,7 +59,6 @@ public class DialogEditTrackStudy extends DialogFragment {
                         // igv single verwijzen naar 1e pattern en 1e oorder
                         // 1e order moet oneindig doorgaan: count <=0
                         if (!track.multi) {
-                            track.patSelected = 0;
                             track.repeatSelected = 0;
                             track.repeats.get(0).count = 0;
                         }

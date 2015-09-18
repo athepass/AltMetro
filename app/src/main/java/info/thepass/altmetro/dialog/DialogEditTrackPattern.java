@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
-import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -83,7 +83,7 @@ public class DialogEditTrackPattern extends DialogFragment {
                         pat.patTitle = etTitel.getText().toString();
 
                         Intent intent = new Intent();
-                        intent.putExtra(Track.KEYPATS, pat.toJson().toString());
+                        intent.putExtra(TrackData.KEYPATS, pat.toJson().toString());
                         intent.putExtra(Keys.EDITACTION, actionAdd);
                         intent.putExtra(Keys.EDITINDEX, index);
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
@@ -120,7 +120,7 @@ public class DialogEditTrackPattern extends DialogFragment {
         editSize = b.getInt(Keys.EDITSIZE);
         try {
             pat = new Pat(h);
-            pat.fromJson(new JSONObject(b.getString(Track.KEYPATS)));
+            pat.fromJson(new JSONObject(b.getString(TrackData.KEYPATS)));
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }

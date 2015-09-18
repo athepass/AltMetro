@@ -67,7 +67,7 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 		}
 
 		Track track = listTrack.get(position);
-        holder.titel.setText(track.getTitle(trackData, position));
+        holder.titel.setText(track.display(h, position));
 		return rowView;
 	}
 

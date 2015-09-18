@@ -1,7 +1,6 @@
 package info.thepass.altmetro.data;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,16 +115,15 @@ public class Pat {
         s += " emphasis=" + statesToString();
         return s;
     }
+
     public String toString2(HelperMetro h) {
-        String[] subPatterns = h.getStringArray(R.array.sub_pattern);
         String s = "measure: " + patBeats + "/" + patTime
-                + ((patSubs > 0) ? " subs=" + subPatterns[patSubs] : "");
+                + ((patSubs > 0) ? " subs=" + h.subPattern[patSubs] : "");
         s += " Title=" + patTitle;
         return s;
     }
 
     public String toStringShort(HelperMetro h) {
-        String[] subPatterns = h.getStringArray(R.array.sub_pattern);
         String s = "m:" + patBeats + "/" + patTime;
         s += " e:" + statesToString();
         s += (patSubs == 0) ? "" : " s:" + h.subPattern[patSubs];
@@ -136,9 +134,18 @@ public class Pat {
     public String toStringShortText(HelperMetro h) {
         String s = "m:" + patBeats + "/" + patTime;
         s += " e:" + statesToStringText();
-//		h.logD(TAG,"patSubs="+patSubs);
         s += (patSubs == 0) ? "" : " s:" + h.subPattern[h.getSubIndex(patSubs)];
         s += (patTitle.equals("")) ? "" : " t:" + patTitle;
+        return s;
+    }
+
+    public String display(HelperMetro h, int index, boolean showEmphasis) {
+        String s = "";
+        s += (index >= 0) ? "p" + (index + 1) + ":" : "";
+        s += patBeats + "/" + patTime;
+        s += (showEmphasis) ? " " + statesToStringText() : "";
+        s += (patSubs > 0) ? " " + h.getString(R.string.label_sub2) + ":" + h.subPattern[patSubs] : "";
+        s += getTitle(" ");
         return s;
     }
 
@@ -164,7 +171,7 @@ public class Pat {
             json.put(KEYBEATSTATE, statesArray);
             json.put(KEYTITLE, patTitle);
         } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            throw new RuntimeException( "toJson exception" + e.getMessage());
         }
         return json;
     }
@@ -181,7 +188,7 @@ public class Pat {
             }
             patTitle = json.getString(KEYTITLE);
         } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            throw new RuntimeException("toJson exception" + e.getMessage());
         }
     }
 
