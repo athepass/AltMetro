@@ -274,7 +274,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
 //        holder.info.setTextColor((index == selectedPat) ? Color.YELLOW : Color.WHITE);
-        holder.rij.setBackgroundColor((index == selectedPat) ? lvSelColor : Color.TRANSPARENT);
+//        holder.rij.setBackgroundColor((index == selectedPat) ? lvSelColor : Color.TRANSPARENT);
 
         return rowView;
     }

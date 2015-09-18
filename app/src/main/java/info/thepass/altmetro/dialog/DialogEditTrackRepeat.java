@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -62,6 +63,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_repeat, null);
+        h.initToastAlert(inflater);
 
         initData();
         initEmphasis(dialogView);
@@ -72,16 +74,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        //todo update repeat
-                        repeat.indexPattern = spPat.getSelectedItemPosition();
-                        repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
-                        repeat.count = Integer.parseInt(etCount.getText().toString());
-                        repeat.tempo = Integer.parseInt(etTempo.getText().toString());
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITACTION, actionAdd);
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -105,7 +97,26 @@ public class DialogEditTrackRepeat extends DialogFragment {
                 : h.getString(R.string.label_editrepeat) + " r" + (index + 1);
         builder.setTitle(dlgTitle);
 
-        return builder.create();
+        AlertDialog alertDialog = builder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button positiveButton = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        Log.d(TAG, "onClick");
+                        if (validateData()) {
+                            saveData();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        return alertDialog;
     }
 
     private void initData() {
@@ -133,6 +144,34 @@ public class DialogEditTrackRepeat extends DialogFragment {
         }
     }
 
+    private boolean validateData() {
+        int tempo = Integer.parseInt(etTempo.getText().toString());
+        if (tempo < 30) {
+            String msg = h.getString2(R.string.error_tempomin, "" + tempo, "" + 30);
+            h.showToastAlert(msg);
+            return false;
+        } else if (tempo > 200) {
+            String msg = h.getString2(R.string.error_tempomax, "" + tempo, "" + 200);
+            h.showToastAlert(msg);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void saveData() {
+        //todo update repeat
+        repeat.indexPattern = spPat.getSelectedItemPosition();
+        repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
+        repeat.count = Integer.parseInt(etCount.getText().toString());
+        repeat.tempo = Integer.parseInt(etTempo.getText().toString());
+        Intent intent = new Intent();
+        intent.putExtra(Keys.EDITACTION, actionAdd);
+        intent.putExtra(Keys.EDITINDEX, index);
+        intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
+        getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
+    }
+
     private void initEmphasis(View dialogView) {
         evmPats = new EmphasisViewManager("dlgrepeatpat", Keys.EVMLIST, dialogView, h);
         evmPats.useLow = true;
@@ -148,13 +187,13 @@ public class DialogEditTrackRepeat extends DialogFragment {
         etCount = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_count);
         etCount.setText(String.valueOf(repeat.count));
         etTempo = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_tempo);
-        etTempo.setText(String.valueOf(repeat.count));
+        etTempo.setText(String.valueOf(repeat.tempo));
     }
 
     private void initSpinner(View dialogView) {
         ArrayList<String> patsList = new ArrayList<String>();
         for (int i = 0; i < pats.size(); i++) {
-            patsList.add(pats.get(i).display(h,i, true));
+            patsList.add(pats.get(i).display(h, i, true));
         }
 
         patSelListener = new AdapterView.OnItemSelectedListener() {

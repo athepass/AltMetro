@@ -11,6 +11,10 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -45,6 +49,8 @@ public class HelperMetro {
     public int[] subValue;
     private Resources resources;
     private Random random;
+    private View toastLayout;
+    private TextView toastText;
     private int premium = PREMIUMUNKNOWN;
     /*********************************************************************************/
     private String logFileName = null;
@@ -161,6 +167,20 @@ public class HelperMetro {
 
     public void showToast(String s) {
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+    }
+
+    public void initToastAlert(LayoutInflater inflater) {
+        toastLayout = inflater.inflate(R.layout.toast_alert,
+                (ViewGroup) getActivity().findViewById(R.id.toast_layout_root));
+        toastText = (TextView) toastLayout.findViewById(R.id.text);
+    }
+
+    public void showToastAlert(String msg) {
+        toastText.setText(msg);
+        Toast toast = new Toast(getActivity());
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(toastLayout);
+        toast.show();
     }
 
     public void dumpFragmentManager(Activity act) {

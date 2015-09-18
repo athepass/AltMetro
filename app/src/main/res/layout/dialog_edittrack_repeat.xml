@@ -101,7 +101,7 @@
 
         <TextView
             android:id="@+id/label_pattern"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:text="@string/label_pattern"/>
 
@@ -119,7 +119,7 @@
 
         <TextView
             android:id="@+id/label_tempo"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:text="@string/label_tempo"/>
 
@@ -128,7 +128,9 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:inputType="number"/>
+
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -136,7 +138,7 @@
 
         <TextView
             android:id="@+id/label_count"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:text="@string/label_count"/>
 
@@ -145,6 +147,14 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:inputType="number"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/label_noend0"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
 
 </LinearLayout>

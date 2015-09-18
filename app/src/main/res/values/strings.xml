@@ -41,12 +41,15 @@
     <string name="label_track">Track</string>
     <string name="label_repeats">Repeat %s times</string>
     <string name="label_noend">no end</string>
+    <string name="label_noend0">(0=no end)</string>
     <string name="label_p1">+1</string>
     <string name="label_p5">+5</string>
     <string name="label_p20">+20</string>
     <string name="label_m1">-1</string>
     <string name="label_m5">-5</string>
     <string name="label_m20">-20</string>
+    <string name="error_tempomin" formatted="false">Tempo %s under minimum %s</string>
+    <string name="error_tempomax" formatted="false">Tempo %s exceeds maximum %s</string>
     <string name="list_add_item">Add item</string>
     <string name="list_select_track">Select a track</string>
     <string name="list_item_added">Item added</string>
