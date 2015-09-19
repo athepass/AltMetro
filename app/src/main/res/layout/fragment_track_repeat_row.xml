@@ -20,12 +20,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/iv_track_repeat_edit"
+        <ImageButton
+            android:id="@+id/imb_track_repeat_overflow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_edit"/>
+            android:src="@mipmap/ic_action_overflow"/>
 
         <LinearLayout
             android:id="@+id/ll_track_repeat_body"
@@ -34,90 +34,90 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/ll_list_repeat_emphasis"
+                android:id="@+id/ll_listrepeat_emphasis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingBottom="2dp">
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis0"
+                    android:id="@+id/iv_listrepeat_emphasis0"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis1"
+                    android:id="@+id/iv_listrepeat_emphasis1"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis2"
+                    android:id="@+id/iv_listrepeat_emphasis2"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis3"
+                    android:id="@+id/iv_listrepeat_emphasis3"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis4"
+                    android:id="@+id/iv_listrepeat_emphasis4"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis5"
+                    android:id="@+id/iv_listrepeat_emphasis5"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis6"
+                    android:id="@+id/iv_listrepeat_emphasis6"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis7"
+                    android:id="@+id/iv_listrepeat_emphasis7"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis8"
+                    android:id="@+id/iv_listrepeat_emphasis8"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis9"
+                    android:id="@+id/iv_listrepeat_emphasis9"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis10"
+                    android:id="@+id/iv_listrepeat_emphasis10"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis11"
+                    android:id="@+id/iv_listrepeat_emphasis11"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis12"
+                    android:id="@+id/iv_listrepeat_emphasis12"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis13"
+                    android:id="@+id/iv_listrepeat_emphasis13"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis14"
+                    android:id="@+id/iv_listrepeat_emphasis14"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis15"
+                    android:id="@+id/iv_listrepeat_emphasis15"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis16"
+                    android:id="@+id/iv_listrepeat_emphasis16"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis17"
+                    android:id="@+id/iv_listrepeat_emphasis17"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis18"
+                    android:id="@+id/iv_listrepeat_emphasis18"
                     style="@style/AppTheme.EmphasisList"/>
 
                 <ImageView
-                    android:id="@+id/iv_list_repeat_emphasis19"
+                    android:id="@+id/iv_listrepeat_emphasis19"
                     style="@style/AppTheme.EmphasisList"/>
             </LinearLayout>
 
@@ -129,6 +129,55 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_track_repeat_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/ic_action_play"/>
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/ic_action_edit"/>
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/ic_action_remove"/>
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/ic_action_new"/>
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/icon_up"/>
+
+        <ImageButton
+            android:id="@+id/imb_track_repeat_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:src="@mipmap/icon_down"/>
     </LinearLayout>
 
 </LinearLayout>

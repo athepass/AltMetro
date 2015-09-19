@@ -95,16 +95,6 @@ public class DialogEditTrackPattern extends DialogFragment {
                     }
                 });
 
-        if ((editSize > 1) && (!actionAdd)) {
-            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent();
-                    intent.putExtra(Keys.EDITINDEX, index);
-                    getTargetFragment().onActivityResult(Keys.TARGETDELETEPATTERN, Activity.RESULT_OK, intent);
-                }
-            });
-        }
-
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addpattern)
                 : h.getString(R.string.label_editpattern) + " p" + (index + 1);

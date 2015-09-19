@@ -50,7 +50,7 @@ public class TrackFragment extends Fragment {
     private TextView tvTempo;
     private int indexDelRepeat;
     private int indexDelPattern;
-    private int maxTempo    ;
+    private int maxTempo;
 
 //    private EmphasisViewManager evPlayer;
 
@@ -118,15 +118,9 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETEDITPATTERN:
                     updatePattern(intent);
                     return;
-                case Keys.TARGETDELETEPATTERN:
-                    confirmDeletePattern(intent);
-                    return;
                 case Keys.TARGETEDITREPEAT:
                 case Keys.TARGETEDITTAP:
                     updateRepeat(intent);
-                    return;
-                case Keys.TARGETDELETEREPEAT:
-                    confirmDeleteRepeat(intent);
                     return;
                 case Keys.TARGETEDITSTUDY:
                 case Keys.TARGETEDITPRACTICE:
@@ -143,10 +137,10 @@ public class TrackFragment extends Fragment {
     }
 
     private void initListView() {
-        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row,
-                track, trackData, h, this);
 
         lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
+        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, lvItems,
+                track, trackData, h, this);
         lvItems.setAdapter(itemsAdapter);
 
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -154,18 +148,18 @@ public class TrackFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 switch (itemsAdapter.getItemViewType(position)) {
-                    case TrackItemsAdapter.TYPEREPEAT:
+                    case TrackItemsAdapter.ROWTYPEREPEAT:
                         itemsAdapter.selectedRepeat = track.getItemRepeatPosition(position);
                         itemsAdapter.notifyDataSetChanged();
                         break;
-                    case TrackItemsAdapter.TYPEREPEATADD:
+                    case TrackItemsAdapter.ROWTYPEREPEATADD:
                         editRepeat(0, true);
                         break;
-                    case TrackItemsAdapter.TYPEPAT:
+                    case TrackItemsAdapter.ROWTYPEPAT:
                         itemsAdapter.selectedPat = track.getItemPatPosition(position);
                         itemsAdapter.notifyDataSetChanged();
                         break;
-                    case TrackItemsAdapter.TYPEPATADD:
+                    case TrackItemsAdapter.ROWTYPEPATADD:
                         editPattern(0, true);
                         break;
                     default:
@@ -276,12 +270,6 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
-    public void editRepeatView(View v) {
-        int pos = lvItems.getPositionForView(v);
-        int index = track.getItemRepeatPosition(pos);
-        editRepeat(pos, false);
-    }
-
     public void editRepeat(int position, boolean add) {
         DialogEditTrackRepeat dlgEdit = new DialogEditTrackRepeat();
         dlgEdit.h = h;
@@ -312,12 +300,6 @@ public class TrackFragment extends Fragment {
         dlgEdit.show(getFragmentManager(), DialogEditTrackRepeat.TAG);
     }
 
-    public void editPatternView(View v) {
-        int pos = lvItems.getPositionForView(v);
-        int index = track.getItemPatPosition(pos);
-        editPattern(pos, false);
-    }
-
     public void updateRepeat(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
@@ -326,12 +308,12 @@ public class TrackFragment extends Fragment {
             Repeat repeat = new Repeat(h);
             repeat.fromJson(new JSONObject(sRepeat));
             if (actionAdd) {
-                track.repeats.add(repeat);
-                itemsAdapter.selectedRepeat = track.repeats.size() - 1;
+                Log.d(TAG, "update repeat add index=" + index);
+                track.repeats.add(index, repeat);
             } else {
                 track.repeats.set(index, repeat);
-                itemsAdapter.selectedRepeat = index;
             }
+            itemsAdapter.selectedRepeat = index;
             track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
@@ -342,16 +324,19 @@ public class TrackFragment extends Fragment {
         itemsAdapter.notifyDataSetChanged();
     }
 
-    private void confirmDeleteRepeat(Intent intent) {
+    public void confirmDeleteRepeat(int position) {
         if (track.repeats.size() == 1) {
             return;
         }
-        indexDelRepeat = intent.getIntExtra(Keys.EDITINDEX, -1);
+        int index = track.getItemRepeatPosition(position);
+        Log.d(TAG, "confirmDeleteRepeat " + index);
+        indexDelRepeat = index;
         itemsAdapter.selectedRepeat = indexDelRepeat;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Repeat repeat = track.repeats.get(indexDelRepeat);
-        String pInfo = "t" + (indexDelRepeat + 1) + " " + repeat.toString();
+        String sPat = trackData.pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
+        String pInfo = repeat.display(h, index, sPat);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
                 .setPositiveButton(h.getString(R.string.yes),
@@ -410,12 +395,11 @@ public class TrackFragment extends Fragment {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));
             if (actionAdd) {
-                trackData.pats.add(pat);
-                itemsAdapter.selectedPat = trackData.pats.size() - 1;
+                trackData.pats.add(index, pat);
             } else {
                 trackData.pats.set(index, pat);
-                itemsAdapter.selectedPat = index;
             }
+            itemsAdapter.selectedPat = index;
             track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
@@ -426,11 +410,12 @@ public class TrackFragment extends Fragment {
         itemsAdapter.notifyDataSetChanged();
     }
 
-    private void confirmDeletePattern(Intent intent) {
+    public void confirmDeletePattern(int position) {
         if (trackData.pats.size() == 1) {
             return;
         }
-        indexDelPattern = intent.getIntExtra(Keys.EDITINDEX, -1);
+        int index = track.getItemPatPosition(position);
+        indexDelPattern = index;
         itemsAdapter.selectedPat = indexDelPattern;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

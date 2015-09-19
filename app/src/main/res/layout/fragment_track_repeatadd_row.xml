@@ -6,8 +6,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tv_track_repeatadd_titel"
-        style="@style/AppTheme.ListviewButton"/>
+    <ImageButton
+        android:id="@+id/imb_track_repeatadd_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:src="@mipmap/ic_action_new"/>
 
 </LinearLayout>
