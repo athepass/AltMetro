@@ -16,7 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -34,19 +34,28 @@ public class TrackListFragment extends ListFragment {
     public final static String TAG = "TrakListFragment";
     private HelperMetro h = null;
     private LinearLayout llList;
-    private Button buttonAddItem;
+    private LinearLayout llAddItem;
     private TrackListAdapter trackListAdapter = null;
     private TrackData trackData;
+    private View mainView;
     private int indexDel;
+
+    private ImageButton btn_play;
+    private ImageButton btn_edit;
+    private ImageButton btn_delete;
+    private ImageButton btn_add;
+    private ImageButton btn_up;
+    private ImageButton btn_down;
+    private ImageButton btn_addadd;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_tracklist, container,
+        mainView = inflater.inflate(R.layout.fragment_tracklist, container,
                 false);
-        buttonAddItem = (Button) inflater.inflate(
+        llAddItem = (LinearLayout) inflater.inflate(
                 R.layout.fragment_tracklist_additem, null, false);
-        return v;
+        return mainView;
     }
 
     @Override
@@ -64,9 +73,10 @@ public class TrackListFragment extends ListFragment {
         });
 
         llList = (LinearLayout) getActivity().findViewById(R.id.ll_tracklist);
-        buttonAddItem = (Button) getActivity().findViewById(R.id.button_additem_track);
+        llAddItem = (LinearLayout) getActivity().findViewById(R.id.ll_tracklist_additem_track);
 
         initData();
+        initButtons();
         getActivity().setTitle(h.getString(R.string.list_select_track));
         setHasOptionsMenu(true);
     }
@@ -103,9 +113,6 @@ public class TrackListFragment extends ListFragment {
                 case Keys.TARGETEDITTRACK:
                     updateTrackList(intent);
                     return;
-                case Keys.TARGETDELETETRACK:
-                    confirmDeleteItem(intent);
-                    return;
             }
         }
     }
@@ -121,18 +128,91 @@ public class TrackListFragment extends ListFragment {
         setPosition(trackData.trackSelected, false);
     }
 
+    private void initButtons() {
+        btn_play = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_play);
+        btn_edit = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_edit);
+        btn_delete = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_delete);
+        btn_add = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_add);
+        btn_up = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_up);
+        btn_down = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_down);
+        btn_addadd = (ImageButton) llAddItem.findViewById(R.id.imb_tracklistadd_add);
+
+        btn_edit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //             int position = getListView().getSelectedItemPosition();
+                editTrackList(trackListAdapter.selectedItem, false);
+                trackListAdapter.notifyDataSetChanged();
+            }
+        });
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                confirmDeleteItem(trackListAdapter.selectedItem);
+            }
+        });
+        btn_add.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                editTrackList(trackListAdapter.selectedItem, true);
+            }
+        });
+        btn_up.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int index = trackListAdapter.selectedItem;
+                Log.d(TAG,"up"+index);
+                if (index >= 1) {
+                    setPosition(trackListAdapter.selectedItem-1,false);
+                    Track track0 = trackData.tracks.get(index - 1);
+                    Track track1 = trackData.tracks.get(index);
+                    trackData.tracks.set(index - 1, track1);
+                    trackData.tracks.set(index, track0);
+                }
+                trackListAdapter.notifyDataSetChanged();
+            }
+        });
+        btn_down.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int index = trackListAdapter.selectedItem;
+                Log.d(TAG,"down"+index);
+                if (index < trackData.tracks.size() - 1) {
+                    setPosition(trackListAdapter.selectedItem+1,false);
+                    Track track0 = trackData.tracks.get(index);
+                    Track track1 = trackData.tracks.get(index + 1);
+                    trackData.tracks.set(index, track1);
+                    trackData.tracks.set(index + 1, track0);
+                }
+                trackListAdapter.notifyDataSetChanged();
+            }
+        });
+
+        btn_addadd.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                editTrackList(trackData.tracks.size(), true);
+            }
+        });
+    }
 
     private void initFooter() {
-        getListView().addFooterView(buttonAddItem);
+        getListView().addFooterView(llAddItem);
         OnClickListener addItemClick = new OnClickListener() {
             // @Override
             public void onClick(View v) {
                 editTrackList(0, true);
             }
         };
-        buttonAddItem = (Button) getActivity().findViewById(
-                R.id.button_additem_track);
-        buttonAddItem.setOnClickListener(addItemClick);
+        llAddItem = (LinearLayout) getActivity().findViewById(
+                R.id.ll_tracklist_additem_track);
+//        llAddItem.setOnClickListener(addItemClick);
     }
 
     /***************************************************************************************/
@@ -156,7 +236,7 @@ public class TrackListFragment extends ListFragment {
     /***************************************************************************************/
     public void editTrackListItem(View v) {
         int position = getListView().getPositionForView(v);
-        setPosition(position,false);
+        setPosition(position, false);
         editTrackList(position, false);
     }
 
@@ -206,11 +286,11 @@ public class TrackListFragment extends ListFragment {
     }
 
     /***************************************************************************************/
-    private void confirmDeleteItem(Intent intent) {
+    private void confirmDeleteItem(int index) {
         if (trackData.tracks.size() == 1) {
             return;
         }
-        indexDel = intent.getIntExtra(Keys.EDITINDEX, -1);
+        indexDel = index;
         trackListAdapter.selectedItem = indexDel;
         getListView().setItemChecked(trackListAdapter.selectedItem, true);
 

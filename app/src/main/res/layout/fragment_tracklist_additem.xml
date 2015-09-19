@@ -1,7 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/button_additem_track"
+<LinearLayout
+    android:id="@+id/ll_tracklist_additem_track"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/list_add_item" >
-</Button>
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_action_play"/>
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_action_edit"/>
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_action_remove"/>
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_action_new"/>
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_up"/>
+
+        <ImageButton
+            android:id="@+id/imb_tracklist_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_down"/>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imb_tracklistadd_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_action_new"/>
+
+
+</LinearLayout>

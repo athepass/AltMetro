@@ -373,11 +373,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 }
             });
 
-            holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_delete);
-            holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_add);
-            holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_up);
-            holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_down);
-
             holder.evRepeatList = new EmphasisViewManager("listrepeat", Keys.EVMLIST, rowView, h);
             holder.evRepeatList.useLow = true;
 

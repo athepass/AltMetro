@@ -81,15 +81,15 @@ public class DialogEditTrackInfo extends DialogFragment {
                     }
                 });
 
-        if ((editSize > 1) && (!actionAdd)) {
-            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent();
-                    intent.putExtra(Keys.EDITINDEX, index);
-                    getTargetFragment().onActivityResult(Keys.TARGETDELETETRACK, Activity.RESULT_OK, intent);
-                }
-            });
-        }
+//        if ((editSize > 1) && (!actionAdd)) {
+//            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    Intent intent = new Intent();
+//                    intent.putExtra(Keys.EDITINDEX, index);
+//                    getTargetFragment().onActivityResult(Keys.TARGETDELETETRACK, Activity.RESULT_OK, intent);
+//                }
+//            });
+//        }
 
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addtrack)
