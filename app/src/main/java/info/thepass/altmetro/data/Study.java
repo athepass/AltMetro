@@ -1,8 +1,8 @@
 package info.thepass.altmetro.data;
 
 import android.os.Bundle;
-import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Study {
@@ -12,16 +12,19 @@ public class Study {
     private final static String KEYTEMPOINCREMENT = "STtpi";
     private final static String KEYROUNDS = "STrnd";
     private final static String KEYUSED = "STuse";
+    private final static String KEYPRACTICE = "STprac";
     public int tempoFrom;
     public int tempoTo;
     public int tempoIncrement;
     public int rounds;
+    public int practice;
     public boolean used;
 
     public Study() {
         used = false;
         tempoIncrement = 5;
         rounds = 4;
+        practice = 100;
     }
 
     public Study(Bundle b) {
@@ -30,6 +33,7 @@ public class Study {
         tempoIncrement = b.getInt(KEYTEMPOINCREMENT);
         rounds = b.getInt(KEYROUNDS);
         used = b.getBoolean(KEYUSED);
+        practice = b.getInt(KEYPRACTICE, 100);
     }
 
     public Bundle toBundle() {
@@ -39,16 +43,14 @@ public class Study {
         b.putInt(KEYTEMPOINCREMENT, tempoIncrement);
         b.putInt(KEYROUNDS, rounds);
         b.putBoolean(KEYUSED, used);
+        b.putInt(KEYPRACTICE, practice);
         return b;
     }
 
     public boolean isChanged(Study newSps) {
-        if (newSps.tempoFrom != tempoFrom || newSps.tempoTo != tempoTo
+        return newSps.tempoFrom != tempoFrom || newSps.tempoTo != tempoTo
                 || newSps.tempoIncrement != tempoIncrement
-                || newSps.rounds != rounds || newSps.used != used) {
-            return true;
-        }
-        return false;
+                || newSps.rounds != rounds || newSps.used != used;
     }
 
     public JSONObject toJson() {
@@ -59,8 +61,9 @@ public class Study {
             json.put(KEYTEMPOINCREMENT, tempoIncrement);
             json.put(KEYROUNDS, rounds);
             json.put(KEYUSED, used);
-        } catch (Exception e) {
-            Log.e(TAG, "toJson exception " + e.getMessage(), e);
+            json.put(KEYPRACTICE, practice);
+        } catch (JSONException e) {
+            throw new RuntimeException("FromJson exception" + e.getMessage());
         }
         return json;
     }
@@ -72,14 +75,16 @@ public class Study {
             tempoIncrement = json.getInt(KEYTEMPOINCREMENT);
             rounds = json.getInt(KEYROUNDS);
             used = json.getBoolean(KEYUSED);
-        } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+            if (json.has(KEYPRACTICE))
+                practice = json.getInt(KEYPRACTICE);
+        } catch (JSONException e) {
+            throw new RuntimeException("toJson exception" + e.getMessage());
         }
     }
 
     @Override
     public String toString() {
-        String s = toStringKort()+ ((used) ? "used" : "not used");
+        String s = toStringKort() + ((used) ? "used" : "not used");
         return s;
     }
 

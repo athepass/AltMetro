@@ -33,6 +33,7 @@ public class DialogEditTrackTap extends DialogFragment {
     private long time1;
     private long time2;
     private int newTempo;
+    private int maxTempo;
 
     public DialogEditTrackTap() {
         // Empty constructor required for DialogFragment
@@ -44,6 +45,7 @@ public class DialogEditTrackTap extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_tap, null);
+        h.initToastAlert(inflater);
 
         initData();
         initView(dialogView);
@@ -52,12 +54,17 @@ public class DialogEditTrackTap extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        repeat.tempo = Integer.parseInt(tvTap.getText().toString());
-
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITTAP, Activity.RESULT_OK, intent);
+                        String sTempo = tvTap.getText().toString();
+                        if (sTempo.length() > 0) {
+                            newTempo = Integer.parseInt(sTempo);
+                            if (newTempo >= Keys.MINTEMPO && newTempo <= maxTempo) {
+                                repeat.tempo = newTempo;
+                                Intent intent = new Intent();
+                                intent.putExtra(Keys.EDITINDEX, index);
+                                intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
+                                getTargetFragment().onActivityResult(Keys.TARGETEDITTAP, Activity.RESULT_OK, intent);
+                            }
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -74,6 +81,8 @@ public class DialogEditTrackTap extends DialogFragment {
     }
 
     private void initData() {
+        maxTempo = h.getMaxTempo();
+
         Bundle b = getArguments();
         index = b.getInt(Keys.EDITINDEX);
         try {
@@ -105,6 +114,13 @@ public class DialogEditTrackTap extends DialogFragment {
         } else {
             time2 = h.getTimeMillis();
             newTempo = Math.round(60000f / (time2 - time1));
+            if (newTempo < Keys.MINTEMPO) {
+                h.showToastAlert(h.getString2(R.string.error_taptempolow, "" + newTempo, "" + Keys.MINTEMPO));
+                newTempo = Keys.MINTEMPO;
+            } else if (newTempo > maxTempo) {
+                h.showToastAlert(h.getString2(R.string.error_taptempohigh, "" + newTempo, "" + maxTempo));
+                newTempo = maxTempo;
+            }
             tvTap.setText(String.valueOf(newTempo));
         }
         firstTap = !firstTap;

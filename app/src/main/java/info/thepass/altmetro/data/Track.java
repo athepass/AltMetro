@@ -1,13 +1,13 @@
 package info.thepass.altmetro.data;
 
-import android.util.Log;
-
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.tools.Keys;
 
 public class Track {
     public final static String TAG = "TrakTrack";
@@ -31,7 +31,7 @@ public class Track {
         nummer = 0;
         hashTrack = h.getHash();
         titel = "";
-        multi = false;
+        multi = h.prefs.getBoolean(Keys.PREFMULTI, false);
 
         study = new Study();
 
@@ -63,7 +63,7 @@ public class Track {
             }
             json.put(KEYREPEATS, repeatsArray);
 
-        } catch (Exception e) {
+        } catch (JSONException e) {
             throw new RuntimeException("toJson exception"+e.getMessage());
         }
         return json;
@@ -87,8 +87,8 @@ public class Track {
                 repeats.add(rep);
             }
 
-        } catch (Exception e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
+        } catch (JSONException e) {
+            throw new RuntimeException("fromJson exception"+e.getMessage());
         }
     }
 

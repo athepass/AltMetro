@@ -55,7 +55,9 @@ public class DialogEditTrackInfo extends DialogFragment {
 
                         // ophalen waardes uit view
                         trak.titel = etTitel.getText().toString();
-                        trak.nummer = Integer.parseInt(etNummer.getText().toString());
+                        String sNummer = etNummer.getText().toString();
+                        trak.nummer = (sNummer.length() > 0) ? Integer.parseInt(sNummer): 0;
+
                         trak.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
 
                         // igv single verwijzen naar 1e pattern en 1e repeat

@@ -39,17 +39,32 @@
     <string name="label_timesig">time sign</string>
     <string name="label_timesigsep">/</string>
     <string name="label_track">Track</string>
-    <string name="label_repeats">Repeat %s times</string>
+    <string name="label_repeats">%s times</string>
     <string name="label_noend">no end</string>
-    <string name="label_noend0">(0=no end)</string>
+    <string name="label_repeatcount">Number of repeats</string>
     <string name="label_p1">+1</string>
     <string name="label_p5">+5</string>
     <string name="label_p20">+20</string>
     <string name="label_m1">-1</string>
     <string name="label_m5">-5</string>
     <string name="label_m20">-20</string>
+    <string name="label_prac50">50%</string>
+    <string name="label_prac70">70%</string>
+    <string name="label_prac80">80%</string>
+    <string name="label_prac85">85%</string>
+    <string name="label_prac90">90%</string>
+    <string name="label_prac95">95%</string>
+    <string name="label_prac100">100%</string>
+    <string name="error_countmin" formatted="false">count %s not greater than 0</string>
     <string name="error_tempomin" formatted="false">Tempo %s under minimum %s</string>
     <string name="error_tempomax" formatted="false">Tempo %s exceeds maximum %s</string>
+    <string name="error_taptempolow" formatted="false">Tempo %s below minimum tempo %s. Corrected</string>
+    <string name="error_taptempohigh" formatted="false">Tempo %s exceeds maximum tempo %s. Corrected</string>
+    <string name="pref_title">Preferences</string>
+    <string name="pref_multi">Default tracktype multi?</string>
+    <string name="pref_maxtempo">Maximum metronome tempo</string>
+    <string name="pref_showStudy">Show study on metro window</string>
+    <string name="pref_showPractice">Show practice on metro window</string>
     <string name="list_add_item">Add item</string>
     <string name="list_select_track">Select a track</string>
     <string name="list_item_added">Item added</string>

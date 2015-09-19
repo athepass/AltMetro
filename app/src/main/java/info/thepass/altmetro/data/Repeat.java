@@ -2,6 +2,7 @@ package info.thepass.altmetro.data;
 
 import android.os.Bundle;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
@@ -40,7 +41,7 @@ public class Repeat {
             json.put(KEYTEMPO, tempo);
             json.put(KEYCOUNT, count);
 
-        } catch (Exception e) {
+        } catch (JSONException e) {
             throw new RuntimeException("toJson exception" + e.getMessage());
         }
         return json;
@@ -52,8 +53,8 @@ public class Repeat {
             hashPattern = json.getInt(KEYHASH);
             tempo = json.getInt(KEYTEMPO);
             count = json.getInt(KEYCOUNT);
-        } catch (Exception e) {
-            throw new RuntimeException("toJson exception" + e.getMessage());
+        } catch (JSONException e) {
+            throw new RuntimeException("fromJson exception" + e.getMessage());
         }
     }
 

@@ -25,8 +25,8 @@ public class Keys {
     public final static int TARGETEDITREPEAT = 31;
     public final static int TARGETDELETEREPEAT = 32;
     public final static int TARGETEDITSTUDY = 41;
-    public final static int TARGETEDITPRACTICE = 42;
-    public final static int TARGETEDITTAP = 43;
+    public final static int TARGETEDITTAP = 42;
+    public final static int TARGETPREF = 51;
 
     public final static String EDITACTION = "EditAction";
     public final static String EDITINDEX = "EditIndex";
@@ -36,4 +36,8 @@ public class Keys {
     public final static int EVMPLAYER = 2;
     public final static int EVMLIST = 3;
 
+    public final static String PREFMULTI= "multi";
+    public final static String PREFMAXTEMPO = "maxTempo";
+    public final static String PREFSHOWSTUDY = "showStudy";
+    public final static String PREFSHOWPRACTICE = "showPractice";
 }

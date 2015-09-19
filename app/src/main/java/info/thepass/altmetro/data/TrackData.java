@@ -146,7 +146,7 @@ public class TrackData {
             }
             json.put(KEYPATS, patsArray);
 
-        } catch (Exception e) {
+        } catch (JSONException e) {
             Log.e(TAG, "toJson exception" + e.getMessage(), e);
             throw new RuntimeException("toJson " + e.getMessage());
         }

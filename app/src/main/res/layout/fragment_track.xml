@@ -120,26 +120,26 @@
             android:tag="iv19"/>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_editor_tempo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button_m20"
+            android:id="@+id/btn_track_m20"
             style="@style/AppTheme.TempoButton"
-            android:layout_toLeftOf="@+id/button_m5"
+            android:layout_toLeftOf="@+id/btn_track_m5"
             android:text="@string/label_m20"/>
 
         <Button
-            android:id="@+id/button_m5"
+            android:id="@+id/btn_track_m5"
             style="@style/AppTheme.TempoButton"
-            android:layout_toLeftOf="@+id/button_m1"
+            android:layout_toLeftOf="@+id/btn_track_m1"
             android:text="@string/label_m5"/>
 
         <Button
-            android:id="@+id/button_m1"
+            android:id="@+id/btn_track_m1"
             style="@style/AppTheme.TempoButton"
             android:layout_toLeftOf="@+id/tv_editor_tempo"
             android:text="@string/label_m1"/>
@@ -157,25 +157,25 @@
             android:textSize="@dimen/textsize_timescale"/>
 
         <Button
-            android:id="@+id/button_p1"
+            android:id="@+id/btn_track_p1"
             style="@style/AppTheme.TempoButton"
             android:layout_toRightOf="@+id/tv_editor_tempo"
             android:text="@string/label_p1"/>
 
 
         <Button
-            android:id="@+id/button_p5"
+            android:id="@+id/btn_track_p5"
             style="@style/AppTheme.TempoButton"
-            android:layout_toRightOf="@+id/button_p5"
+            android:layout_toRightOf="@+id/btn_track_p1"
             android:text="@string/label_p5"/>
 
         <Button
-            android:id="@+id/button_p20"
+            android:id="@+id/btn_track_p20"
             style="@style/AppTheme.TempoButton"
-            android:layout_toRightOf="@+id/button_p20"
+            android:layout_toRightOf="@+id/btn_track_p5"
             android:text="@string/label_p20"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <SeekBar
         android:id="@+id/sb_tempo"
@@ -188,7 +188,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/color_text"
         android:textSize="@dimen/textsize_row"/>
-
 
     <ListView
         android:id="@+id/track_listView"

@@ -2,6 +2,7 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
@@ -167,6 +170,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_study_row,
                     parent, false);
             holder = new ViewHolderStudy();
+
             holder.tv_tap = (TextView) rowView.findViewById(R.id.tv_track_study_tap);
             holder.tv_tap.setOnClickListener(new View.OnClickListener() {
 
@@ -177,24 +181,88 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             });
             holder.tv_study = (TextView) rowView.findViewById(R.id.tv_track_study_study);
             holder.tv_study.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View v) {
                     frag.editSpeedStudy();
                 }
             });
-            holder.tv_practice = (TextView) rowView.findViewById(R.id.tv_track_study_practice);
-            holder.tv_practice.setOnClickListener(new View.OnClickListener() {
+
+            holder.rg_practice = (RadioGroup) rowView.findViewById(R.id.rg_track_practice);
+            holder.rg_practice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
                 @Override
-                public void onClick(View v) {
-                    frag.editPractice();
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    Log.d(TAG, "practice changed");
+                    int newPractice = 0;
+                    switch (checkedId) {
+                        case R.id.rb_track_prac50:
+                            newPractice = 50;
+                            break;
+                        case R.id.rb_track_prac70:
+                            newPractice = 70;
+                            break;
+                        case R.id.rb_track_prac80:
+                            newPractice = 80;
+                            break;
+                        case R.id.rb_track_prac90:
+                            newPractice = 90;
+                            break;
+                        case R.id.rb_track_prac95:
+                            newPractice = 95;
+                            break;
+                        case R.id.rb_track_prac100:
+                            newPractice = 100;
+                            break;
+                    }
+                    track.study.practice = newPractice;
+                    trackData.saveData("Practice changed", false);
                 }
             });
+
+            switch (track.study.practice) {
+                case 50:
+                    holder.rb_prac50 = (RadioButton) rowView.findViewById(R.id.rb_track_prac50);
+                    holder.rb_prac50.setChecked(true);
+                    break;
+                case 70:
+                    holder.rb_prac70 = (RadioButton) rowView.findViewById(R.id.rb_track_prac70);
+                    holder.rb_prac70.setChecked(true);
+                    break;
+                case 80:
+                    holder.rb_prac80 = (RadioButton) rowView.findViewById(R.id.rb_track_prac80);
+                    holder.rb_prac80.setChecked(true);
+                    break;
+                case 90:
+                    holder.rb_prac90 = (RadioButton) rowView.findViewById(R.id.rb_track_prac90);
+                    holder.rb_prac90.setChecked(true);
+                    break;
+                case 95:
+                    holder.rb_prac95 = (RadioButton) rowView.findViewById(R.id.rb_track_prac95);
+                    holder.rb_prac95.setChecked(true);
+                    break;
+                case 100:
+                    holder.rb_prac100 = (RadioButton) rowView.findViewById(R.id.rb_track_prac100);
+                    holder.rb_prac100.setChecked(true);
+                    break;
+            }
             rowView.setTag(holder);
         } else {
             holder = (ViewHolderStudy) rowView.getTag();
         }
+
+        boolean showStudy = h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+        holder.tv_study.setVisibility((showStudy)? View.VISIBLE : View.GONE);
+        holder.tv_study.setText((track.study.used)
+                ? h.getString(R.string.label_study_on)
+                : h.getString(R.string.label_study_off));
+
+        boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
+        if (!showPractice) {
+            holder.rg_practice.setVisibility(View.GONE);
+        } else {
+            holder.rg_practice.setVisibility((track.study.used || (!showPractice)) ? View.INVISIBLE : View.VISIBLE);
+        }
+
 
         return rowView;
     }
@@ -517,7 +585,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         public LinearLayout rij;
         public TextView tv_tap;
         public TextView tv_study;
-        public TextView tv_practice;
+        public RadioGroup rg_practice;
+        public RadioButton rb_prac50;
+        public RadioButton rb_prac70;
+        public RadioButton rb_prac80;
+        public RadioButton rb_prac90;
+        public RadioButton rb_prac95;
+        public RadioButton rb_prac100;
     }
 
     public static class ViewHolderRepeat {

@@ -17,4 +17,6 @@
     <dimen name="listitem_button_width">100dp</dimen>
     <dimen name="listitem_button_height">35dp</dimen>
     <dimen name="listitem_button_marginleft">10dp</dimen>
+    <dimen name="prac_textsize">14sp</dimen>
+    <dimen name="prac_width">45dp</dimen>
 </resources>

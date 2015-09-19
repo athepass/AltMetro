@@ -3,6 +3,7 @@ package info.thepass.altmetro.data;
 import android.os.Bundle;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
@@ -170,7 +171,7 @@ public class Pat {
             }
             json.put(KEYBEATSTATE, statesArray);
             json.put(KEYTITLE, patTitle);
-        } catch (Exception e) {
+        } catch (JSONException e) {
             throw new RuntimeException( "toJson exception" + e.getMessage());
         }
         return json;
@@ -187,7 +188,7 @@ public class Pat {
                 patBeatState[i] = statesArray.getInt(i);
             }
             patTitle = json.getString(KEYTITLE);
-        } catch (Exception e) {
+        } catch (JSONException e) {
             throw new RuntimeException("toJson exception" + e.getMessage());
         }
     }

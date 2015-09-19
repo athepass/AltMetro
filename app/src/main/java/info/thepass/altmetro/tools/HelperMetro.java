@@ -192,6 +192,10 @@ public class HelperMetro {
         return resources.getColor(id);
     }
 
+    public int getMaxTempo() {
+        return Integer.parseInt(prefs.getString(Keys.PREFMAXTEMPO, "250"));
+    }
+
     public String alfaNum(int i) {
         if (i < 26) {
             return Character.toString((char) (97 + i));

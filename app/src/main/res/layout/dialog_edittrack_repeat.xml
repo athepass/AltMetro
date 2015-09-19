@@ -112,35 +112,110 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/label_tempo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_tempo"
+        android:layout_marginTop="30dp"/>
+
+
+    <RelativeLayout
+        android:id="@+id/ll_dlg_tempo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/button_dlg_m20"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m20"
+            android:layout_alignBottom="@+id/button_dlg_m5"
+            android:layout_toLeftOf="@+id/button_dlg_m5"
+            android:layout_toStartOf="@+id/button_dlg_m5"/>
+
+        <Button
+            android:id="@+id/button_dlg_m5"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m5"
+            android:layout_alignBottom="@+id/button_dlg_m1"
+            android:layout_toLeftOf="@+id/button_dlg_m1"
+            android:layout_toStartOf="@+id/button_dlg_m1"/>
+
+        <Button
+            android:id="@+id/button_dlg_m1"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m1"
+            android:layout_alignBottom="@+id/tv_dlg_tempo"
+            android:layout_toLeftOf="@+id/tv_dlg_tempo"
+            android:layout_toStartOf="@+id/tv_dlg_tempo"/>
+
         <TextView
-            android:id="@+id/label_tempo"
-            android:layout_width="60dp"
+            android:id="@+id/tv_dlg_tempo"
+            android:layout_width="@dimen/incdec_width"
             android:layout_height="wrap_content"
-            android:text="@string/label_tempo"/>
+            android:background="@color/color_emphasis_low"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/hw"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/textsize_timescale"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
 
-        <EditText
-            android:id="@+id/et_dlg_repeat_tempo"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
+        <Button
+            android:id="@+id/button_dlg_p1"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p1"
+            android:layout_alignBottom="@+id/tv_dlg_tempo"
+            android:layout_toRightOf="@+id/tv_dlg_tempo"
+            android:layout_toEndOf="@+id/tv_dlg_tempo"/>
 
-    </LinearLayout>
+
+        <Button
+            android:id="@+id/button_dlg_p5"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p5"
+            android:layout_alignBottom="@+id/button_dlg_p1"
+            android:layout_toRightOf="@+id/button_dlg_p1"
+            android:layout_toEndOf="@+id/button_dlg_p1"/>
+
+        <Button
+            android:id="@+id/button_dlg_p20"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p20"
+            android:layout_alignBottom="@+id/button_dlg_p5"
+            android:layout_toRightOf="@+id/button_dlg_p5"
+            android:layout_toEndOf="@+id/button_dlg_p5"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/label_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_count"
+        android:layout_marginTop="30dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_noend"
+            android:id="@+id/cb_dlg_noend"/>
 
         <TextView
-            android:id="@+id/label_count"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="@string/label_count"/>
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="@string/label_repeatcount"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginRight="5dp"/>
 
         <EditText
             android:id="@+id/et_dlg_repeat_count"
@@ -148,13 +223,6 @@
             android:layout_height="wrap_content"
             android:inputType="number"/>
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/label_noend0"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
 
 </LinearLayout>

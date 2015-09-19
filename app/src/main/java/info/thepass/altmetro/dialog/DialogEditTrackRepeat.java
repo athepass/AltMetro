@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,6 +43,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private int index = 0;
     private int editSize = -1;
     private boolean multi;
+    private int maxTempo;
 
     private LinearLayout llSpinner;
     private LinearLayout llEmphasis;
@@ -49,8 +52,16 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private Spinner spPat;
     private ArrayAdapter<String> patSelAdapter;
     private AdapterView.OnItemSelectedListener patSelListener;
+    private Button buttonM1;
+    private Button buttonM5;
+    private Button buttonM20;
+    private Button buttonP1;
+    private Button buttonP5;
+    private Button buttonP20;
+    private TextView tvTempo;
+
     private EditText etCount;
-    private EditText etTempo;
+    private CheckBox cbNoEnd;
 
     public DialogEditTrackRepeat() {
         // Empty constructor required for DialogFragment
@@ -66,6 +77,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         h.initToastAlert(inflater);
 
         initData();
+        initIncDec(dialogView);
         initEmphasis(dialogView);
         initViews(dialogView);
         initSpinner(dialogView);
@@ -110,6 +122,8 @@ public class DialogEditTrackRepeat extends DialogFragment {
     }
 
     private void initData() {
+        maxTempo = h.getMaxTempo();
+
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
         index = b.getInt(Keys.EDITINDEX);
@@ -134,27 +148,77 @@ public class DialogEditTrackRepeat extends DialogFragment {
         }
     }
 
+    private void initIncDec(View dialogView) {
+        tvTempo = (TextView) dialogView.findViewById(R.id.tv_dlg_tempo);
+        tvTempo.setText(String.valueOf(repeat.tempo));
+
+        buttonM1 = (Button) dialogView.findViewById(R.id.button_dlg_m1);
+        buttonM1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(-1);
+            }
+        });
+
+        buttonM5 = (Button) dialogView.findViewById(R.id.button_dlg_m5);
+        buttonM5.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(-5);
+            }
+        });
+        buttonM20 = (Button) dialogView.findViewById(R.id.button_dlg_m20);
+        buttonM20.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(-20);
+            }
+        });
+        buttonP1 = (Button) dialogView.findViewById(R.id.button_dlg_p1);
+        buttonP1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(1);
+            }
+        });
+        buttonP5 = (Button) dialogView.findViewById(R.id.button_dlg_p5);
+        buttonP5.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(5);
+            }
+        });
+        buttonP20 = (Button) dialogView.findViewById(R.id.button_dlg_p20);
+        buttonP20.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wijzigTempo(20);
+            }
+        });
+    }
+
+
     private boolean validateData() {
-        int tempo = Integer.parseInt(etTempo.getText().toString());
-        if (tempo < 30) {
-            String msg = h.getString2(R.string.error_tempomin, "" + tempo, "" + 30);
-            h.showToastAlert(msg);
-            return false;
-        } else if (tempo > 200) {
-            String msg = h.getString2(R.string.error_tempomax, "" + tempo, "" + 200);
-            h.showToastAlert(msg);
-            return false;
-        } else {
+        if (cbNoEnd.isChecked()) {
+            etCount.setText("0");
             return true;
         }
+        String sCount = etCount.getText().toString();
+        if (sCount.length() == 0) {
+            String msg = h.getString1(R.string.error_countmin, sCount);
+            h.showToastAlert(msg);
+            return false;
+        }
+
+        int count = Integer.parseInt(sCount);
+        if (count<=0) {
+            String msg = h.getString1(R.string.error_countmin, sCount);
+            h.showToastAlert(msg);
+            return false;
+        }
+
+        return true;
     }
 
     private void saveData() {
-        //todo update repeat
         repeat.indexPattern = spPat.getSelectedItemPosition();
         repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
-        repeat.count = Integer.parseInt(etCount.getText().toString());
-        repeat.tempo = Integer.parseInt(etTempo.getText().toString());
+        repeat.count = (cbNoEnd.isChecked()) ? 0 : Integer.parseInt(etCount.getText().toString());
+        repeat.tempo = Integer.parseInt(tvTempo.getText().toString());
         Intent intent = new Intent();
         intent.putExtra(Keys.EDITACTION, actionAdd);
         intent.putExtra(Keys.EDITINDEX, index);
@@ -176,8 +240,9 @@ public class DialogEditTrackRepeat extends DialogFragment {
 
         etCount = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_count);
         etCount.setText(String.valueOf(repeat.count));
-        etTempo = (EditText) dialogView.findViewById(R.id.et_dlg_repeat_tempo);
-        etTempo.setText(String.valueOf(repeat.tempo));
+
+        cbNoEnd = (CheckBox) dialogView.findViewById(R.id.cb_dlg_noend);
+        cbNoEnd.setChecked(repeat.count == 0);
     }
 
     private void initSpinner(View dialogView) {
@@ -203,6 +268,14 @@ public class DialogEditTrackRepeat extends DialogFragment {
         spPat.setAdapter(patSelAdapter);
         spPat.setOnItemSelectedListener(patSelListener);
         updatePat(repeat.indexPattern);
+    }
+
+    private void wijzigTempo(int iDelta) {
+        String s = tvTempo.getText().toString();
+        int newTempo = Integer.parseInt(s) + iDelta;
+        newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
+        newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
+        tvTempo.setText("" + newTempo);
     }
 
     private void updatePat(int position) {

@@ -32,9 +32,7 @@ import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.dialog.DialogEditTrackPattern;
-import info.thepass.altmetro.dialog.DialogEditTrackPractice;
 import info.thepass.altmetro.dialog.DialogEditTrackRepeat;
-import info.thepass.altmetro.dialog.DialogEditTrackStudy;
 import info.thepass.altmetro.dialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -98,7 +96,7 @@ public class TrackFragment extends Fragment {
                 h.showToast("PLAY under development");
                 return true;
             case R.id.action_track_settings:
-                h.showToast("SETTINGS under development");
+                doPrefs();
                 return true;
             case R.id.action_track_tracklist:
                 doTrackList();
@@ -123,8 +121,10 @@ public class TrackFragment extends Fragment {
                     updateRepeat(intent);
                     return;
                 case Keys.TARGETEDITSTUDY:
-                case Keys.TARGETEDITPRACTICE:
                     updateStudy(intent);
+                    return;
+                case Keys.TARGETPREF:
+                    itemsAdapter.notifyDataSetChanged();
                     return;
             }
         }
@@ -203,38 +203,38 @@ public class TrackFragment extends Fragment {
     }
 
     private void initIncDec() {
-        buttonM1 = (Button) getActivity().findViewById(R.id.button_m1);
+        buttonM1 = (Button) getActivity().findViewById(R.id.btn_track_m1);
         buttonM1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(-1);
             }
         });
 
-        buttonM5 = (Button) getActivity().findViewById(R.id.button_m5);
+        buttonM5 = (Button) getActivity().findViewById(R.id.btn_track_m5);
         buttonM5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(-5);
             }
         });
-        buttonM20 = (Button) getActivity().findViewById(R.id.button_m20);
+        buttonM20 = (Button) getActivity().findViewById(R.id.btn_track_m20);
         buttonM20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(-20);
             }
         });
-        buttonP1 = (Button) getActivity().findViewById(R.id.button_p1);
+        buttonP1 = (Button) getActivity().findViewById(R.id.btn_track_p1);
         buttonP1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(1);
             }
         });
-        buttonP5 = (Button) getActivity().findViewById(R.id.button_p5);
+        buttonP5 = (Button) getActivity().findViewById(R.id.btn_track_p5);
         buttonP5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(5);
             }
         });
-        buttonP20 = (Button) getActivity().findViewById(R.id.button_p20);
+        buttonP20 = (Button) getActivity().findViewById(R.id.btn_track_p20);
         buttonP20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 wijzigTempo(20);
@@ -257,6 +257,16 @@ public class TrackFragment extends Fragment {
 
         itemsAdapter.notifyDataSetChanged();
         tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
+    }
+
+    private void doPrefs() {
+        PrefsFragment frag = new PrefsFragment();
+        frag.setTargetFragment(this, Keys.TARGETPREF);
+        FragmentTransaction transaction = getFragmentManager()
+                .beginTransaction();
+        transaction.replace(R.id.fragment_container, frag);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void doTrackList() {
@@ -464,30 +474,19 @@ public class TrackFragment extends Fragment {
         dlgEdit.show(getFragmentManager(), DialogEditTrackTap.TAG);
     }
 
-    public void editPractice() {
-        DialogEditTrackPractice dlgEdit = new DialogEditTrackPractice();
-        dlgEdit.h = h;
-        dlgEdit.setTargetFragment(this, Keys.TARGETEDITPRACTICE);
-
-        Bundle b = new Bundle();
-        Study study = track.study;
-        b.putString(Track.KEYSTUDY, study.toJson().toString());
-
-        dlgEdit.setArguments(b);
-        dlgEdit.show(getFragmentManager(), DialogEditTrackPractice.TAG);
-    }
-
     public void editSpeedStudy() {
-        DialogEditTrackStudy dlgEdit = new DialogEditTrackStudy();
-        dlgEdit.h = h;
-        dlgEdit.setTargetFragment(this, Keys.TARGETEDITSTUDY);
-
-        Bundle b = new Bundle();
-        Study study = track.study;
-        b.putString(TrackData.KEYPATS, study.toJson().toString());
-
-        dlgEdit.setArguments(b);
-        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
+//        DialogEditTrackStudy dlgEdit = new DialogEditTrackStudy();
+//        dlgEdit.h = h;
+//        dlgEdit.setTargetFragment(this, Keys.TARGETEDITSTUDY);
+//
+//        Bundle b = new Bundle();
+//        Study study = track.study;
+//        b.putString(TrackData.KEYPATS, study.toJson().toString());
+//
+//        dlgEdit.setArguments(b);
+//        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
+        track.study.used = !track.study.used;
+        itemsAdapter.notifyDataSetChanged();
     }
 
     public void updateStudy(Intent intent) {

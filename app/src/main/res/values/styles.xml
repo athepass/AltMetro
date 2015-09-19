@@ -51,5 +51,15 @@
         <item name="android:textSize">@dimen/textsize_timescale</item>
     </style>
 
+    <style name="AppTheme.RadioButtonPractice">
+        <item name="android:layout_width">@dimen/prac_width</item>
+        <item name="android:layout_height">@dimen/incdec_height</item>
+        <item name="android:background">@drawable/selector_radiobutton</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_practice</item>
+        <item name="android:button">@android:color/transparent</item>
+        <item name="android:padding">-12dp</item>
+        <item name="android:textSize">@dimen/prac_textsize</item>
+    </style>
 
 </resources>
