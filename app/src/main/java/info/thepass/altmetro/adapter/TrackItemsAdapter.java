@@ -2,7 +2,6 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
@@ -25,11 +22,10 @@ import info.thepass.altmetro.tools.Keys;
 import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
-    public final static int ROWTYPESTUDY = 0;
-    public final static int ROWTYPEPAT = 1;
-    public final static int ROWTYPEPATADD = 2;
-    public final static int ROWTYPEREPEAT = 3;
-    public final static int ROWTYPEREPEATADD = 4;
+    public final static int ROWTYPEPAT = 0;
+    public final static int ROWTYPEPATADD = 1;
+    public final static int ROWTYPEREPEAT = 2;
+    public final static int ROWTYPEREPEATADD = 3;
     private final static String TAG = "TrakItemsAdapter";
     public int selectedPat = 0;
     public int selectedRepeat = 0;
@@ -67,46 +63,45 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public int getViewTypeCount() {
-        return (track.multi) ? 5 : 4;
+        return (track.multi) ? 4 : 3;
     }
 
     @Override
     public int getItemViewType(int position) {
+        int vType;
         if (track.multi) {
-            if (position == 0) {
-                return ROWTYPESTUDY;
-            } else if (position < (1 + track.repeats.size())) {
-                return ROWTYPEREPEAT;
-            } else if (position == (1 + track.repeats.size())) {
-                return ROWTYPEREPEATADD;
-            } else if (position < (1 + track.repeats.size() + 1 + trackData.pats.size())) {
-                return ROWTYPEPAT;
-            } else if (position == (1 + track.repeats.size() + 1 + trackData.pats.size())) {
-                return ROWTYPEPATADD;
+            if (position < (track.repeats.size())) {
+                vType= ROWTYPEREPEAT;
+            } else if (position == (track.repeats.size())) {
+                vType= ROWTYPEREPEATADD;
+            } else if (position < (track.repeats.size() + 1 + trackData.pats.size())) {
+                vType = ROWTYPEPAT;
+            } else if (position == (track.repeats.size() + 1 + trackData.pats.size())) {
+                vType =  ROWTYPEPATADD;
             } else {
                 String msg = "invalid multi item type at position " + position;
                 msg += " rep:" + track.repeats.size();
                 msg += " pat:" + trackData.pats.size();
                 throw new RuntimeException(msg);
             }
+            return vType;
         } else {
             switch (position) {
                 case 0:
-                    return ROWTYPESTUDY;
-                case 1:
-                    return ROWTYPEREPEAT;
+                    vType = ROWTYPEREPEAT;
+                    break;
                 default:
-                    if (position < (2 + trackData.pats.size())) {
-                        return ROWTYPEPAT;
-                    } else if (position == (2 + trackData.pats.size())) {
-                        return ROWTYPEPATADD;
+                    if (position < (1 + trackData.pats.size())) {
+                        vType = ROWTYPEPAT;
+                    } else if (position == (1 + trackData.pats.size())) {
+                        vType = ROWTYPEPATADD;
                     } else {
                         throw new RuntimeException("invalid single item type at position " + position);
                     }
             }
+            return vType;
         }
     }
-
 
     @Override
     public void notifyDataSetChanged() {
@@ -133,21 +128,9 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         return position;
     }
 
-    public int getItemRepeatIndex(int position) {
-        int index = track.getItemRepeatPosition(position);
-        return (index + 1);
-    }
-
-    public int getItemPatIndex(int position) {
-        int index = track.getItemPatPosition(position);
-        return (index + 1);
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         switch (getItemViewType(position)) {
-            case ROWTYPESTUDY:
-                return getViewStudy(position, convertView, parent);
             case ROWTYPEREPEAT:
                 return getViewRepeat(position, convertView, parent);
             case ROWTYPEREPEATADD:
@@ -159,112 +142,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             default:
                 return null;
         }
-    }
-
-    private View getViewStudy(int position, View convertView, ViewGroup parent) {
-        View rowView = convertView;
-        ViewHolderStudy holder;
-        if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.fragment_track_study_row,
-                    parent, false);
-            holder = new ViewHolderStudy();
-
-            holder.tv_tap = (TextView) rowView.findViewById(R.id.tv_track_study_tap);
-            holder.tv_tap.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    frag.editTap();
-                }
-            });
-            holder.tv_study = (TextView) rowView.findViewById(R.id.tv_track_study_study);
-            holder.tv_study.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    frag.editSpeedStudy();
-                }
-            });
-
-            holder.rg_practice = (RadioGroup) rowView.findViewById(R.id.rg_track_practice);
-            holder.rg_practice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    Log.d(TAG, "practice changed");
-                    int newPractice = 0;
-                    switch (checkedId) {
-                        case R.id.rb_track_prac50:
-                            newPractice = 50;
-                            break;
-                        case R.id.rb_track_prac70:
-                            newPractice = 70;
-                            break;
-                        case R.id.rb_track_prac80:
-                            newPractice = 80;
-                            break;
-                        case R.id.rb_track_prac90:
-                            newPractice = 90;
-                            break;
-                        case R.id.rb_track_prac95:
-                            newPractice = 95;
-                            break;
-                        case R.id.rb_track_prac100:
-                            newPractice = 100;
-                            break;
-                    }
-                    track.study.practice = newPractice;
-                    trackData.saveData("Practice changed", false);
-                }
-            });
-
-            switch (track.study.practice) {
-                case 50:
-                    holder.rb_prac50 = (RadioButton) rowView.findViewById(R.id.rb_track_prac50);
-                    holder.rb_prac50.setChecked(true);
-                    break;
-                case 70:
-                    holder.rb_prac70 = (RadioButton) rowView.findViewById(R.id.rb_track_prac70);
-                    holder.rb_prac70.setChecked(true);
-                    break;
-                case 80:
-                    holder.rb_prac80 = (RadioButton) rowView.findViewById(R.id.rb_track_prac80);
-                    holder.rb_prac80.setChecked(true);
-                    break;
-                case 90:
-                    holder.rb_prac90 = (RadioButton) rowView.findViewById(R.id.rb_track_prac90);
-                    holder.rb_prac90.setChecked(true);
-                    break;
-                case 95:
-                    holder.rb_prac95 = (RadioButton) rowView.findViewById(R.id.rb_track_prac95);
-                    holder.rb_prac95.setChecked(true);
-                    break;
-                case 100:
-                    holder.rb_prac100 = (RadioButton) rowView.findViewById(R.id.rb_track_prac100);
-                    holder.rb_prac100.setChecked(true);
-                    break;
-            }
-            rowView.setTag(holder);
-        } else {
-            holder = (ViewHolderStudy) rowView.getTag();
-        }
-
-        boolean showStudy = h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
-        holder.tv_study.setVisibility((showStudy)? View.VISIBLE : View.GONE);
-        holder.tv_study.setText((track.study.used)
-                ? h.getString(R.string.label_study_on)
-                : h.getString(R.string.label_study_off));
-
-        boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
-        if (!showPractice) {
-            holder.rg_practice.setVisibility(View.GONE);
-        } else {
-            holder.rg_practice.setVisibility((track.study.used || (!showPractice)) ? View.INVISIBLE : View.VISIBLE);
-        }
-
-
-        return rowView;
     }
 
     private View getViewRepeat(final int position, View convertView, ViewGroup parent) {
@@ -607,6 +484,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     int position = getViewPosition(v);
+                    positionToolbar = -1;
+                    notifyDataSetChanged();
                     frag.editPattern(position, true);
                 }
             });
@@ -616,19 +495,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         return rowView;
-    }
-
-    public static class ViewHolderStudy {
-        public LinearLayout rij;
-        public TextView tv_tap;
-        public TextView tv_study;
-        public RadioGroup rg_practice;
-        public RadioButton rb_prac50;
-        public RadioButton rb_prac70;
-        public RadioButton rb_prac80;
-        public RadioButton rb_prac90;
-        public RadioButton rb_prac95;
-        public RadioButton rb_prac100;
     }
 
     public static class ViewHolderRepeat {

@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -39,19 +41,28 @@ import info.thepass.altmetro.tools.Keys;
 
 public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
+    // views Study
+    public TextView tvTap;
+    public TextView tv_study;
+    public RadioGroup rg_practice;
+    public RadioButton rb_prac50;
+    public RadioButton rb_prac70;
+    public RadioButton rb_prac80;
+    public RadioButton rb_prac90;
+    public RadioButton rb_prac95;
+    public RadioButton rb_prac100;
+    //    private EmphasisViewManager evPlayer;
     private HelperMetro h;
     private TrackData trackData;
     private Track track;
-
     private ListView lvItems;
     private TrackItemsAdapter itemsAdapter;
-    private TextView tvTempo;
     private int indexDelRepeat;
     private int indexDelPattern;
+    private View layout;
+    // views tempo
     private int maxTempo;
-
-//    private EmphasisViewManager evPlayer;
-
+    private TextView tvTempo;
     private SeekBar sbTempo;
     private SeekBar.OnSeekBarChangeListener tempoListener;
     private Button buttonM1;
@@ -60,8 +71,6 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
-
-    private View layout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +91,8 @@ public class TrackFragment extends Fragment {
         initSeekBar();
         initTempo();
         initIncDec();
+        initStudy();
+        updateStudy(null);
         setData();
     }
 
@@ -92,6 +103,9 @@ public class TrackFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_track_play:
+                doPlay(trackData.trackSelected);
+                return true;
             case R.id.action_track_settings:
                 doPrefs();
                 return true;
@@ -239,6 +253,84 @@ public class TrackFragment extends Fragment {
         });
     }
 
+    private void initStudy() {
+        tvTap = (TextView) getActivity().findViewById(R.id.tv_track_study_tap);
+        tvTap.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                editTap();
+            }
+        });
+        tv_study = (TextView) getActivity().findViewById(R.id.tv_track_study_study);
+        tv_study.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editSpeedStudy();
+            }
+        });
+
+        rg_practice = (RadioGroup) getActivity().findViewById(R.id.rg_track_practice);
+        rg_practice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Log.d(TAG, "practice changed");
+                int newPractice = 0;
+                switch (checkedId) {
+                    case R.id.rb_track_prac50:
+                        newPractice = 50;
+                        break;
+                    case R.id.rb_track_prac70:
+                        newPractice = 70;
+                        break;
+                    case R.id.rb_track_prac80:
+                        newPractice = 80;
+                        break;
+                    case R.id.rb_track_prac90:
+                        newPractice = 90;
+                        break;
+                    case R.id.rb_track_prac95:
+                        newPractice = 95;
+                        break;
+                    case R.id.rb_track_prac100:
+                        newPractice = 100;
+                        break;
+                }
+                track.study.practice = newPractice;
+                trackData.saveData("Practice changed", false);
+            }
+        });
+
+        switch (track.study.practice) {
+            case 50:
+                rb_prac50 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac50);
+                rb_prac50.setChecked(true);
+                break;
+            case 70:
+                rb_prac70 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac70);
+                rb_prac70.setChecked(true);
+                break;
+            case 80:
+                rb_prac80 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac80);
+                rb_prac80.setChecked(true);
+                break;
+            case 90:
+                rb_prac90 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac90);
+                rb_prac90.setChecked(true);
+                break;
+            case 95:
+                rb_prac95 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac95);
+                rb_prac95.setChecked(true);
+                break;
+            case 100:
+                rb_prac100 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac100);
+                rb_prac100.setChecked(true);
+                break;
+        }
+
+    }
+
     private void initEmphasis() {
 //        evPlayer = new EmphasisViewManager("ed_player", h,
 //                (MetroActivity) getActivity(), true, layout);
@@ -280,6 +372,7 @@ public class TrackFragment extends Fragment {
     public void doPlay(int position) {
         h.showToast("PLAY under development");
     }
+
     public void editRepeat(int position, boolean add) {
         DialogEditTrackRepeat dlgEdit = new DialogEditTrackRepeat();
         dlgEdit.h = h;
@@ -486,19 +579,33 @@ public class TrackFragment extends Fragment {
 //        dlgEdit.setArguments(b);
 //        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
         track.study.used = !track.study.used;
-        itemsAdapter.notifyDataSetChanged();
+        updateStudy(null);
     }
 
     public void updateStudy(Intent intent) {
-        String sStudy = intent.getStringExtra(Track.KEYREPEATS);
-        try {
-            Study newStudy = new Study();
-            newStudy.fromJson(new JSONObject(sStudy));
-            track.study = newStudy;
-        } catch (Exception e) {
-            throw new RuntimeException("updateStudy json exception");
+        if (intent != null) {
+            String sStudy = intent.getStringExtra(Track.KEYREPEATS);
+            try {
+                Study newStudy = new Study();
+                newStudy.fromJson(new JSONObject(sStudy));
+                track.study = newStudy;
+            } catch (Exception e) {
+                throw new RuntimeException("updateStudy json exception");
+            }
+            trackData.saveData("updateStudy", false);
         }
-        trackData.saveData("updateStudy", false);
+        boolean showStudy = h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+        tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
+        tv_study.setText((track.study.used)
+                ? h.getString(R.string.label_study_on)
+                : h.getString(R.string.label_study_off));
+
+        boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
+        if (!showPractice) {
+            rg_practice.setVisibility(View.GONE);
+        } else {
+            rg_practice.setVisibility((track.study.used || (!showPractice)) ? View.INVISIBLE : View.VISIBLE);
+        }
     }
 
     private void wijzigTempo(int iDelta) {

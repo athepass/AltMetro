@@ -101,6 +101,9 @@ public class TrackListFragment extends ListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_tracklist_play:
+                getFragmentManager().popBackStack();
+                return true;
             case R.id.action_tracklist_settings:
                 doPrefs();
                 return true;

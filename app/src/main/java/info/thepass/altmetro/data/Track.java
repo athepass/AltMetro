@@ -129,7 +129,7 @@ public class Track {
 
     public int getItemRepeatPosition(int position) {
         if (multi) {
-            return position - 1;
+            return position;
         } else {
             return 0;
         }
@@ -137,21 +137,20 @@ public class Track {
 
     public int getItemPatPosition(int position) {
         if (multi) {
-            return position - 1 - repeats.size() - 1;
+            return position - repeats.size() - 1;
         } else {
-            return position - 2;
+            return position - 1;
         }
     }
 
     public void syncItems(ArrayList<Pat> pats) {
-        int aantal = 3 + pats.size();  // vaste aantal voor single items: study + repeat + add pattern + pats
+        int aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + add pattern + pats
         if (multi) {
-            aantal = 1 + repeats.size() + 1 + pats.size() + 1;
+            aantal = repeats.size() + 1 + pats.size() + 1;
         }
         while (items.size() < aantal)
             items.add("-----");
         while (items.size() > aantal)
             items.remove(0);
     }
-
 }
