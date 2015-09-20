@@ -308,6 +308,16 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     }
                 }
             });
+            holder.play.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    int position = getViewPosition(v);
+                    positionToolbar = -1;
+                    notifyDataSetChanged();
+                    frag.doPlay(position);
+                }
+            });
             holder.edit.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -451,6 +461,38 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_pat_add);
             holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_pat_up);
             holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_pat_down);
+
+            holder.info.setClickable(true);
+            holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    h.showToast("body click");
+                    int position = getViewPosition(v);
+                    if (position > 0) {
+                        positionToolbar = (positionToolbar == position) ? -1 : position;
+                    } else {
+                        positionToolbar = position;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+
+            holder.rijBody.setClickable(true);
+            holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    h.showToast("body click");
+                    int position = getViewPosition(v);
+                    if (position > 0) {
+                        positionToolbar = (positionToolbar == position) ? -1 : position;
+                    } else {
+                        positionToolbar = position;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
 
             holder.overflow.setOnClickListener(new View.OnClickListener() {
 

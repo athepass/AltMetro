@@ -2,6 +2,7 @@ package info.thepass.altmetro.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -82,6 +83,13 @@ public class TrackListFragment extends ListFragment {
     }
 
     @Override
+    public void onDetach() {
+        this.updateTrackFragment();
+        trackData.saveData("tracklist detach", false);
+        super.onDetach();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
@@ -93,8 +101,8 @@ public class TrackListFragment extends ListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_tracklist_play:
-                getFragmentManager().popBackStack();
+            case R.id.action_tracklist_settings:
+                doPrefs();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -137,6 +145,14 @@ public class TrackListFragment extends ListFragment {
         btn_down = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_down);
         btn_addadd = (ImageButton) llAddItem.findViewById(R.id.imb_tracklistadd_add);
 
+        btn_play.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //             int position = getListView().getSelectedItemPosition();
+                getFragmentManager().popBackStack();
+            }
+        });
         btn_edit.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -165,9 +181,9 @@ public class TrackListFragment extends ListFragment {
             @Override
             public void onClick(View v) {
                 int index = trackListAdapter.selectedItem;
-                Log.d(TAG,"up"+index);
+                Log.d(TAG, "up" + index);
                 if (index >= 1) {
-                    setPosition(trackListAdapter.selectedItem-1,false);
+                    setPosition(trackListAdapter.selectedItem - 1, false);
                     Track track0 = trackData.tracks.get(index - 1);
                     Track track1 = trackData.tracks.get(index);
                     trackData.tracks.set(index - 1, track1);
@@ -181,9 +197,9 @@ public class TrackListFragment extends ListFragment {
             @Override
             public void onClick(View v) {
                 int index = trackListAdapter.selectedItem;
-                Log.d(TAG,"down"+index);
+                Log.d(TAG, "down" + index);
                 if (index < trackData.tracks.size() - 1) {
-                    setPosition(trackListAdapter.selectedItem+1,false);
+                    setPosition(trackListAdapter.selectedItem + 1, false);
                     Track track0 = trackData.tracks.get(index);
                     Track track1 = trackData.tracks.get(index + 1);
                     trackData.tracks.set(index, track1);
@@ -231,6 +247,16 @@ public class TrackListFragment extends ListFragment {
         trackData.saveData(TAG, false);
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETTRACKFRAGMENT, Activity.RESULT_OK, intent);
+    }
+
+    private void doPrefs() {
+        PrefsFragment frag = new PrefsFragment();
+        frag.setTargetFragment(this, Keys.TARGETPREF);
+        FragmentTransaction transaction = getFragmentManager()
+                .beginTransaction();
+        transaction.replace(R.id.fragment_container, frag);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     /***************************************************************************************/

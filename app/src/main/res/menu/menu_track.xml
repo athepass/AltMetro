@@ -1,11 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_track_play"
-        android:icon="@mipmap/ic_action_play"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_play"/>
-    <item
         android:id="@+id/action_track_tracklist"
         android:icon="@mipmap/icon_list_white"
         android:orderInCategory="100"

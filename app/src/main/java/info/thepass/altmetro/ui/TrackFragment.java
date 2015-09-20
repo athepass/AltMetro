@@ -92,9 +92,6 @@ public class TrackFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_track_play:
-                h.showToast("PLAY under development");
-                return true;
             case R.id.action_track_settings:
                 doPrefs();
                 return true;
@@ -280,6 +277,9 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
+    public void doPlay(int position) {
+        h.showToast("PLAY under development");
+    }
     public void editRepeat(int position, boolean add) {
         DialogEditTrackRepeat dlgEdit = new DialogEditTrackRepeat();
         dlgEdit.h = h;
