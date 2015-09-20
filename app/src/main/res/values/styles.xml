@@ -12,7 +12,7 @@
         <item name="android:layout_marginLeft">@dimen/emphasis_editor_marginleft</item>
         <item name="android:clickable">true</item>
         <item name="android:contentDescription">@string/hw</item>
-        <item name="android:src">@drawable/levellist_emphasis</item>
+        <item name="android:src">@drawable/levellist_emphasis_editor</item>
     </style>
 
     <style name="AppTheme.EmphasisPlayer">
@@ -20,6 +20,7 @@
         <item name="android:layout_height">@dimen/emphasis_editor_height</item>
         <item name="android:layout_marginLeft">@dimen/emphasis_editor_marginleft</item>
         <item name="android:clickable">true</item>
+        <item name="android:src">@drawable/levellist_emphasis_list</item>
         <item name="android:contentDescription">@string/hw</item>
     </style>
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:drawable="@drawable/shape_emphasis_high"
+        android:maxLevel="0"/>
+    <item
+        android:drawable="@drawable/shape_emphasis_low"
+        android:maxLevel="1"/>
+    <item
+        android:drawable="@drawable/shape_emphasis_none"
+        android:maxLevel="2"/>
+
+    <item
+        android:drawable="@drawable/shape_emphasis_high_active"
+        android:maxLevel="3"/>
+    <item
+        android:drawable="@drawable/shape_emphasis_low_active"
+        android:maxLevel="4"/>
+    <item
+        android:drawable="@drawable/shape_emphasis_none_active"
+        android:maxLevel="5"/>
+
+</level-list>

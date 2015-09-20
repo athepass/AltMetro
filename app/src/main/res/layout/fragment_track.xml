@@ -5,117 +5,117 @@
               android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/ll_ed_player_emphasis0"
+        android:id="@+id/ll_player_emphasis0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="3dp">
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis0"
+            android:id="@+id/iv_player_emphasis0"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv00"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis1"
+            android:id="@+id/iv_player_emphasis1"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv01"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis2"
+            android:id="@+id/iv_player_emphasis2"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv02"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis3"
+            android:id="@+id/iv_player_emphasis3"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv03"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis4"
+            android:id="@+id/iv_player_emphasis4"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv04"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis5"
+            android:id="@+id/iv_player_emphasis5"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv05"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis6"
+            android:id="@+id/iv_player_emphasis6"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv06"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis7"
+            android:id="@+id/iv_player_emphasis7"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv07"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis8"
+            android:id="@+id/iv_player_emphasis8"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv08"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis9"
+            android:id="@+id/iv_player_emphasis9"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv09"/>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll_ed_player_emphasis1"
+        android:id="@+id/ll_player_emphasis1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="3dp">
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis10"
+            android:id="@+id/iv_player_emphasis10"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv10"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis11"
+            android:id="@+id/iv_player_emphasis11"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv11"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis12"
+            android:id="@+id/iv_player_emphasis12"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv12"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis13"
+            android:id="@+id/iv_player_emphasis13"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv13"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis14"
+            android:id="@+id/iv_player_emphasis14"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv14"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis15"
+            android:id="@+id/iv_player_emphasis15"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv15"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis16"
+            android:id="@+id/iv_player_emphasis16"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv16"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis17"
+            android:id="@+id/iv_player_emphasis17"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv17"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis18"
+            android:id="@+id/iv_player_emphasis18"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv18"/>
 
         <ImageView
-            android:id="@+id/iv_ed_player_emphasis19"
+            android:id="@+id/iv_player_emphasis19"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv19"/>
     </LinearLayout>

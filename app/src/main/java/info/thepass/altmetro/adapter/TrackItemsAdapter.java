@@ -2,7 +2,6 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -146,7 +145,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     }
 
     private View getViewRepeat(final int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "getViewRepeat " + position);
         View rowView = convertView;
         ViewHolderRepeat holder;
         if (rowView == null) {
@@ -212,11 +210,15 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                         positionToolbar = position;
                     }
                     notifyDataSetChanged();
+
                 } else {
                     frag.editRepeat(position, false);
                 }
+                int index = track.getItemRepeatPosition(position);
+                frag.setRepeat(index);
             }
         });
+
         holder.play.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -224,9 +226,14 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
-                frag.doPlay(position);
+
+                int index = track.getItemRepeatPosition(position);
+                frag.setRepeat(index);
+
+                frag.doPlay(index);
             }
         });
+
         holder.edit.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -234,9 +241,14 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
+
+                int index = track.getItemRepeatPosition(position);
+                frag.setRepeat(index);
+
                 frag.editRepeat(position, false);
             }
         });
+
         holder.delete.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -244,9 +256,14 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
+
+                int index = track.getItemRepeatPosition(position);
+                frag.setRepeat(index);
+
                 frag.confirmDeleteRepeat(position);
             }
         });
+
         holder.add.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -254,9 +271,14 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
+
+                int index = track.getItemRepeatPosition(position);
+                frag.setRepeat(index);
+
                 frag.editRepeat(position, true);
             }
         });
+
         holder.up.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -272,8 +294,12 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     track.repeats.set(index, repeat0);
                 }
                 notifyDataSetChanged();
+
+                index = track.getItemRepeatPosition(selectedRepeat);
+                frag.setRepeat(index);
             }
         });
+
         holder.down.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -289,9 +315,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     track.repeats.set(index + 1, repeat0);
                 }
                 notifyDataSetChanged();
+
+                index = track.getItemRepeatPosition(selectedRepeat);
+                frag.setRepeat(index);
             }
         });
-
     }
 
     private View getViewRepeatAdd(View convertView, ViewGroup parent) {

@@ -7,6 +7,9 @@ import android.widget.LinearLayout;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
+import info.thepass.altmetro.data.Repeat;
+import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.data.TrackData;
 
 public class EmphasisViewManager {
     private final static String TAG = "EmphasisTrak";
@@ -25,6 +28,7 @@ public class EmphasisViewManager {
     private int empType;
     private boolean isPlayer;
     private Pat pat;
+    public TrackData data;
     private View.OnClickListener emphasisListener;
     private View layout;
 
@@ -153,7 +157,7 @@ public class EmphasisViewManager {
             } else {
                 ivArray[ivIndexArray[i]].setImageLevel(pat.patBeatState[i]);
                 ivArray[ivIndexArray[i]]
-                        .setImageResource(R.drawable.levellist_emphasis);
+                        .setImageResource(R.drawable.levellist_emphasis_editor);
             }
         }
         if (isPlayer) {
@@ -198,6 +202,19 @@ public class EmphasisViewManager {
                 llEmphasis[1].setVisibility(View.GONE);
                 llEmphasis[2].setVisibility(View.GONE);
             }
+        }
+        if (empType == Keys.EVMPLAYER) {
+            // bepaal het maximum van de beats van alle repeats
+            // er mag niet worden versprongen
+            Track track = data.tracks.get(data.trackSelected);
+            int maxBeat = 0;
+            for (int i=0;i<track.repeats.size();i++){
+                Repeat repeat = track.repeats.get(i);
+                Pat patRepeat = data.pats.get(repeat.indexPattern);
+                maxBeat = (maxBeat<patRepeat.patBeats) ? patRepeat.patBeats : maxBeat;
+            }
+            // er passen er 10 op de eerste regel. Evt. 2e regel verbergen
+            llEmphasis[1].setVisibility ((maxBeat<=10)? View.GONE : View.VISIBLE);
         }
     }
 

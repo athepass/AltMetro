@@ -37,6 +37,7 @@ import info.thepass.altmetro.dialog.DialogEditTrackPattern;
 import info.thepass.altmetro.dialog.DialogEditTrackRepeat;
 import info.thepass.altmetro.dialog.DialogEditTrackStudy;
 import info.thepass.altmetro.dialog.DialogEditTrackTap;
+import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -52,7 +53,7 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
-    //    private EmphasisViewManager evPlayer;
+    private EmphasisViewManager evPlayer;
     private HelperMetro h;
     private TrackData trackData;
     private Track track;
@@ -64,6 +65,7 @@ public class TrackFragment extends Fragment {
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
+    private int newTempo;
     private SeekBar sbTempo;
     private SeekBar.OnSeekBarChangeListener tempoListener;
     private Button buttonM1;
@@ -76,7 +78,8 @@ public class TrackFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_track, container, false);
+        layout = inflater.inflate(R.layout.fragment_track, container, false);
+        return layout;
     }
 
     @Override
@@ -143,6 +146,8 @@ public class TrackFragment extends Fragment {
     }
 
     private void initData() {
+        maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO, "400"));
+
         ActivityTrack act = (ActivityTrack) getActivity();
         this.trackData = act.trackData;
         track = trackData.tracks.get(trackData.trackSelected);
@@ -211,45 +216,46 @@ public class TrackFragment extends Fragment {
     private void initSeekBar() {
         sbTempo = (SeekBar) getActivity().findViewById(R.id.sb_tempo);
         sbTempo.setMax(maxTempo - Keys.MINTEMPO);
-        sbTempo.setOnSeekBarChangeListener(tempoListener);
+//        sbTempo.setOnSeekBarChangeListener(tempoListener);
     }
 
     private void initIncDec() {
         buttonM1 = (Button) getActivity().findViewById(R.id.btn_track_m1);
         buttonM1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(-1);
+                Log.d(TAG, "m1");
+                displayTempo(-1);
             }
         });
 
         buttonM5 = (Button) getActivity().findViewById(R.id.btn_track_m5);
         buttonM5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(-5);
+                displayTempo(-5);
             }
         });
         buttonM20 = (Button) getActivity().findViewById(R.id.btn_track_m20);
         buttonM20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(-20);
+                displayTempo(-20);
             }
         });
         buttonP1 = (Button) getActivity().findViewById(R.id.btn_track_p1);
         buttonP1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(1);
+                displayTempo(1);
             }
         });
         buttonP5 = (Button) getActivity().findViewById(R.id.btn_track_p5);
         buttonP5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(5);
+                displayTempo(5);
             }
         });
         buttonP20 = (Button) getActivity().findViewById(R.id.btn_track_p20);
         buttonP20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                wijzigTempo(20);
+                displayTempo(20);
             }
         });
     }
@@ -329,13 +335,11 @@ public class TrackFragment extends Fragment {
                 rb_prac100.setChecked(true);
                 break;
         }
-
     }
 
     private void initEmphasis() {
-//        evPlayer = new EmphasisViewManager("ed_player", h,
-//                (MetroActivity) getActivity(), true, layout);
-//        evPlayer.useLow = true;
+        evPlayer = new EmphasisViewManager("player", Keys.EVMPLAYER, layout, h);
+        evPlayer.useLow = true;
     }
 
     private void setData() {
@@ -347,6 +351,8 @@ public class TrackFragment extends Fragment {
 
         itemsAdapter.notifyDataSetChanged();
         tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
+
+        setRepeat(track.repeatSelected);
     }
 
     private void doPrefs() {
@@ -576,7 +582,7 @@ public class TrackFragment extends Fragment {
         Bundle b = new Bundle();
         Study study = track.study;
         b.putString(Track.KEYSTUDY, study.toJson().toString());
-        b.putInt(Repeat.KEYTEMPO,track.repeats.get(track.repeatSelected).tempo);
+        b.putInt(Repeat.KEYTEMPO, track.repeats.get(track.repeatSelected).tempo);
 
         dlgEdit.setArguments(b);
         dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
@@ -606,40 +612,19 @@ public class TrackFragment extends Fragment {
         }
     }
 
-    private void wijzigTempo(int iDelta) {
-        String s = tvTempo.getText().toString();
-        int newTempo = Integer.parseInt(s) + iDelta;
-        newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
-        newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
-//        displayTempo(newTempo);
-//        doPatternEdited("wijzigTempo");
+    public void setRepeat(int index) {
+        Repeat repeat = track.repeats.get(index);
+        newTempo = repeat.tempo;
+        displayTempo(0);
+        Pat pat = trackData.pats.get(repeat.indexPattern);
+        evPlayer.data = trackData;
+        evPlayer.setPattern(pat);
     }
 
-    //    public void updateBeat(Bundle b) {
-//        tvTempo.setText(String.valueOf(b.getInt(Keys.KEYTEMPO)));
-////        tvInfo.setText(b.getString(Keys.KEYBARINFO));
-//        currentBeat = b.getInt(Keys.KEYBEAT);
-//        h.logD(TAG, "updateBeat " + currentBeat);
-//        updateViewCurrentBeat();
-//        evPlayer.updateEmphasisView(currentBeat);
-//    }
-//
-//    private void updateViewCurrentBeat() {
-//        switch (p.patBeatState[currentBeat - 1]) {
-//            case 0:
-//                tvCurrentBeat.setBackgroundColor(getResources().getColor(
-//                        R.color.color_emphasis_high));
-//                break;
-//            case 1:
-//                tvCurrentBeat.setBackgroundColor(getResources().getColor(
-//                        R.color.color_emphasis_low));
-//                break;
-//            case 2:
-//                tvCurrentBeat.setBackgroundColor(getResources().getColor(
-//                        R.color.color_emphasis_none));
-//                break;
-//        }
-//        tvCurrentBeat.setText("" + currentBeat);
-//    }
-//
+    private void displayTempo(int iDelta) {
+        newTempo = newTempo + iDelta;
+        newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
+        newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
+        tvTempo.setText("" + newTempo);
+    }
 }
