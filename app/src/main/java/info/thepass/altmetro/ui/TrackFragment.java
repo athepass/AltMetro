@@ -440,7 +440,7 @@ public class TrackFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Repeat repeat = track.repeats.get(indexDelRepeat);
         String sPat = trackData.pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
-        String pInfo = repeat.display(h, index, sPat);
+        String pInfo = repeat.display(h, index, sPat, true);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
                 .setPositiveButton(h.getString(R.string.yes),

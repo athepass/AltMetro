@@ -68,11 +68,11 @@ public class Repeat {
         return s;
     }
 
-    public String display(HelperMetro h, int index, String patDisplay) {
+    public String display(HelperMetro h, int index, String patDisplay, boolean showTempo) {
         String s = "";
         s += (index >= 0) ? "r" + (index + 1) + " " : "";
-        s += h.getString(R.string.label_tempo) + " " + tempo;
-        s += ", " + ((count == 0) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeats, String.valueOf(count)));
+        s += (showTempo) ? h.getString(R.string.label_tempo) + ",  " + tempo : "";
+        s += ((count == 0) ? h.getString(R.string.label_noend): h.getString1(R.string.label_repeats, String.valueOf(count)));
         s += ", " + patDisplay;
         return s;
     }

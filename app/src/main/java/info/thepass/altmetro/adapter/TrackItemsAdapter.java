@@ -2,6 +2,7 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,13 +72,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         int vType;
         if (track.multi) {
             if (position < (track.repeats.size())) {
-                vType= ROWTYPEREPEAT;
+                vType = ROWTYPEREPEAT;
             } else if (position == (track.repeats.size())) {
-                vType= ROWTYPEREPEATADD;
+                vType = ROWTYPEREPEATADD;
             } else if (position < (track.repeats.size() + 1 + trackData.pats.size())) {
                 vType = ROWTYPEPAT;
             } else if (position == (track.repeats.size() + 1 + trackData.pats.size())) {
-                vType =  ROWTYPEPATADD;
+                vType = ROWTYPEPATADD;
             } else {
                 String msg = "invalid multi item type at position " + position;
                 msg += " rep:" + track.repeats.size();
@@ -145,6 +146,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     }
 
     private View getViewRepeat(final int position, View convertView, ViewGroup parent) {
+        Log.d(TAG, "getViewRepeat " + position);
         View rowView = convertView;
         ViewHolderRepeat holder;
         if (rowView == null) {
@@ -157,108 +159,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.rijToolbar = (LinearLayout) rowView.findViewById(R.id.ll_track_repeat_toolbar);
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_repeat_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_repeat_info);
-            holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_overflow);
-            holder.play = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_play);
-            holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_edit);
-            holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_delete);
-            holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_add);
-            holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_up);
-            holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_down);
-
-            if (!track.multi) {
-            }
-
-            holder.overflow.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    if (track.multi) {
-                        int position = getViewPosition(v);
-                        if (position > 0) {
-                            positionToolbar = (positionToolbar == position) ? -1 : position;
-                        } else {
-                            positionToolbar = position;
-                        }
-                        notifyDataSetChanged();
-                    } else {
-                        frag.editRepeat(position, false);
-                    }
-                }
-            });
-            holder.play.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.doPlay(position);
-                }
-            });
-            holder.edit.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.editRepeat(position, false);
-                }
-            });
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.confirmDeleteRepeat(position);
-                }
-            });
-            holder.add.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.editRepeat(position, true);
-                }
-            });
-            holder.up.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    int index = track.getItemRepeatPosition(position);
-                    if (index >= 1) {
-                        positionToolbar--;
-                        selectedRepeat--;
-                        Repeat repeat0 = track.repeats.get(index - 1);
-                        Repeat repeat1 = track.repeats.get(index);
-                        track.repeats.set(index - 1, repeat1);
-                        track.repeats.set(index, repeat0);
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-            holder.down.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    int index = track.getItemRepeatPosition(position);
-                    if (index < track.repeats.size() - 1) {
-                        positionToolbar++;
-                        selectedRepeat++;
-                        Repeat repeat0 = track.repeats.get(index);
-                        Repeat repeat1 = track.repeats.get(index + 1);
-                        track.repeats.set(index, repeat1);
-                        track.repeats.set(index + 1, repeat0);
-                    }
-                    notifyDataSetChanged();
-                }
-            });
+            initButtonsRepeat(rowView, holder);
 
             holder.evRepeatList = new EmphasisViewManager("listrepeat", Keys.EVMLIST, rowView, h);
             holder.evRepeatList.useLow = true;
@@ -273,7 +174,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         Repeat repeat = track.repeats.get(index);
         Pat pat = trackData.pats.get(repeat.indexPattern);
         String patDisplay = pat.display(h, repeat.indexPattern, false);
-        String s = repeat.display(h, index, patDisplay);
+        String s = repeat.display(h, index, patDisplay, index != selectedRepeat);
         holder.info.setText(s);
         holder.evRepeatList.setPattern(pat);
 
@@ -288,6 +189,109 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.rijToolbar.setVisibility(View.GONE);
         }
         return rowView;
+    }
+
+    private void initButtonsRepeat(View rowView, ViewHolderRepeat holder) {
+        holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_overflow);
+        holder.play = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_play);
+        holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_edit);
+        holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_delete);
+        holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_add);
+        holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_up);
+        holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_down);
+
+        holder.overflow.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                if (track.multi) {
+                    if (position > 0) {
+                        positionToolbar = (positionToolbar == position) ? -1 : position;
+                    } else {
+                        positionToolbar = position;
+                    }
+                    notifyDataSetChanged();
+                } else {
+                    frag.editRepeat(position, false);
+                }
+            }
+        });
+        holder.play.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.doPlay(position);
+            }
+        });
+        holder.edit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.editRepeat(position, false);
+            }
+        });
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.confirmDeleteRepeat(position);
+            }
+        });
+        holder.add.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.editRepeat(position, true);
+            }
+        });
+        holder.up.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                int index = track.getItemRepeatPosition(position);
+                if (index >= 1) {
+                    positionToolbar--;
+                    selectedRepeat--;
+                    Repeat repeat0 = track.repeats.get(index - 1);
+                    Repeat repeat1 = track.repeats.get(index);
+                    track.repeats.set(index - 1, repeat1);
+                    track.repeats.set(index, repeat0);
+                }
+                notifyDataSetChanged();
+            }
+        });
+        holder.down.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                int index = track.getItemRepeatPosition(position);
+                if (index < track.repeats.size() - 1) {
+                    positionToolbar++;
+                    selectedRepeat++;
+                    Repeat repeat0 = track.repeats.get(index);
+                    Repeat repeat1 = track.repeats.get(index + 1);
+                    track.repeats.set(index, repeat1);
+                    track.repeats.set(index + 1, repeat0);
+                }
+                notifyDataSetChanged();
+            }
+        });
+
     }
 
     private View getViewRepeatAdd(View convertView, ViewGroup parent) {
@@ -331,121 +335,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_pat_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_pat_info);
 
-            holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_pat_overflow);
-            holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_pat_edit);
-            holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_pat_delete);
-            holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_pat_add);
-            holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_pat_up);
-            holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_pat_down);
-
-            holder.info.setClickable(true);
-            holder.rijBody.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    h.showToast("body click");
-                    int position = getViewPosition(v);
-                    if (position > 0) {
-                        positionToolbar = (positionToolbar == position) ? -1 : position;
-                    } else {
-                        positionToolbar = position;
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-
-            holder.rijBody.setClickable(true);
-            holder.rijBody.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    h.showToast("body click");
-                    int position = getViewPosition(v);
-                    if (position > 0) {
-                        positionToolbar = (positionToolbar == position) ? -1 : position;
-                    } else {
-                        positionToolbar = position;
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-
-            holder.overflow.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    if (position > 0) {
-                        positionToolbar = (positionToolbar == position) ? -1 : position;
-                    } else {
-                        positionToolbar = position;
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-            holder.edit.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.editPattern(position, false);
-                }
-            });
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.confirmDeletePattern(position);
-                }
-            });
-            holder.add.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    positionToolbar = -1;
-                    notifyDataSetChanged();
-                    frag.editPattern(position, true);
-                }
-            });
-            holder.up.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    int index = track.getItemPatPosition(position);
-                    if (index >= 1) {
-                        positionToolbar--;
-                        Pat pat0 = trackData.pats.get(index - 1);
-                        Pat pat1 = trackData.pats.get(index);
-                        trackData.pats.set(index - 1, pat1);
-                        trackData.pats.set(index, pat0);
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-            holder.down.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int position = getViewPosition(v);
-                    int index = track.getItemPatPosition(position);
-                    if (index < trackData.pats.size() - 1) {
-                        positionToolbar++;
-                        Pat pat0 = trackData.pats.get(index);
-                        Pat pat1 = trackData.pats.get(index + 1);
-                        trackData.pats.set(index, pat1);
-                        trackData.pats.set(index + 1, pat0);
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-
+            initButtonsPat(rowView, holder);
             holder.evPatList = new EmphasisViewManager("listpat", Keys.EVMLIST, rowView, h);
             holder.evPatList.useLow = true;
 
@@ -465,6 +355,124 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         holder.header.setTextColor(Color.BLACK);
 
         return rowView;
+    }
+
+    private void initButtonsPat(View rowView, ViewHolderPat holder) {
+        holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_pat_overflow);
+        holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_pat_edit);
+        holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_pat_delete);
+        holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_pat_add);
+        holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_pat_up);
+        holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_pat_down);
+
+        holder.info.setClickable(true);
+        holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                h.showToast("body click");
+                int position = getViewPosition(v);
+                if (position > 0) {
+                    positionToolbar = (positionToolbar == position) ? -1 : position;
+                } else {
+                    positionToolbar = position;
+                }
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.rijBody.setClickable(true);
+        holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                h.showToast("body click");
+                int position = getViewPosition(v);
+                if (position > 0) {
+                    positionToolbar = (positionToolbar == position) ? -1 : position;
+                } else {
+                    positionToolbar = position;
+                }
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.overflow.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                if (position > 0) {
+                    positionToolbar = (positionToolbar == position) ? -1 : position;
+                } else {
+                    positionToolbar = position;
+                }
+                notifyDataSetChanged();
+            }
+        });
+        holder.edit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.editPattern(position, false);
+            }
+        });
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.confirmDeletePattern(position);
+            }
+        });
+        holder.add.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                positionToolbar = -1;
+                notifyDataSetChanged();
+                frag.editPattern(position, true);
+            }
+        });
+        holder.up.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                int index = track.getItemPatPosition(position);
+                if (index >= 1) {
+                    positionToolbar--;
+                    Pat pat0 = trackData.pats.get(index - 1);
+                    Pat pat1 = trackData.pats.get(index);
+                    trackData.pats.set(index - 1, pat1);
+                    trackData.pats.set(index, pat0);
+                }
+                notifyDataSetChanged();
+            }
+        });
+        holder.down.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = getViewPosition(v);
+                int index = track.getItemPatPosition(position);
+                if (index < trackData.pats.size() - 1) {
+                    positionToolbar++;
+                    Pat pat0 = trackData.pats.get(index);
+                    Pat pat1 = trackData.pats.get(index + 1);
+                    trackData.pats.set(index, pat1);
+                    trackData.pats.set(index + 1, pat0);
+                }
+                notifyDataSetChanged();
+            }
+        });
+
     }
 
     private View getViewPatAdd(View convertView, ViewGroup parent) {
