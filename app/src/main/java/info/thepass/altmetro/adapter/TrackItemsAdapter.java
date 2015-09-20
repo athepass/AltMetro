@@ -332,7 +332,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_pat_info);
 
             holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_pat_overflow);
-            holder.play = (ImageButton) rowView.findViewById(R.id.imb_track_pat_play);
             holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_pat_edit);
             holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_pat_delete);
             holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_pat_add);
@@ -524,7 +523,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         public TextView info;
         public EmphasisViewManager evPatList;
         public ImageButton overflow;
-        public ImageButton play;
         public ImageButton edit;
         public ImageButton delete;
         public ImageButton add;
