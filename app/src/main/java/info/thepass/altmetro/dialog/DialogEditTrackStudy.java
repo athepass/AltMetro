@@ -9,15 +9,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.ToggleButton;
 
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.data.Repeat;
+import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -25,12 +26,14 @@ public class DialogEditTrackStudy extends DialogFragment {
     public final static String TAG = "DialogEditTrakStudy";
     public HelperMetro h;
     private String oldTitle;
-    private Track track;
-    private EditText etNummer;
-    private EditText etTitel;
-    private RadioGroup rgMulti;
-    private RadioButton rbSingle;
-    private RadioButton rbMulti;
+    private Study study;
+    private int tempo;
+    private NumberPicker npFrom;
+    private NumberPicker npTo;
+    private NumberPicker npIncrement;
+    private NumberPicker npRounds;
+    private ToggleButton tbUsed;
+    private Button btnInit;
 
     public DialogEditTrackStudy() {
         // Empty constructor required for DialogFragment
@@ -41,62 +44,107 @@ public class DialogEditTrackStudy extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edittrack_info, null);
+        final View dialogView = inflater.inflate(R.layout.dialog_edittrack_study, null);
 
-        initData();
         initView(dialogView);
+        initData(true);
 
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
-                        // ophalen waardes uit view
-                        track.titel = etTitel.getText().toString();
-                        track.nummer = Integer.parseInt(etNummer.getText().toString());
-                        track.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
-
-                        // igv single verwijzen naar 1e pattern en 1e oorder
-                        // 1e order moet oneindig doorgaan: count <=0
-                        if (!track.multi) {
-                            track.repeatSelected = 0;
-                            track.repeats.get(0).count = 0;
-                        }
+                        study.tempoFrom = npFrom.getValue();
+                        study.tempoTo = npTo.getValue();
+                        study.tempoIncrement = npIncrement.getValue();
+                        study.rounds = npRounds.getValue();
+                        study.used = tbUsed.isChecked();
 
                         Intent intent = new Intent();
-                        intent.putExtra(TrackData.KEYTRACKS, track.toJson().toString());
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
+                        intent.putExtra(Track.KEYSTUDY, study.toJson().toString());
+                        getTargetFragment().onActivityResult(Keys.TARGETEDITSTUDY, Activity.RESULT_OK, intent);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DialogEditTrackStudy.this.getDialog().cancel();
+//                        DialogEditTrackStudy.this.getDialog().cancel();
                     }
                 });
 
+        String dlgTitle = h.getString1(R.string.label_editstudy, "" + tempo);
+        builder.setTitle(dlgTitle);
 
         return builder.create();
     }
 
-    private void initData() {
-        Bundle b = getArguments();
-        try {
-            track = new Track(h);
-            track.fromJson(new JSONObject(b.getString(TrackData.KEYTRACKS)), h);
-            etNummer.setText(String.valueOf(track.nummer));
-            etTitel.setText(track.titel);
-            rbSingle.setChecked(!track.multi);
-            rbMulti.setChecked(track.multi);
-        } catch (Exception e) {
-            h.logE(TAG, "from Json", e);
+    private void initData(boolean fromArgs) {
+        if (fromArgs) {
+            Bundle b = getArguments();
+            tempo = b.getInt(Repeat.KEYTEMPO, -1);
+            String sStudy = b.getString(Track.KEYSTUDY);
+            try {
+                study = new Study();
+                study.fromJson(new JSONObject(sStudy));
+            } catch (Exception e) {
+                h.logE(TAG, "from Json", e);
+            }
         }
+        if (!fromArgs || (study.rounds <= 0)) {
+            study.used = true;
+            study.tempoFrom = Math.round(tempo * 0.8f);
+            study.tempoTo = Math.round(tempo * 1.2f);
+            study.tempoIncrement = 5;
+            study.rounds = 4;
+        }
+
+        npFrom.setValue(study.tempoFrom);
+        npTo.setValue(study.tempoTo);
+        npIncrement.setValue(study.tempoIncrement);
+        npRounds.setValue(study.rounds);
+        tbUsed.setChecked(study.used);
     }
 
     private void initView(View dialogView) {
-        etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
-        etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
-        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
-        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
-        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
+        NumberPicker.OnValueChangeListener npChange = new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                tbUsed.setChecked(true);
+            }
+        };
+
+        tbUsed = (ToggleButton) dialogView.findViewById(R.id.tbDlgStudy);
+
+        npFrom = (NumberPicker) dialogView.findViewById(R.id.npDlgTempoFrom);
+        npFrom.setMinValue(Keys.MINTEMPO);
+        npFrom.setMaxValue(Keys.MAXTEMPOMAX);
+        npFrom.setWrapSelectorWheel(false);
+        npFrom.setOnValueChangedListener(npChange);
+
+        npTo = (NumberPicker) dialogView.findViewById(R.id.npDlgTempoTo);
+        npTo.setMinValue(Keys.MINTEMPO);
+        npTo.setMaxValue(Keys.MAXTEMPOMAX);
+        npTo.setWrapSelectorWheel(false);
+        npTo.setOnValueChangedListener(npChange);
+
+        npIncrement = (NumberPicker) dialogView
+                .findViewById(R.id.npDlgTempoIncrement);
+        npIncrement.setMinValue(1);
+        npIncrement.setMaxValue(50);
+        npIncrement.setWrapSelectorWheel(false);
+        npIncrement.setOnValueChangedListener(npChange);
+
+        npRounds = (NumberPicker) dialogView.findViewById(R.id.npDlgTempoCount);
+        npRounds.setMinValue(1);
+        npRounds.setMaxValue(50);
+        npRounds.setWrapSelectorWheel(false);
+        npRounds.setOnValueChangedListener(npChange);
+
+        btnInit = (Button) dialogView.findViewById(R.id.btnDlgInit);
+        btnInit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                initData(false);
+            }
+        });
+
+
     }
 }

@@ -35,6 +35,7 @@ import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.dialog.DialogEditTrackPattern;
 import info.thepass.altmetro.dialog.DialogEditTrackRepeat;
+import info.thepass.altmetro.dialog.DialogEditTrackStudy;
 import info.thepass.altmetro.dialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -164,14 +165,14 @@ public class TrackFragment extends Fragment {
                         itemsAdapter.notifyDataSetChanged();
                         break;
                     case TrackItemsAdapter.ROWTYPEREPEATADD:
-                        editRepeat(0, true);
+                        editRepeat(track.repeats.size(), true);
                         break;
                     case TrackItemsAdapter.ROWTYPEPAT:
                         itemsAdapter.selectedPat = track.getItemPatPosition(position);
                         itemsAdapter.notifyDataSetChanged();
                         break;
                     case TrackItemsAdapter.ROWTYPEPATADD:
-                        editPattern(0, true);
+                        editPattern(trackData.pats.size(), true);
                         break;
                     default:
                         throw new RuntimeException("listview click at position " + position);
@@ -568,23 +569,22 @@ public class TrackFragment extends Fragment {
     }
 
     public void editSpeedStudy() {
-//        DialogEditTrackStudy dlgEdit = new DialogEditTrackStudy();
-//        dlgEdit.h = h;
-//        dlgEdit.setTargetFragment(this, Keys.TARGETEDITSTUDY);
-//
-//        Bundle b = new Bundle();
-//        Study study = track.study;
-//        b.putString(TrackData.KEYPATS, study.toJson().toString());
-//
-//        dlgEdit.setArguments(b);
-//        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
-        track.study.used = !track.study.used;
-        updateStudy(null);
+        DialogEditTrackStudy dlgEdit = new DialogEditTrackStudy();
+        dlgEdit.h = h;
+        dlgEdit.setTargetFragment(this, Keys.TARGETEDITSTUDY);
+
+        Bundle b = new Bundle();
+        Study study = track.study;
+        b.putString(Track.KEYSTUDY, study.toJson().toString());
+        b.putInt(Repeat.KEYTEMPO,track.repeats.get(track.repeatSelected).tempo);
+
+        dlgEdit.setArguments(b);
+        dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
     }
 
     public void updateStudy(Intent intent) {
         if (intent != null) {
-            String sStudy = intent.getStringExtra(Track.KEYREPEATS);
+            String sStudy = intent.getStringExtra(Track.KEYSTUDY);
             try {
                 Study newStudy = new Study();
                 newStudy.fromJson(new JSONObject(sStudy));
@@ -596,9 +596,7 @@ public class TrackFragment extends Fragment {
         }
         boolean showStudy = h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
         tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
-        tv_study.setText((track.study.used)
-                ? h.getString(R.string.label_study_on)
-                : h.getString(R.string.label_study_off));
+        tv_study.setText(track.study.display(h));
 
         boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
         if (!showPractice) {

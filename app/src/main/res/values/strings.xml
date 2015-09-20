@@ -22,6 +22,8 @@
     <string name="label_editrepeat">Edit repeat</string>
     <string name="label_addrepeat">Add repeat</string>
     <string name="label_edittap">Tap tempo</string>
+    <string name="label_editstudy" formatted="false">Edit study, tempo=%s</string>
+    <string name="label_initStudy" >init</string>
     <string name="label_sub">Subdivision</string>
     <string name="label_sub2">Subdiv</string>
     <string name="label_multi">Multiple tempi</string>
@@ -35,6 +37,10 @@
     <string name="label_study_on">Study</string>
     <string name="label_tap">Tap</string>
     <string name="label_tempo">Tempo</string>
+    <string name="label_tempo_from">From</string>
+    <string name="label_tempo_to">To</string>
+    <string name="label_tempo_increment">Step</string>
+    <string name="label_tempo_rondes">Rounds</string>
     <string name="label_title">Title</string>
     <string name="label_timesig">time sign</string>
     <string name="label_timesigsep">/</string>

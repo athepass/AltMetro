@@ -5,6 +5,9 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import info.thepass.altmetro.R;
+import info.thepass.altmetro.tools.HelperMetro;
+
 public class Study {
     private final static String TAG = "TrakStudy";
     private final static String KEYTEMPOFROM = "STtpf";
@@ -22,8 +25,8 @@ public class Study {
 
     public Study() {
         used = false;
-        tempoIncrement = 5;
-        rounds = 4;
+        tempoIncrement = -1;
+        rounds = -1;
         practice = 100;
     }
 
@@ -86,6 +89,20 @@ public class Study {
     public String toString() {
         String s = toStringKort() + ((used) ? "used" : "not used");
         return s;
+    }
+
+    public String display(HelperMetro h) {
+        if (!used) {
+            return h.getString(R.string.label_study_off);
+        } else {
+            String s = h.getString(R.string.label_study_on) +": ";
+            s += h.getString(R.string.label_tempo_from) + " " + tempoFrom + " ";
+            s += h.getString(R.string.label_tempo_to) + " " + tempoTo + " ";
+            s += h.getString(R.string.label_tempo_increment) + " " + tempoIncrement + " ";
+            s += h.getString(R.string.label_tempo_rondes) + " " + rounds;
+            s = s.toLowerCase();
+            return s;
+        }
     }
 
     public String toStringKort() {

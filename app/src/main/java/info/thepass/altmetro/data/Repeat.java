@@ -10,10 +10,10 @@ import info.thepass.altmetro.tools.HelperMetro;
 
 public class Repeat {
     public final static String TAG = "TrakRepeat";
-    private final static String KEYINDEX = "RPidx";
-    private final static String KEYHASH = "RPhpat";
-    private final static String KEYTEMPO = "RPtmp";
-    private final static String KEYCOUNT = "RPcnt";
+    public final static String KEYINDEX = "RPidx";
+    public final static String KEYHASH = "RPhpat";
+    public final static String KEYTEMPO = "RPtmp";
+    public final static String KEYCOUNT = "RPcnt";
     public int indexPattern;
     public int hashPattern;
     public int tempo;

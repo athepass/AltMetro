@@ -196,18 +196,21 @@
 
         <TextView
             android:id="@+id/tv_track_study_tap"
-            android:layout_width="wrap_content"
             style="@style/AppTheme.ListviewButton"
-            android:text="@string/label_tap"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"/>
+            android:layout_width="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/label_tap"/>
 
         <TextView
             android:id="@+id/tv_track_study_study"
-            android:layout_width="match_parent"
             style="@style/AppTheme.ListviewButton"
+            android:layout_width="match_parent"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
             android:text="@string/label_study_off"
-            android:gravity="left"/>
+            android:textSize="15dp"
+            android:gravity="center"/>
 
     </LinearLayout>
 
@@ -215,9 +218,9 @@
         android:id="@+id/rg_track_practice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
         android:checkedButton="@+id/rb_track_prac100"
-        android:layout_gravity="center_horizontal">
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/rb_track_prac50"

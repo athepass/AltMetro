@@ -14,6 +14,7 @@ public class Keys {
 
     public final static int SUBDEFAULT = 0;
     public final static int MINTEMPO = 30;
+    public final static int MAXTEMPOMAX = 400;
     public final static int MAXEMPHASIS = 20;
     public final static int HALFEMPHASIS = 10;
 
