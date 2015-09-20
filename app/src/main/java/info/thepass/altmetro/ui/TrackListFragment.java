@@ -41,12 +41,6 @@ public class TrackListFragment extends ListFragment {
     private View mainView;
     private int indexDel;
 
-    private ImageButton btn_play;
-    private ImageButton btn_edit;
-    private ImageButton btn_delete;
-    private ImageButton btn_add;
-    private ImageButton btn_up;
-    private ImageButton btn_down;
     private ImageButton btn_addadd;
 
     @Override
@@ -101,9 +95,6 @@ public class TrackListFragment extends ListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_tracklist_play:
-                getFragmentManager().popBackStack();
-                return true;
             case R.id.action_tracklist_settings:
                 doPrefs();
                 return true;
@@ -135,83 +126,13 @@ public class TrackListFragment extends ListFragment {
         trackListAdapter = new TrackListAdapter(getActivity(),
                 R.layout.fragment_tracklist_row, trackData, h);
         trackListAdapter.frag = this;
+        trackListAdapter.lv = getListView();
         setListAdapter(this.trackListAdapter);
         setPosition(trackData.trackSelected, false);
     }
 
     private void initButtons() {
-        btn_play = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_play);
-        btn_edit = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_edit);
-        btn_delete = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_delete);
-        btn_add = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_add);
-        btn_up = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_up);
-        btn_down = (ImageButton) llAddItem.findViewById(R.id.imb_tracklist_down);
         btn_addadd = (ImageButton) llAddItem.findViewById(R.id.imb_tracklistadd_add);
-
-        btn_play.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //             int position = getListView().getSelectedItemPosition();
-                getFragmentManager().popBackStack();
-            }
-        });
-        btn_edit.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //             int position = getListView().getSelectedItemPosition();
-                editTrackList(trackListAdapter.selectedItem, false);
-                trackListAdapter.notifyDataSetChanged();
-            }
-        });
-        btn_delete.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                confirmDeleteItem(trackListAdapter.selectedItem);
-            }
-        });
-        btn_add.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                editTrackList(trackListAdapter.selectedItem, true);
-            }
-        });
-        btn_up.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int index = trackListAdapter.selectedItem;
-                Log.d(TAG, "up" + index);
-                if (index >= 1) {
-                    setPosition(trackListAdapter.selectedItem - 1, false);
-                    Track track0 = trackData.tracks.get(index - 1);
-                    Track track1 = trackData.tracks.get(index);
-                    trackData.tracks.set(index - 1, track1);
-                    trackData.tracks.set(index, track0);
-                }
-                trackListAdapter.notifyDataSetChanged();
-            }
-        });
-        btn_down.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int index = trackListAdapter.selectedItem;
-                Log.d(TAG, "down" + index);
-                if (index < trackData.tracks.size() - 1) {
-                    setPosition(trackListAdapter.selectedItem + 1, false);
-                    Track track0 = trackData.tracks.get(index);
-                    Track track1 = trackData.tracks.get(index + 1);
-                    trackData.tracks.set(index, track1);
-                    trackData.tracks.set(index + 1, track0);
-                }
-                trackListAdapter.notifyDataSetChanged();
-            }
-        });
-
         btn_addadd.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -236,8 +157,9 @@ public class TrackListFragment extends ListFragment {
 
     /***************************************************************************************/
     private void setPosition(int position, boolean updateData) {
-        // werk de user interface bij
+        // werk d1e user interface bij
         trackListAdapter.selectedItem = position;
+        trackListAdapter.positionToolbar = position;
         getListView().setItemChecked(position, true);
         trackListAdapter.notifyDataSetChanged();
         if (updateData) {
@@ -263,13 +185,13 @@ public class TrackListFragment extends ListFragment {
     }
 
     /***************************************************************************************/
-    public void editTrackListItem(View v) {
-        int position = getListView().getPositionForView(v);
-        setPosition(position, false);
-        editTrackList(position, false);
-    }
-
-    private void editTrackList(int position, boolean add) {
+//    public void editTrackListItem(View v) {
+//        int position = getListView().getPositionForView(v);
+//        setPosition(position, false);
+//        editTrackList(position, false);
+//    }
+//
+    public void editTrackList(int position, boolean add) {
 
         DialogEditTrackInfo dlgEdit = new DialogEditTrackInfo();
         dlgEdit.h = h;
@@ -315,7 +237,7 @@ public class TrackListFragment extends ListFragment {
     }
 
     /***************************************************************************************/
-    private void confirmDeleteItem(int index) {
+    public void confirmDeleteItem(int index) {
         if (trackData.tracks.size() == 1) {
             return;
         }
