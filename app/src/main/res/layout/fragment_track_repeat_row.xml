@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_overflow"/>
+            android:src="@mipmap/ic_action_overflow2"/>
 
         <LinearLayout
             android:id="@+id/ll_track_repeat_body"
@@ -142,42 +142,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_play"/>
+            android:src="@mipmap/ic_action_play2"/>
 
         <ImageButton
             android:id="@+id/imb_track_repeat_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_edit"/>
+            android:src="@mipmap/ic_action_edit2"/>
 
         <ImageButton
             android:id="@+id/imb_track_repeat_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_remove"/>
+            android:src="@mipmap/ic_action_remove2"/>
 
         <ImageButton
             android:id="@+id/imb_track_repeat_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/ic_action_new"/>
+            android:src="@mipmap/ic_action_new2"/>
 
         <ImageButton
             android:id="@+id/imb_track_repeat_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/icon_up"/>
+            android:src="@mipmap/icon_up2"/>
 
         <ImageButton
             android:id="@+id/imb_track_repeat_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:src="@mipmap/icon_down"/>
+            android:src="@mipmap/icon_down2"/>
     </LinearLayout>
 
 </LinearLayout>

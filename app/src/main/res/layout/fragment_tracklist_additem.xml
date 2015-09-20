@@ -15,44 +15,44 @@
             android:id="@+id/imb_tracklist_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_action_play"/>
+            android:src="@mipmap/ic_action_play2"/>
 
         <ImageButton
             android:id="@+id/imb_tracklist_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_action_edit"/>
+            android:src="@mipmap/ic_action_edit2"/>
 
         <ImageButton
             android:id="@+id/imb_tracklist_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_action_remove"/>
+            android:src="@mipmap/ic_action_remove2"/>
 
         <ImageButton
             android:id="@+id/imb_tracklist_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_action_new"/>
+            android:src="@mipmap/ic_action_new2"/>
 
         <ImageButton
             android:id="@+id/imb_tracklist_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/icon_up"/>
+            android:src="@mipmap/icon_up2"/>
 
         <ImageButton
             android:id="@+id/imb_tracklist_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/icon_down"/>
+            android:src="@mipmap/icon_down2"/>
     </LinearLayout>
 
     <ImageButton
         android:id="@+id/imb_tracklistadd_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_action_new"/>
+        android:src="@mipmap/ic_action_new2"/>
 
 
 </LinearLayout>

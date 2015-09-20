@@ -52,8 +52,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         lv = lv2;
         frag = frag2;
         lvSelColor = h.getColor(R.color.color_listitem_selected_background);
-        resOverflow = h.context.getResources().getIdentifier("ic_action_overflow", "mipmap", h.context.getPackageName());
-        resEdit = h.context.getResources().getIdentifier("ic_action_edit", "mipmap", h.context.getPackageName());
+        resOverflow = h.context.getResources().getIdentifier("ic_action_overflow2", "mipmap", h.context.getPackageName());
+        resEdit = h.context.getResources().getIdentifier("ic_action_edit2", "mipmap", h.context.getPackageName());
     }
 
     //    @Override
