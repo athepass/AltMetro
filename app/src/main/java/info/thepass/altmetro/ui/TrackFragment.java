@@ -559,7 +559,7 @@ public class TrackFragment extends Fragment {
         indexDelPattern = index;
         itemsAdapter.selectedPat = indexDelPattern;
         Pat pat = trackData.pats.get(indexDelPattern);
-        // verwijderen niet mogelijk indien nog in gebruik.
+        // verwijderen niet mogelijk indien nog in gebruik.!!
         if (pat.checkInUse(trackData, h)) {
             return;
         }
