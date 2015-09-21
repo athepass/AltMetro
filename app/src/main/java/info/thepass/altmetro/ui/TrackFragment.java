@@ -26,6 +26,10 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import info.thepass.altmetro.Audio.BeatManager;
+import info.thepass.altmetro.Audio.SoundFragment;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackItemsAdapter;
 import info.thepass.altmetro.data.Pat;
@@ -43,6 +47,20 @@ import info.thepass.altmetro.tools.Keys;
 
 public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
+    private HelperMetro h;
+
+    public ListView lvItems;
+    public TrackItemsAdapter itemsAdapter;
+    private EmphasisViewManager evPlayer;
+
+    public TrackData trackData;
+    public Track track;
+    private int indexDelRepeat;
+    private int indexDelPattern;
+
+    private View layout;
+
+    private SoundFragment soundFragment;
     // views Study
     public TextView tvTap;
     public TextView tv_study;
@@ -53,15 +71,6 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
-    private EmphasisViewManager evPlayer;
-    private HelperMetro h;
-    private TrackData trackData;
-    private Track track;
-    private ListView lvItems;
-    private TrackItemsAdapter itemsAdapter;
-    private int indexDelRepeat;
-    private int indexDelPattern;
-    private View layout;
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -96,7 +105,7 @@ public class TrackFragment extends Fragment {
         initTempo();
         initIncDec();
         initStudy();
-        updateStudy(null);
+        initSoundFragment();
         setData();
     }
 
@@ -136,7 +145,7 @@ public class TrackFragment extends Fragment {
                     updateRepeat(intent);
                     return;
                 case Keys.TARGETEDITSTUDY:
-                    updateStudy(intent);
+                    setStudy(intent);
                     return;
                 case Keys.TARGETPREF:
                     itemsAdapter.notifyDataSetChanged();
@@ -153,10 +162,10 @@ public class TrackFragment extends Fragment {
         track = trackData.tracks.get(trackData.trackSelected);
     }
 
-    private void initListView() {
+    public void initListView() {
 
-        lvItems = (ListView) getActivity().findViewById(R.id.track_listView);
-        itemsAdapter = new TrackItemsAdapter(getActivity(), R.layout.fragment_tracklist_row, lvItems,
+        lvItems = (ListView) h.getActivity().findViewById(R.id.track_listView);
+        itemsAdapter = new TrackItemsAdapter(h.getActivity(), R.layout.fragment_tracklist_row, lvItems,
                 track, trackData, h, this);
         lvItems.setAdapter(itemsAdapter);
 
@@ -342,6 +351,18 @@ public class TrackFragment extends Fragment {
         evPlayer.useLow = true;
     }
 
+    private void initSoundFragment() {
+        soundFragment = (SoundFragment) getFragmentManager()
+                .findFragmentByTag(SoundFragment.TAG);
+        if (soundFragment == null) {
+            soundFragment = new SoundFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.add(soundFragment, SoundFragment.TAG);
+            fragmentTransaction.commit();
+        }
+    }
+
     private void setData() {
         track = trackData.tracks.get(trackData.trackSelected);
 
@@ -353,6 +374,7 @@ public class TrackFragment extends Fragment {
         tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
 
         setRepeat(track.repeatSelected);
+        setStudy(null);
     }
 
     private void doPrefs() {
@@ -377,7 +399,27 @@ public class TrackFragment extends Fragment {
     }
 
     public void doPlay(int position) {
-        h.showToast("PLAY under development");
+        BeatManager bm = new BeatManager(h);
+        bm.build(track, trackData.pats);
+        ArrayList<String> rows = bm.display();
+
+        ArrayBrowserListFragment beatFragment = new ArrayBrowserListFragment();
+
+        Bundle b = new Bundle();
+        b.putString(ArrayBrowserListFragment.TITEL,"beatManager lijst");
+        b.putStringArrayList(ArrayBrowserListFragment.ROW, rows);
+        String s = "====== Dump beats =====";
+        for (int i=0;i<rows.size();i++) {
+              s += "\n" + rows.get(i);
+        }
+        Log.d(TAG,s);
+//        beatFragment.setArguments(b);
+//
+//        FragmentTransaction transaction = getFragmentManager()
+//                .beginTransaction();
+//        transaction.replace(R.id.fragment_container, beatFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 
     public void editRepeat(int position, boolean add) {
@@ -588,7 +630,7 @@ public class TrackFragment extends Fragment {
         dlgEdit.show(getFragmentManager(), DialogEditTrackStudy.TAG);
     }
 
-    public void updateStudy(Intent intent) {
+    public void setStudy(Intent intent) {
         if (intent != null) {
             String sStudy = intent.getStringExtra(Track.KEYSTUDY);
             try {
@@ -596,11 +638,12 @@ public class TrackFragment extends Fragment {
                 newStudy.fromJson(new JSONObject(sStudy));
                 track.study = newStudy;
             } catch (Exception e) {
-                throw new RuntimeException("updateStudy json exception");
+                throw new RuntimeException("setStudy json exception");
             }
-            trackData.saveData("updateStudy", false);
+            trackData.saveData("setStudy", false);
         }
-        boolean showStudy = h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+        // study textview onzichtbaar i.g.v. single. Gebruik anders preference
+        boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
         tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         tv_study.setText(track.study.display(h));
 

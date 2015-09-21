@@ -202,57 +202,57 @@
             android:paddingRight="5dp"
             android:text="@string/label_tap"/>
 
-        <TextView
-            android:id="@+id/tv_track_study_study"
-            style="@style/AppTheme.ListviewButton"
-            android:layout_width="match_parent"
-            android:ellipsize="none"
-            android:scrollHorizontally="false"
-            android:text="@string/label_study_off"
-            android:textSize="15dp"
-            android:gravity="center"/>
+        <RadioGroup
+            android:id="@+id/rg_track_practice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:checkedButton="@+id/rb_track_prac100"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_track_prac50"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac50"/>
+
+            <RadioButton
+                android:id="@+id/rb_track_prac70"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac70"/>
+
+            <RadioButton
+                android:id="@+id/rb_track_prac80"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac80"/>
+
+            <RadioButton
+                android:id="@+id/rb_track_prac90"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac90"/>
+
+            <RadioButton
+                android:id="@+id/rb_track_prac95"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac95"/>
+
+            <RadioButton
+                android:id="@+id/rb_track_prac100"
+                style="@style/AppTheme.RadioButtonPractice"
+                android:text="@string/label_prac100"/>
+
+        </RadioGroup>
 
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/rg_track_practice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:checkedButton="@+id/rb_track_prac100"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rb_track_prac50"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac50"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac70"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac70"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac80"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac80"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac90"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac90"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac95"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac95"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac100"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac100"/>
-
-    </RadioGroup>
+    <TextView
+        android:id="@+id/tv_track_study_study"
+        style="@style/AppTheme.ListviewButton"
+        android:layout_width="match_parent"
+        android:ellipsize="none"
+        android:scrollHorizontally="false"
+        android:text="@string/label_study_off"
+        android:textSize="15dp"
+        android:gravity="center"/>
 
     <ListView
         android:id="@+id/track_listView"

@@ -142,7 +142,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
                 pat.fromJson(patsArray.getJSONObject(i));
                 pats.add(pat);
             }
-            Log.d(TAG, "init pats=" + pats.size());
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }

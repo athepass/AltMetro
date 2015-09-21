@@ -25,9 +25,7 @@ public class Study {
 
     public Study() {
         used = false;
-        tempoIncrement = -1;
-        rounds = -1;
-        practice = 100;
+        setInitial();
     }
 
     public Study(Bundle b) {
@@ -103,6 +101,16 @@ public class Study {
             s = s.toLowerCase();
             return s;
         }
+    }
+
+    public void setInitial() {
+        tempoIncrement = -1;
+        rounds = -1;
+        practice = 100;
+    }
+
+    public boolean isInitial() {
+        return (rounds==-1);
     }
 
     public String toStringKort() {

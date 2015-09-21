@@ -52,27 +52,8 @@ public class DialogEditTrackInfo extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
-                        // ophalen waardes uit view
-                        trak.titel = etTitel.getText().toString();
-                        String sNummer = etNummer.getText().toString();
-                        trak.nummer = (sNummer.length() > 0) ? Integer.parseInt(sNummer): 0;
-
-                        trak.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
-
-                        // igv single verwijzen naar 1e pattern en 1e repeat
-                        // 1e repeat moet oneindig doorgaan: count <=0
-                        if (!trak.multi) {
-                            trak.repeatSelected = 0;
-                            trak.repeats.get(0).count = 0;
-                        }
-
-                        Intent intent = new Intent();
-                        intent.putExtra(Keys.EDITACTION, actionAdd);
-                        intent.putExtra(Keys.EDITINDEX, index);
-                        String sTrack = trak.toJson().toString();
-                        intent.putExtra(TrackData.KEYTRACKS, sTrack);
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
+                        if (validate())
+                            updateData();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -80,16 +61,6 @@ public class DialogEditTrackInfo extends DialogFragment {
                         DialogEditTrackInfo.this.getDialog().cancel();
                     }
                 });
-
-//        if ((editSize > 1) && (!actionAdd)) {
-//            builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    Intent intent = new Intent();
-//                    intent.putExtra(Keys.EDITINDEX, index);
-//                    getTargetFragment().onActivityResult(Keys.TARGETDELETETRACK, Activity.RESULT_OK, intent);
-//                }
-//            });
-//        }
 
         String dlgTitle = (actionAdd)
                 ? h.getString(R.string.label_addtrack)
@@ -115,6 +86,36 @@ public class DialogEditTrackInfo extends DialogFragment {
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
+    }
+
+    private boolean validate() {
+        return true;
+    }
+
+    private void updateData() {
+        // ophalen waardes uit view
+        trak.titel = etTitel.getText().toString();
+        String sNummer = etNummer.getText().toString();
+        trak.nummer = (sNummer.length() > 0) ? Integer.parseInt(sNummer): 0;
+
+        trak.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
+
+        if (!trak.multi) {
+            // igv single study disable
+            trak.study.used = false;
+            trak.study.setInitial();
+            // igv single verwijzen naar 1e pattern en 1e repeat
+            // 1e repeat moet oneindig doorgaan: count <=0
+            trak.repeatSelected = 0;
+            trak.repeats.get(0).count = 0;
+        }
+
+        Intent intent = new Intent();
+        intent.putExtra(Keys.EDITACTION, actionAdd);
+        intent.putExtra(Keys.EDITINDEX, index);
+        String sTrack = trak.toJson().toString();
+        intent.putExtra(TrackData.KEYTRACKS, sTrack);
+        getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
     }
 
     private void initViews(View dialogView) {

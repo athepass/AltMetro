@@ -45,7 +45,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                              HelperMetro hConstructor, TrackFragment frag2) {
         super(cont, layout, track2.items);
         h = hConstructor;
-        h.logD(TAG, "constructor");
         context = cont;
         this.track = track2;
         this.trackData = trackData2;
