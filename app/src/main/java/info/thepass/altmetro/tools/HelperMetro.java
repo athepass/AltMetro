@@ -196,6 +196,12 @@ public class HelperMetro {
         return Integer.parseInt(prefs.getString(Keys.PREFMAXTEMPO, "250"));
     }
 
+    public int validatedTempo(int newTempo) {
+        int testedTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO: newTempo;
+        testedTempo = (testedTempo > getMaxTempo()) ? getMaxTempo() : testedTempo;
+        return testedTempo;
+    }
+
     public String alfaNum(int i) {
         if (i < 26) {
             return Character.toString((char) (97 + i));

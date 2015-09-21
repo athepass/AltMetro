@@ -42,7 +42,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private int index = 0;
     private int editSize = -1;
     private boolean multi;
-    private int maxTempo;
 
     private LinearLayout llSpinner;
     private LinearLayout llEmphasis;
@@ -120,8 +119,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
     }
 
     private void initData() {
-        maxTempo = h.getMaxTempo();
-
         Bundle b = getArguments();
         actionAdd = b.getBoolean(Keys.EDITACTION);
         index = b.getInt(Keys.EDITINDEX);
@@ -269,9 +266,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
 
     private void wijzigTempo(int iDelta) {
         String s = tvTempo.getText().toString();
-        int newTempo = Integer.parseInt(s) + iDelta;
-        newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
-        newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
+        int newTempo = h.validatedTempo(Integer.parseInt(s) + iDelta);
         tvTempo.setText("" + newTempo);
     }
 

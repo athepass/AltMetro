@@ -172,4 +172,9 @@ public class Track {
             }
         }
     }
+
+    public void setTempo(int newTempo) {
+        repeats.get(repeatSelected).tempo = newTempo;
+    }
+
 }

@@ -70,7 +70,8 @@ public class TrackFragment extends Fragment {
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
-    private int newTempo;
+    private TextView tvTempoPractice;
+    private int tempoTV;
     private SeekBar sbTempo;
     private SeekBar.OnSeekBarChangeListener tempoListener;
     private Button buttonM1;
@@ -201,9 +202,7 @@ public class TrackFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-//                displayTempo(getProgressTempo(sbTempo.getProgress()));
-//                if (!settingMetroData)
-//                    doPatternEdited("tempoListener onProgressChanged");
+                setTempo(getProgressTempo(sbTempo.getProgress()));
             }
 
             @Override
@@ -218,56 +217,57 @@ public class TrackFragment extends Fragment {
 
     private void initTempo() {
         tvTempo = (TextView) getActivity().findViewById(R.id.tv_editor_tempo);
+        tvTempoPractice = (TextView) getActivity().findViewById(R.id.tv_editor_tempopractice);
     }
 
     private void initSeekBar() {
         sbTempo = (SeekBar) getActivity().findViewById(R.id.sb_tempo);
         sbTempo.setMax(maxTempo - Keys.MINTEMPO);
-//        sbTempo.setOnSeekBarChangeListener(tempoListener);
+        sbTempo.setOnSeekBarChangeListener(tempoListener);
     }
 
     private void initIncDec() {
         buttonM1 = (Button) getActivity().findViewById(R.id.btn_track_m1);
         buttonM1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(-1);
+                changeTempo(-1);
             }
         });
 
         buttonM5 = (Button) getActivity().findViewById(R.id.btn_track_m5);
         buttonM5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(-5);
+                changeTempo(-5);
             }
         });
         buttonM20 = (Button) getActivity().findViewById(R.id.btn_track_m20);
         buttonM20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(-20);
+                changeTempo(-20);
             }
         });
         buttonP1 = (Button) getActivity().findViewById(R.id.btn_track_p1);
         buttonP1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(1);
+                changeTempo(1);
             }
         });
         buttonP5 = (Button) getActivity().findViewById(R.id.btn_track_p5);
         buttonP5.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(5);
+                changeTempo(5);
             }
         });
         buttonP20 = (Button) getActivity().findViewById(R.id.btn_track_p20);
         buttonP20.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                displayTempo(20);
+                changeTempo(20);
             }
         });
     }
 
     private void initStudy() {
-        tvTap = (TextView) getActivity().findViewById(R.id.tv_track_study_tap);
+        tvTap = (TextView) getActivity().findViewById(R.id.tv_track_tap);
         tvTap.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -311,6 +311,7 @@ public class TrackFragment extends Fragment {
                 }
                 track.study.practice = newPractice;
                 trackData.saveData("Practice changed", false);
+                setData();
             }
         });
 
@@ -464,7 +465,8 @@ public class TrackFragment extends Fragment {
         } catch (Exception e) {
             throw new RuntimeException("updateRepeat json exception");
         }
-        trackData.saveData("updatePattern", false);
+        trackData.saveData("updateRepeat", false);
+        setData();
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -503,6 +505,7 @@ public class TrackFragment extends Fragment {
             itemsAdapter.selectedRepeat = track.repeats.size() - 1;
         }
         trackData.saveData("deleteRepeat", false);
+        setData();
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -548,6 +551,7 @@ public class TrackFragment extends Fragment {
             throw new RuntimeException("updatePattern json exception");
         }
         trackData.saveData("updatePattern", false);
+        setData();
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -589,6 +593,7 @@ public class TrackFragment extends Fragment {
             itemsAdapter.selectedPat = trackData.pats.size() - 1;
         }
         trackData.saveData("deletePattern", false);
+        setData();
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -634,6 +639,7 @@ public class TrackFragment extends Fragment {
                 throw new RuntimeException("setStudy json exception");
             }
             trackData.saveData("setStudy", false);
+            setData();
         }
         // study textview onzichtbaar i.g.v. single. Gebruik anders preference
         boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
@@ -642,6 +648,7 @@ public class TrackFragment extends Fragment {
 
         boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
         if (!showPractice) {
+            track.study.practice = 100;
             rg_practice.setVisibility(View.GONE);
         } else {
             rg_practice.setVisibility((track.study.used || (!showPractice)) ? View.INVISIBLE : View.VISIBLE);
@@ -650,17 +657,38 @@ public class TrackFragment extends Fragment {
 
     public void setRepeat(int index) {
         Repeat repeat = track.repeats.get(index);
-        newTempo = repeat.tempo;
-        displayTempo(0);
+        tempoTV = repeat.tempo;
+        changeTempo(0);
         Pat pat = trackData.pats.get(repeat.indexPattern);
         evPlayer.data = trackData;
         evPlayer.setPattern(pat);
     }
 
-    private void displayTempo(int iDelta) {
-        newTempo = newTempo + iDelta;
-        newTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
-        newTempo = (newTempo >= maxTempo) ? maxTempo : newTempo;
-        tvTempo.setText("" + newTempo);
+    private void setTempo(int newTempo) {
+        tempoTV = h.validatedTempo(newTempo);
+        track.setTempo(tempoTV);
+        displayTempo();
+    }
+    private void changeTempo(int iDelta) {
+        setTempo(tempoTV + iDelta);
+    }
+    
+    private void displayTempo() {
+        tvTempo.setText("" + tempoTV);
+        int tempoPractice = h.validatedTempo(tempoTV * track.study.practice / 100);
+        tvTempoPractice.setText("" + tempoPractice);
+
+        int indexSB = getProgressIndex(tempoTV);
+        if (indexSB != sbTempo.getProgress()) {
+            sbTempo.setProgress(indexSB);
+        }
+    }
+
+    private int getProgressTempo(int tempoIndex) {
+        return tempoIndex + Keys.MINTEMPO;
+    }
+
+    private int getProgressIndex(int tempo) {
+        return tempo - Keys.MINTEMPO;
     }
 }

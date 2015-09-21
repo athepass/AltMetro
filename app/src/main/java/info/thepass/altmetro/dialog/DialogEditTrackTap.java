@@ -57,13 +57,11 @@ public class DialogEditTrackTap extends DialogFragment {
                         String sTempo = tvTap.getText().toString();
                         if (sTempo.length() > 0) {
                             newTempo = Integer.parseInt(sTempo);
-                            if (newTempo >= Keys.MINTEMPO && newTempo <= maxTempo) {
-                                repeat.tempo = newTempo;
-                                Intent intent = new Intent();
-                                intent.putExtra(Keys.EDITINDEX, index);
-                                intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
-                                getTargetFragment().onActivityResult(Keys.TARGETEDITTAP, Activity.RESULT_OK, intent);
-                            }
+                            repeat.tempo = newTempo;
+                            Intent intent = new Intent();
+                            intent.putExtra(Keys.EDITINDEX, index);
+                            intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
+                            getTargetFragment().onActivityResult(Keys.TARGETEDITTAP, Activity.RESULT_OK, intent);
                         }
                     }
                 })
@@ -82,7 +80,6 @@ public class DialogEditTrackTap extends DialogFragment {
 
     private void initData() {
         maxTempo = h.getMaxTempo();
-
         Bundle b = getArguments();
         index = b.getInt(Keys.EDITINDEX);
         try {
