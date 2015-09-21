@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/ll_track_pat_alles"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,122 +14,110 @@
         android:visibility="gone"/>
 
     <LinearLayout
-        android:id="@+id/ll_track_pat"
+        android:id="@+id/ll_track_pat_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/imb_track_pat_overflow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:src="@mipmap/ic_action_overflow2"/>
-
         <LinearLayout
-            android:id="@+id/ll_track_pat_body"
+            android:id="@+id/ll_listpat_emphasis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:paddingBottom="2dp">
 
-            <LinearLayout
-                android:id="@+id/ll_listpat_emphasis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="2dp">
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis0"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis0"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis1"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis1"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis2"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis2"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis3"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis3"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis4"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis4"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis5"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis5"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis6"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis6"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis7"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis7"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis8"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis8"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis9"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis9"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis10"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis10"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis11"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis11"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis12"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis12"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis13"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis13"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis14"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis14"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis15"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis15"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis16"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis16"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis17"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis17"
-                    style="@style/AppTheme.EmphasisList"/>
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis18"
+                style="@style/AppTheme.EmphasisList"/>
 
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis18"
-                    style="@style/AppTheme.EmphasisList"/>
-
-                <ImageView
-                    android:id="@+id/iv_listpat_emphasis19"
-                    style="@style/AppTheme.EmphasisList"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_track_pat_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="blabla"/>
-
+            <ImageView
+                android:id="@+id/iv_listpat_emphasis19"
+                style="@style/AppTheme.EmphasisList"/>
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_track_pat_info"
+        android:layout_width="wrap_content"
+        android:clickable="true"
+        android:layout_height="wrap_content"
+        android:text="blabla"/>
+
     <LinearLayout
         android:id="@+id/ll_track_pat_toolbar"
         android:layout_width="match_parent"

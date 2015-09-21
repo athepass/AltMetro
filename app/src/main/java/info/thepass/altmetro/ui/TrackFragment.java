@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -167,11 +168,13 @@ public class TrackFragment extends Fragment {
         itemsAdapter = new TrackItemsAdapter(h.getActivity(), R.layout.fragment_tracklist_row, lvItems,
                 track, trackData, h, this);
         lvItems.setAdapter(itemsAdapter);
+        lvItems.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                Log.d(TAG,"itemClickListener "+ position);
                 switch (itemsAdapter.getItemViewType(position)) {
                     case TrackItemsAdapter.ROWTYPEREPEAT:
                         itemsAdapter.selectedRepeat = track.getItemRepeatPosition(position);
@@ -596,7 +599,6 @@ public class TrackFragment extends Fragment {
         setData();
         itemsAdapter.notifyDataSetChanged();
     }
-
 
     public void editTap() {
         DialogEditTrackTap dlgEdit = new DialogEditTrackTap();

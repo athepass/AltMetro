@@ -2,6 +2,7 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     private TrackFragment frag;
     private int positionToolbar = -1;
     private int lvSelColor;
-    private int resOverflow;
-    private int resEdit;
 
     public TrackItemsAdapter(Context cont, int layout, ListView lv2,
                              Track track2, TrackData trackData2,
@@ -51,8 +50,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         lv = lv2;
         frag = frag2;
         lvSelColor = h.getColor(R.color.color_listitem_selected_background);
-        resOverflow = h.context.getResources().getIdentifier("ic_action_overflow2", "mipmap", h.context.getPackageName());
-        resEdit = h.context.getResources().getIdentifier("ic_action_edit2", "mipmap", h.context.getPackageName());
     }
 
     //    @Override
@@ -153,11 +150,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_repeat_row,
                     parent, false);
             holder = new ViewHolderRepeat();
-            holder.rijBody = (LinearLayout) rowView.findViewById(R.id.ll_track_repeat_body);
-            holder.rijToolbar = (LinearLayout) rowView.findViewById(R.id.ll_track_repeat_toolbar);
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_repeat_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_repeat_info);
             initButtonsRepeat(rowView, holder);
+            initLLRepeat(rowView, holder);
 
             holder.evRepeatList = new EmphasisViewManager("listrepeat", Keys.EVMLIST, rowView, h);
             holder.evRepeatList.useLow = true;
@@ -178,46 +174,61 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
-        holder.rijBody.setBackgroundColor((index == selectedRepeat) ? lvSelColor : Color.TRANSPARENT);
+        holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size()>1) ? lvSelColor : Color.TRANSPARENT);
         if (track.multi) {
-            holder.overflow.setImageResource(resOverflow);
             holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
         } else {
-            holder.overflow.setImageResource(resEdit);
             holder.rijToolbar.setVisibility(View.GONE);
         }
         return rowView;
     }
 
+    private void llClickRepeat(String info, View v) {
+        int position = getViewPosition(v);
+        Log.d(TAG, "click repeat " + info + ": " + position);
+        if (track.multi) {
+            if (position >= 0) {
+                positionToolbar = (positionToolbar == position) ? -1 : position;
+            } else {
+                positionToolbar = position;
+            }
+            notifyDataSetChanged();
+
+        } else {
+            frag.editRepeat(position, false);
+        }
+        int index = track.getItemRepeatPosition(position);
+        frag.setRepeat(index);
+    }
+
+    private void initLLRepeat(View rowView, ViewHolderRepeat holder) {
+        holder.rijEmphasis = (LinearLayout) rowView.findViewById(R.id.ll_listrepeat_emphasis);
+        holder.rijBody = (LinearLayout) rowView.findViewById(R.id.ll_track_repeat_body);
+        holder.rijToolbar = (LinearLayout) rowView.findViewById(R.id.ll_track_repeat_toolbar);
+
+        holder.rijEmphasis.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                llClickRepeat("listemphasis", v);
+            }
+        });
+        holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                llClickRepeat("body", v);
+            }
+        });
+    }
+
     private void initButtonsRepeat(View rowView, ViewHolderRepeat holder) {
-        holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_overflow);
         holder.play = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_play);
         holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_edit);
         holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_delete);
         holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_add);
         holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_up);
         holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_repeat_down);
-
-        holder.overflow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int position = getViewPosition(v);
-                if (track.multi) {
-                    if (position > 0) {
-                        positionToolbar = (positionToolbar == position) ? -1 : position;
-                    } else {
-                        positionToolbar = position;
-                    }
-                    notifyDataSetChanged();
-
-                } else {
-                    frag.editRepeat(position, false);
-                }
-                int index = track.getItemRepeatPosition(position);
-                frag.setRepeat(index);
-            }
-        });
 
         holder.play.setOnClickListener(new View.OnClickListener() {
 
@@ -358,11 +369,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.fragment_track_pat_row,
                     parent, false);
             holder = new ViewHolderPat();
-            holder.rijBody = (LinearLayout) rowView.findViewById(R.id.ll_track_pat_body);
-            holder.rijToolbar = (LinearLayout) rowView.findViewById(R.id.ll_track_pat_toolbar);
             holder.header = (TextView) rowView.findViewById(R.id.tv_track_pat_header);
             holder.info = (TextView) rowView.findViewById(R.id.tv_track_pat_info);
 
+            initLLPat(rowView, holder);
             initButtonsPat(rowView, holder);
             holder.evPatList = new EmphasisViewManager("listpat", Keys.EVMLIST, rowView, h);
             holder.evPatList.useLow = true;
@@ -385,59 +395,55 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
+    private void llClickPat(String info, View v) {
+        int position = getViewPosition(v);
+        Log.d(TAG, "click Pat " + info + ": " + position);
+        if (position >= 0) {
+            positionToolbar = (positionToolbar == position) ? -1 : position;
+        } else {
+            positionToolbar = position;
+        }
+        notifyDataSetChanged();
+//        int index = track.getItemRepeatPosition(position);
+////        frag.setP(index);
+    }
+
+    private void initLLPat(View rowView, ViewHolderPat holder) {
+        holder.rijBody = (LinearLayout) rowView.findViewById(R.id.ll_track_pat_body);
+        holder.rijEmphasis = (LinearLayout) rowView.findViewById(R.id.ll_listpat_emphasis);
+        holder.rijToolbar = (LinearLayout) rowView.findViewById(R.id.ll_track_pat_toolbar);
+
+        holder.rijBody.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                llClickPat("body", v);
+            }
+        });
+        holder.rijEmphasis.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                llClickPat("emphasis", v);
+            }
+        });
+        holder.info.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                llClickPat("info", v);
+            }
+        });
+
+    }
+
     private void initButtonsPat(View rowView, ViewHolderPat holder) {
-        holder.overflow = (ImageButton) rowView.findViewById(R.id.imb_track_pat_overflow);
         holder.edit = (ImageButton) rowView.findViewById(R.id.imb_track_pat_edit);
         holder.delete = (ImageButton) rowView.findViewById(R.id.imb_track_pat_delete);
         holder.add = (ImageButton) rowView.findViewById(R.id.imb_track_pat_add);
         holder.up = (ImageButton) rowView.findViewById(R.id.imb_track_pat_up);
         holder.down = (ImageButton) rowView.findViewById(R.id.imb_track_pat_down);
 
-        holder.info.setClickable(true);
-        holder.rijBody.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                h.showToast("body click");
-                int position = getViewPosition(v);
-                if (position > 0) {
-                    positionToolbar = (positionToolbar == position) ? -1 : position;
-                } else {
-                    positionToolbar = position;
-                }
-                notifyDataSetChanged();
-            }
-        });
-
-        holder.rijBody.setClickable(true);
-        holder.rijBody.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                h.showToast("body click");
-                int position = getViewPosition(v);
-                if (position > 0) {
-                    positionToolbar = (positionToolbar == position) ? -1 : position;
-                } else {
-                    positionToolbar = position;
-                }
-                notifyDataSetChanged();
-            }
-        });
-
-        holder.overflow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int position = getViewPosition(v);
-                if (position > 0) {
-                    positionToolbar = (positionToolbar == position) ? -1 : position;
-                } else {
-                    positionToolbar = position;
-                }
-                notifyDataSetChanged();
-            }
-        });
         holder.edit.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -533,6 +539,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     }
 
     public static class ViewHolderRepeat {
+        public LinearLayout rijEmphasis;
         public LinearLayout rijBody;
         public LinearLayout rijToolbar;
         public TextView header;
@@ -554,11 +561,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     public static class ViewHolderPat {
         public LinearLayout rijBody;
+        public LinearLayout rijEmphasis;
         public LinearLayout rijToolbar;
         public TextView header;
         public TextView info;
         public EmphasisViewManager evPatList;
-        public ImageButton overflow;
         public ImageButton edit;
         public ImageButton delete;
         public ImageButton add;
