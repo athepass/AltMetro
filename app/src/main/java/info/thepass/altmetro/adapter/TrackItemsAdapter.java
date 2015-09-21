@@ -104,6 +104,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public void notifyDataSetChanged() {
+        track.syncItems(trackData.pats);
         super.notifyDataSetChanged();
     }
 

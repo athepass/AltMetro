@@ -311,4 +311,25 @@ public class Pat {
                 }
         }
     }
+
+    public boolean checkInUse(TrackData trackData, HelperMetro h) {
+        int counter = 0;
+        String s= "";
+        for (int iT=0; iT<trackData.tracks.size();iT++) {
+            Track track = trackData.tracks.get(iT);
+            for (int iR=0; iR<track.repeats.size();iR++) {
+                Repeat repeat = track.repeats.get(iR);
+                if (repeat.hashPattern==this.patHash) {
+                    counter++;
+                    s += "\nTrack t" + (iT+1) + " Repeat r" + (iR+1);
+                }
+            }
+        }
+        if (counter>0) {
+            s = h.getString(R.string.error_patinuse) + s;
+            h.showToastAlert(s);
+            return true;
+        }
+        return false;
+    }
 }

@@ -86,7 +86,7 @@ public class DialogEditTrackTap extends DialogFragment {
         Bundle b = getArguments();
         index = b.getInt(Keys.EDITINDEX);
         try {
-            repeat = new Repeat(h);
+            repeat = new Repeat();
             String s = b.getString(Track.KEYREPEATS);
             repeat.fromJson(new JSONObject(s));
         } catch (Exception e) {

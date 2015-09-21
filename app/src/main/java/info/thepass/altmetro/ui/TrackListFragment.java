@@ -7,7 +7,6 @@ import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -110,7 +109,7 @@ public class TrackListFragment extends ListFragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
-            Log.d(TAG, "onActivityResult OK=" + resultCode + " req=" + requestCode);
+            h.logD(TAG, "onActivityResult OK=" + resultCode + " req=" + requestCode);
             switch (requestCode) {
                 case Keys.TARGETEDITTRACK:
                     updateTrackList(intent);

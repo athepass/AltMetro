@@ -59,7 +59,7 @@ public class TrackData {
     }
 
     private void addDefaultData() {
-        Log.d(TAG, "addDefaultData");
+        h.logD(TAG, "addDefaultData");
 
         Track track = new Track(h);
         tracks.add(track);
@@ -147,7 +147,6 @@ public class TrackData {
             json.put(KEYPATS, patsArray);
 
         } catch (JSONException e) {
-            Log.e(TAG, "toJson exception" + e.getMessage(), e);
             throw new RuntimeException("toJson " + e.getMessage());
         }
         return json;

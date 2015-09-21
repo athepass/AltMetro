@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
@@ -20,7 +19,6 @@ public class PrefsFragment extends PreferenceFragment {
         getActivity().setTitle(h.getString(R.string.pref_title));
     }
     public void onDetach() {
-        Log.d("PrefFragment", "onDetach");
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETPREF, Activity.RESULT_OK, intent);
         super.onDetach();

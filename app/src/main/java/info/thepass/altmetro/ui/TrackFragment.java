@@ -7,7 +7,6 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,20 +46,10 @@ import info.thepass.altmetro.tools.Keys;
 
 public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
-    private HelperMetro h;
-
     public ListView lvItems;
     public TrackItemsAdapter itemsAdapter;
-    private EmphasisViewManager evPlayer;
-
     public TrackData trackData;
     public Track track;
-    private int indexDelRepeat;
-    private int indexDelPattern;
-
-    private View layout;
-
-    private SoundFragment soundFragment;
     // views Study
     public TextView tvTap;
     public TextView tv_study;
@@ -71,6 +60,13 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
+    private HelperMetro h;
+    private EmphasisViewManager evPlayer;
+    private int indexDelRepeat;
+    private int indexDelPattern;
+    private LayoutInflater myInflater;
+    private View layout;
+    private SoundFragment soundFragment;
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -87,6 +83,7 @@ public class TrackFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        myInflater = inflater;
         layout = inflater.inflate(R.layout.fragment_track, container, false);
         return layout;
     }
@@ -96,6 +93,7 @@ public class TrackFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         h = new HelperMetro(getActivity());
         h.logD(TAG, "activityCreated");
+        h.initToastAlert(myInflater);
         setHasOptionsMenu(true);
         initData();
         initListView();
@@ -131,7 +129,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d(TAG, "onActivityResult OK=" + resultCode + " req=" + requestCode);
+        h.logD(TAG, "onActivityResult OK=" + resultCode + " req=" + requestCode);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case Keys.TARGETTRACKFRAGMENT:
@@ -232,7 +230,6 @@ public class TrackFragment extends Fragment {
         buttonM1 = (Button) getActivity().findViewById(R.id.btn_track_m1);
         buttonM1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "m1");
                 displayTempo(-1);
             }
         });
@@ -291,7 +288,6 @@ public class TrackFragment extends Fragment {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, "practice changed");
                 int newPractice = 0;
                 switch (checkedId) {
                     case R.id.rb_track_prac50:
@@ -366,7 +362,6 @@ public class TrackFragment extends Fragment {
     private void setData() {
         track = trackData.tracks.get(trackData.trackSelected);
 
-        track.syncItems(trackData.pats);
         String s = track.getTitle(trackData, trackData.trackSelected);
         getActivity().setTitle(s.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + s);
 
@@ -406,13 +401,13 @@ public class TrackFragment extends Fragment {
         ArrayBrowserListFragment beatFragment = new ArrayBrowserListFragment();
 
         Bundle b = new Bundle();
-        b.putString(ArrayBrowserListFragment.TITEL,"beatManager lijst");
+        b.putString(ArrayBrowserListFragment.TITEL, "beatManager lijst");
         b.putStringArrayList(ArrayBrowserListFragment.ROW, rows);
         String s = "====== Dump beats =====";
-        for (int i=0;i<rows.size();i++) {
-              s += "\n" + rows.get(i);
+        for (int i = 0; i < rows.size(); i++) {
+            s += "\n" + rows.get(i);
         }
-        Log.d(TAG,s);
+        h.logD(TAG, s);
 //        beatFragment.setArguments(b);
 //
 //        FragmentTransaction transaction = getFragmentManager()
@@ -442,7 +437,7 @@ public class TrackFragment extends Fragment {
 
         Repeat repeat;
         if (add) {
-            repeat = new Repeat(h);
+            repeat = new Repeat();
         } else {
             repeat = track.repeats.get(index);
         }
@@ -457,19 +452,16 @@ public class TrackFragment extends Fragment {
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
         String sRepeat = intent.getStringExtra(Track.KEYREPEATS);
         try {
-            Repeat repeat = new Repeat(h);
+            Repeat repeat = new Repeat();
             repeat.fromJson(new JSONObject(sRepeat));
             if (actionAdd) {
-                Log.d(TAG, "update repeat add index=" + index);
                 track.repeats.add(index, repeat);
             } else {
                 track.repeats.set(index, repeat);
             }
             itemsAdapter.selectedRepeat = index;
-            track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-            h.logE(TAG, "updateRepeat json exception", e);
             throw new RuntimeException("updateRepeat json exception");
         }
         trackData.saveData("updatePattern", false);
@@ -481,7 +473,6 @@ public class TrackFragment extends Fragment {
             return;
         }
         int index = track.getItemRepeatPosition(position);
-        Log.d(TAG, "confirmDeleteRepeat " + index);
         indexDelRepeat = index;
         itemsAdapter.selectedRepeat = indexDelRepeat;
 
@@ -552,10 +543,8 @@ public class TrackFragment extends Fragment {
                 trackData.pats.set(index, pat);
             }
             itemsAdapter.selectedPat = index;
-            track.syncItems(trackData.pats);
             itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-            h.logE(TAG, "updatePattern json exception", e);
             throw new RuntimeException("updatePattern json exception");
         }
         trackData.saveData("updatePattern", false);
@@ -569,9 +558,13 @@ public class TrackFragment extends Fragment {
         int index = track.getItemPatPosition(position);
         indexDelPattern = index;
         itemsAdapter.selectedPat = indexDelPattern;
+        Pat pat = trackData.pats.get(indexDelPattern);
+        // verwijderen niet mogelijk indien nog in gebruik.
+        if (pat.checkInUse(trackData, h)) {
+            return;
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Pat pat = trackData.pats.get(indexDelPattern);
         String pInfo = pat.display(h, indexDelPattern, true);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)

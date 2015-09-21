@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -108,7 +107,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-                        Log.d(TAG, "onClick");
                         if (validateData()) {
                             saveData();
                             dialog.dismiss();
@@ -131,7 +129,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         multi = b.getBoolean(Track.KEYMULTI);
 
         try {
-            repeat = new Repeat(h);
+            repeat = new Repeat();
             String s = b.getString(Track.KEYREPEATS);
             repeat.fromJson(new JSONObject(s));
 

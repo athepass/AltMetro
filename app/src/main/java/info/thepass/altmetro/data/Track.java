@@ -37,7 +37,7 @@ public class Track {
 
         repeatSelected = 0;
         repeats = new ArrayList<Repeat>();
-        Repeat repeat = new Repeat(h);
+        Repeat repeat = new Repeat();
         repeats.add(repeat);
 
         //Laat de repeat meteen verwijzen naar de 0e pattern
@@ -82,7 +82,7 @@ public class Track {
             repeats.clear();
             JSONArray repeatsArray = json.getJSONArray(KEYREPEATS);
             for (int i = 0; i < repeatsArray.length(); i++) {
-                Repeat rep = new Repeat(h);
+                Repeat rep = new Repeat();
                 rep.fromJson(repeatsArray.getJSONObject(i));
                 repeats.add(rep);
             }
@@ -148,9 +148,28 @@ public class Track {
         if (multi) {
             aantal = repeats.size() + 1 + pats.size() + 1;
         }
+        // maak aantal regels
         while (items.size() < aantal)
             items.add("-----");
         while (items.size() > aantal)
             items.remove(0);
+
+        // controleer consistentie pat hash in repeat
+        for (int i=0;i<repeats.size();i++) {
+            Repeat repeat = repeats.get(i);
+            if (repeat.hashPattern==Repeat.NOHASH) {
+                // hash default: vul hash obv repeat.indexpattern
+                repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
+            } else {
+                // hash ingevuld. Zet index goed.
+                for (int j=0;j<pats.size();j++) {
+                    Pat pat = pats.get(j);
+                    if (repeat.hashPattern==pat.patHash) {
+                        repeat.indexPattern = j;
+                        j = pats.size();
+                    }
+                }
+            }
+        }
     }
 }
