@@ -113,9 +113,9 @@
 
     <TextView
         android:id="@+id/tv_track_pat_info"
-        android:layout_width="wrap_content"
-        android:clickable="true"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:text="blabla"/>
 
     <LinearLayout

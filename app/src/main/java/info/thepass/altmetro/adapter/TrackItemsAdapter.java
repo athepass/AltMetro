@@ -174,7 +174,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
-        holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size()>1) ? lvSelColor : Color.TRANSPARENT);
+        holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size() > 1) ? lvSelColor : Color.TRANSPARENT);
         if (track.multi) {
             holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
         } else {
@@ -389,8 +389,11 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         holder.evPatList.setPattern(pat);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
-        holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
+
+        holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
+        holder.rijBody.setBackgroundColor((position == positionToolbar) ? lvSelColor : Color.TRANSPARENT);
+        holder.info.setBackgroundColor((position == positionToolbar) ? lvSelColor : Color.TRANSPARENT);
 
         return rowView;
     }
