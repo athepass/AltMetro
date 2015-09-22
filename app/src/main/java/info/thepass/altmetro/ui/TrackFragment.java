@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,8 +26,6 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import info.thepass.altmetro.Audio.BeatManager;
 import info.thepass.altmetro.Audio.SoundFragment;
@@ -70,6 +69,7 @@ public class TrackFragment extends Fragment {
     private SoundFragment soundFragment;
     // views tempo
     private int maxTempo;
+    private LinearLayout llRoot;
     private TextView tvTempo;
     private TextView tvTempoPractice;
     private int tempoTV;
@@ -81,6 +81,9 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
+
+    private boolean isPlaying;
+    private BeatManager bm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -106,6 +109,7 @@ public class TrackFragment extends Fragment {
         initIncDec();
         initStudy();
         initSoundFragment();
+        bm = new BeatManager(h);
         setData();
     }
 
@@ -160,9 +164,11 @@ public class TrackFragment extends Fragment {
         ActivityTrack act = (ActivityTrack) getActivity();
         this.trackData = act.trackData;
         track = trackData.tracks.get(trackData.trackSelected);
+        isPlaying = false;
     }
 
     public void initListView() {
+        llRoot= (LinearLayout) h.getActivity().findViewById(R.id.ll_track_root);
 
         lvItems = (ListView) h.getActivity().findViewById(R.id.track_listView);
         itemsAdapter = new TrackItemsAdapter(h.getActivity(), R.layout.fragment_tracklist_row, lvItems,
@@ -374,6 +380,7 @@ public class TrackFragment extends Fragment {
 
         setRepeat(track.repeatSelected);
         setStudy(null);
+        evPlayer.setEmphasisVisible(isPlaying);
     }
 
     private void doPrefs() {
@@ -398,27 +405,21 @@ public class TrackFragment extends Fragment {
     }
 
     public void doPlay(int position) {
-        BeatManager bm = new BeatManager(h);
-        bm.build(track, trackData.pats);
-        ArrayList<String> rows = bm.display();
+        // toggle
+        isPlaying = !isPlaying;
+        evPlayer.setEmphasisVisible(isPlaying);
+        lvItems.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
+        tv_study.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
+        tvTap.setVisibility((isPlaying) ? View.INVISIBLE : View.VISIBLE);
 
-        ArrayBrowserListFragment beatFragment = new ArrayBrowserListFragment();
-
-        Bundle b = new Bundle();
-        b.putString(ArrayBrowserListFragment.TITEL, "beatManager lijst");
-        b.putStringArrayList(ArrayBrowserListFragment.ROW, rows);
-        String s = "====== Dump beats =====";
-        for (int i = 0; i < rows.size(); i++) {
-            s += "\n" + rows.get(i);
+        if (isPlaying) {
+            bm.trackData = trackData;
+            bm.track = track;
+            bm.llRoot = llRoot;
+            bm.startPlayer();
+        } else {
+            bm.stopPlayer();
         }
-        h.logD(TAG, s);
-//        beatFragment.setArguments(b);
-//
-//        FragmentTransaction transaction = getFragmentManager()
-//                .beginTransaction();
-//        transaction.replace(R.id.fragment_container, beatFragment);
-//        transaction.addToBackStack(null);
-//        transaction.commit();
     }
 
     public void editRepeat(int position, boolean add) {
@@ -663,7 +664,7 @@ public class TrackFragment extends Fragment {
         changeTempo(0);
         Pat pat = trackData.pats.get(repeat.indexPattern);
         evPlayer.data = trackData;
-        evPlayer.setPattern(pat);
+        evPlayer.setPattern(pat, isPlaying);
     }
 
     private void setTempo(int newTempo) {

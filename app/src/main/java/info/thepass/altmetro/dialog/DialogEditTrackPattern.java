@@ -133,7 +133,7 @@ public class DialogEditTrackPattern extends DialogFragment {
                     pat.patBeats = Integer.parseInt(spBeat.getSelectedItem()
                             .toString());
                     pat.initBeatStates();
-                    evEditor.setPattern(pat);
+                    evEditor.setPattern(pat,true);
                     lastBeatIndex = spBeat.getSelectedItemPosition();
                 }
             }
@@ -178,7 +178,7 @@ public class DialogEditTrackPattern extends DialogFragment {
     private void initEmphasis(View view) {
         evEditor = new EmphasisViewManager("ed_editor", Keys.EVMEDITOR, view, h);
         evEditor.useLow = true;
-        evEditor.setPattern(pat);
+        evEditor.setPattern(pat, false);
     }
 
     private int getbarBeatsIndex(int barBeats) {

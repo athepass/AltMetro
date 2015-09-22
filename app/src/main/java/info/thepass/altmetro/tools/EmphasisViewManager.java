@@ -20,6 +20,7 @@ public class EmphasisViewManager {
     private int ivLast;
     private LinearLayout[] llEmphasis;
     private int llCount;
+    private int llCountVisible;
     private ImageView ivArray[];
     private AnimationDrawable animArray[];
     private String prefix;
@@ -95,12 +96,12 @@ public class EmphasisViewManager {
         iv.setImageLevel(pat.patBeatState[i]);
     }
 
-    public void setPattern(Pat pp) {
+    public void setPattern(Pat pp, boolean isPlaying) {
         settingMetroData = true;
         pat = pp;
         setIvIndex();
         setImageVisibility();
-        setLinLayoutVisibility();
+        setLinLayoutVisibility(isPlaying);
         setViewState();
         settingMetroData = false;
     }
@@ -188,7 +189,7 @@ public class EmphasisViewManager {
         }
     }
 
-    private void setLinLayoutVisibility() {
+    private void setLinLayoutVisibility(boolean isPlaying) {
         if (pat == null)
             return;
         if (empType == Keys.EVMEDITOR) {
@@ -214,7 +215,9 @@ public class EmphasisViewManager {
                 maxBeat = (maxBeat<patRepeat.patBeats) ? patRepeat.patBeats : maxBeat;
             }
             // er passen er 10 op de eerste regel. Evt. 2e regel verbergen
-            llEmphasis[1].setVisibility ((maxBeat<=10)? View.GONE : View.VISIBLE);
+            llCountVisible = (maxBeat<=10) ? 1 : 2;
+            for (int i=0;i<llCount;i++)
+            llEmphasis[i].setVisibility((isPlaying && i < llCountVisible) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -232,6 +235,11 @@ public class EmphasisViewManager {
             ivArray[ivIndexArray[ivLast]]
                     .setImageLevel(pat.patBeatState[ivLast] + 3);
         }
+    }
+
+    public void setEmphasisVisible (boolean isPlayer) {
+        for (int i=0;i<llCount;i++)
+            llEmphasis[i].setVisibility ((isPlayer&&(i<llCountVisible))? View.VISIBLE: View.GONE);
     }
 
     private int[] getViewIndex(int beatCount) {

@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout android:id="@+id/ll_track_root"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -12,6 +13,138 @@
         android:text="info"
         android:textColor="@color/color_text"
         android:textSize="@dimen/textsize_row"/>
+
+    <RelativeLayout
+        android:id="@+id/ll_editor_tempo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_track_m20"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toLeftOf="@+id/btn_track_m5"
+            android:text="@string/label_m20"/>
+
+        <Button
+            android:id="@+id/btn_track_m5"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toLeftOf="@+id/btn_track_m1"
+            android:text="@string/label_m5"/>
+
+        <Button
+            android:id="@+id/btn_track_m1"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toLeftOf="@+id/tv_editor_tempo"
+            android:text="@string/label_m1"/>
+
+        <TextView
+            android:id="@+id/tv_editor_tempo"
+            android:layout_width="@dimen/incdec_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/color_emphasis_low"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/hw"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/textsize_timescale"/>
+
+        <Button
+            android:id="@+id/btn_track_p1"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toRightOf="@+id/tv_editor_tempo"
+            android:text="@string/label_p1"/>
+
+
+        <Button
+            android:id="@+id/btn_track_p5"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toRightOf="@+id/btn_track_p1"
+            android:text="@string/label_p5"/>
+
+        <Button
+            android:id="@+id/btn_track_p20"
+            style="@style/AppTheme.TempoButton"
+            android:layout_toRightOf="@+id/btn_track_p5"
+            android:text="@string/label_p20"/>
+
+        <TextView
+            android:id="@+id/tv_track_tap"
+            style="@style/AppTheme.ListviewButton"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@+id/btn_track_p20"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/label_tap"
+            android:textSize="15dp"/>
+
+    </RelativeLayout>
+
+    <SeekBar
+        android:id="@+id/sb_tempo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RadioGroup
+        android:id="@+id/rg_track_practice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:checkedButton="@+id/rb_track_prac100"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_track_prac50"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac50"/>
+
+        <RadioButton
+            android:id="@+id/rb_track_prac70"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac70"/>
+
+        <RadioButton
+            android:id="@+id/rb_track_prac80"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac80"/>
+
+        <TextView
+            android:id="@+id/tv_editor_tempopractice"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:background="@color/color_emphasis_low"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/hw"
+            android:textColor="@color/color_practice"
+            android:textSize="@dimen/prac_textsize"/>
+
+        <RadioButton
+            android:id="@+id/rb_track_prac90"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac90"/>
+
+        <RadioButton
+            android:id="@+id/rb_track_prac95"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac95"/>
+
+        <RadioButton
+            android:id="@+id/rb_track_prac100"
+            style="@style/AppTheme.RadioButtonPractice"
+            android:text="@string/label_prac100"/>
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tv_track_study_study"
+        style="@style/AppTheme.ListviewButton"
+        android:layout_width="match_parent"
+        android:ellipsize="none"
+        android:gravity="center"
+        android:scrollHorizontally="false"
+        android:text="@string/label_study_off"
+        android:textSize="15dp"/>
 
     <LinearLayout
         android:id="@+id/ll_player_emphasis0"
@@ -128,138 +261,6 @@
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv19"/>
     </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/ll_editor_tempo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_track_m20"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toLeftOf="@+id/btn_track_m5"
-            android:text="@string/label_m20"/>
-
-        <Button
-            android:id="@+id/btn_track_m5"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toLeftOf="@+id/btn_track_m1"
-            android:text="@string/label_m5"/>
-
-        <Button
-            android:id="@+id/btn_track_m1"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toLeftOf="@+id/tv_editor_tempo"
-            android:text="@string/label_m1"/>
-
-        <TextView
-            android:id="@+id/tv_editor_tempo"
-            android:layout_width="@dimen/incdec_width"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:background="@color/color_emphasis_low"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/hw"
-            android:textColor="@color/color_text"
-            android:textSize="@dimen/textsize_timescale"/>
-
-        <Button
-            android:id="@+id/btn_track_p1"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toRightOf="@+id/tv_editor_tempo"
-            android:text="@string/label_p1"/>
-
-
-        <Button
-            android:id="@+id/btn_track_p5"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toRightOf="@+id/btn_track_p1"
-            android:text="@string/label_p5"/>
-
-        <Button
-            android:id="@+id/btn_track_p20"
-            style="@style/AppTheme.TempoButton"
-            android:layout_toRightOf="@+id/btn_track_p5"
-            android:text="@string/label_p20"/>
-
-        <TextView
-            android:id="@+id/tv_track_tap"
-            style="@style/AppTheme.ListviewButton"
-            android:layout_width="wrap_content"
-            android:layout_toLeftOf="@+id/btn_track_m20"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:text="@string/label_tap"
-            android:textSize="15dp"/>
-
-    </RelativeLayout>
-
-    <SeekBar
-        android:id="@+id/sb_tempo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <RadioGroup
-        android:id="@+id/rg_track_practice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:checkedButton="@+id/rb_track_prac100"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rb_track_prac50"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac50"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac70"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac70"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac80"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac80"/>
-
-        <TextView
-            android:id="@+id/tv_editor_tempopractice"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:background="@color/color_emphasis_low"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/hw"
-            android:textColor="@color/color_practice"
-            android:textSize="@dimen/prac_textsize"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac90"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac90"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac95"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac95"/>
-
-        <RadioButton
-            android:id="@+id/rb_track_prac100"
-            style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac100"/>
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/tv_track_study_study"
-        style="@style/AppTheme.ListviewButton"
-        android:layout_width="match_parent"
-        android:ellipsize="none"
-        android:gravity="center"
-        android:scrollHorizontally="false"
-        android:text="@string/label_study_off"
-        android:textSize="15dp"/>
 
     <ListView
         android:id="@+id/track_listView"

@@ -272,6 +272,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
 
     private void updatePat(int position) {
         spPat.setSelection(position);
-        evmPats.setPattern(pats.get(position));
+        evmPats.setPattern(pats.get(position), false);
     }
 }

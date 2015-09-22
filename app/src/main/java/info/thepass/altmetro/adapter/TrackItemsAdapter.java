@@ -2,7 +2,6 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,7 +169,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         String patDisplay = pat.display(h, repeat.indexPattern, false);
         String s = repeat.display(h, index, patDisplay, index != selectedRepeat);
         holder.info.setText(s);
-        holder.evRepeatList.setPattern(pat);
+        holder.evRepeatList.setPattern(pat, false);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
@@ -185,7 +184,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickRepeat(String info, View v) {
         int position = getViewPosition(v);
-        Log.d(TAG, "click repeat " + info + ": " + position);
         if (track.multi) {
             if (position >= 0) {
                 positionToolbar = (positionToolbar == position) ? -1 : position;
@@ -386,7 +384,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         Pat pat = trackData.pats.get(index);
         String s = pat.display(h, index, false);
         holder.info.setText(s);
-        holder.evPatList.setPattern(pat);
+        holder.evPatList.setPattern(pat, false);
 
         holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
         holder.header.setTextColor(Color.BLACK);
@@ -400,15 +398,12 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickPat(String info, View v) {
         int position = getViewPosition(v);
-        Log.d(TAG, "click Pat " + info + ": " + position);
         if (position >= 0) {
             positionToolbar = (positionToolbar == position) ? -1 : position;
         } else {
             positionToolbar = position;
         }
         notifyDataSetChanged();
-//        int index = track.getItemRepeatPosition(position);
-////        frag.setP(index);
     }
 
     private void initLLPat(View rowView, ViewHolderPat holder) {
