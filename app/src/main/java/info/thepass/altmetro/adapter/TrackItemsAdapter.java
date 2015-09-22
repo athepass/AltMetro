@@ -193,7 +193,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             notifyDataSetChanged();
 
         } else {
-            frag.editRepeat(position, false);
+            frag.lvManager.editRepeat(position, false);
         }
         int index = track.getItemRepeatPosition(position);
         frag.setRepeat(index);
@@ -254,7 +254,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemRepeatPosition(position);
                 frag.setRepeat(index);
 
-                frag.editRepeat(position, false);
+                frag.lvManager.editRepeat(position, false);
             }
         });
 
@@ -269,7 +269,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemRepeatPosition(position);
                 frag.setRepeat(index);
 
-                frag.confirmDeleteRepeat(position);
+                frag.lvManager.confirmDeleteRepeat(position);
             }
         });
 
@@ -284,7 +284,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemRepeatPosition(position);
                 frag.setRepeat(index);
 
-                frag.editRepeat(position, true);
+                frag.lvManager.editRepeat(position, true);
             }
         });
 
@@ -347,7 +347,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     int position = getViewPosition(v);
-                    frag.editRepeat(position, true);
+                    frag.lvManager.editRepeat(position, true);
                 }
             });
             rowView.setTag(holder);
@@ -449,7 +449,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
-                frag.editPattern(position, false);
+                frag.lvManager.editPattern(position, false);
             }
         });
         holder.delete.setOnClickListener(new View.OnClickListener() {
@@ -459,7 +459,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
-                frag.confirmDeletePattern(position);
+                frag.lvManager.confirmDeletePattern(position);
             }
         });
         holder.add.setOnClickListener(new View.OnClickListener() {
@@ -469,7 +469,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int position = getViewPosition(v);
                 positionToolbar = -1;
                 notifyDataSetChanged();
-                frag.editPattern(position, true);
+                frag.lvManager.editPattern(position, true);
             }
         });
         holder.up.setOnClickListener(new View.OnClickListener() {
@@ -525,7 +525,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     int position = getViewPosition(v);
                     positionToolbar = -1;
                     notifyDataSetChanged();
-                    frag.editPattern(position, true);
+                    frag.lvManager.editPattern(position, true);
                 }
             });
             rowView.setTag(holder);
