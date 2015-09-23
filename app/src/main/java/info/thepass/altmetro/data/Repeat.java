@@ -1,7 +1,5 @@
 package info.thepass.altmetro.data;
 
-import android.os.Bundle;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,23 +13,19 @@ public class Repeat {
     public final static String KEYHASH = "RPhpat";
     public final static String KEYTEMPO = "RPtmp";
     public final static String KEYCOUNT = "RPcnt";
+    public final static String KEYNOEND = "RPnen";
     public int indexPattern;
     public int hashPattern;
     public int tempo;
     public int count;
+    public boolean noEnd;
 
     public Repeat() {
         indexPattern = 0;
         hashPattern = NOHASH;
         tempo = 90;
-        count = 0;
-    }
-
-    public Repeat(Bundle b) {
-        indexPattern = b.getInt(KEYINDEX);
-        hashPattern = b.getInt(KEYHASH);
-        tempo = b.getInt(KEYTEMPO);
-        count = b.getInt(KEYCOUNT);
+        count = 1;
+        noEnd = true;
     }
 
     public JSONObject toJson() {
@@ -41,6 +35,7 @@ public class Repeat {
             json.put(KEYHASH, hashPattern);
             json.put(KEYTEMPO, tempo);
             json.put(KEYCOUNT, count);
+            json.put(KEYNOEND, noEnd);
 
         } catch (JSONException e) {
             throw new RuntimeException("toJson exception" + e.getMessage());
@@ -54,26 +49,17 @@ public class Repeat {
             hashPattern = json.getInt(KEYHASH);
             tempo = json.getInt(KEYTEMPO);
             count = json.getInt(KEYCOUNT);
+            noEnd = json.getBoolean(KEYNOEND);
         } catch (JSONException e) {
             throw new RuntimeException("fromJson exception" + e.getMessage());
         }
-    }
-
-    public String toString() {
-        return "i:" + indexPattern + ",h:" + hashPattern + ",c:" + count;
-    }
-
-    public String toString2(boolean showTempo, HelperMetro h) {
-        String s = h.getString(R.string.label_count) + ": " + count;
-        s += ((showTempo) ? " " + h.getString(R.string.label_tempo) + ": " + tempo : "");
-        return s;
     }
 
     public String display(HelperMetro h, int index, String patDisplay, boolean showTempo) {
         String s = "";
         s += (index >= 0) ? "r" + (index + 1) + " " : "";
         s += (showTempo) ? h.getString(R.string.label_tempo) + ",  " + tempo : "";
-        s += ((count == 0) ? h.getString(R.string.label_noend): h.getString1(R.string.label_repeats, String.valueOf(count)));
+        s += ((noEnd) ? h.getString(R.string.label_noend): h.getString1(R.string.label_repeatTimes, String.valueOf(count)));
         s += ", " + patDisplay;
         return s;
     }

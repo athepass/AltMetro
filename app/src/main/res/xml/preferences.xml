@@ -1,21 +1,27 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <info.thepass.altmetro.tools.MyListPreference
+        android:defaultValue="1"
+        android:entries="@array/array_metromode"
+        android:entryValues="@array/array_metromode_index"
+        android:key="metroMode"
+        android:title="@string/pref_metromode"/>
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="showPractice"
-        android:title="@string/pref_showPractice" />
+        android:title="@string/pref_showPractice"/>
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="showStudy"
-        android:title="@string/pref_showStudy" />
+        android:title="@string/pref_showStudy"/>
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="multi"
-        android:title="@string/pref_multi" />
+        android:title="@string/pref_multi"/>
     <info.thepass.altmetro.tools.MyListPreference
-        android:key="maxTempo"
         android:defaultValue="250"
-        android:title="@string/pref_maxtempo"
         android:entries="@array/array_maxtempo"
-        android:entryValues="@array/array_maxtempo"/>
+        android:entryValues="@array/array_maxtempo"
+        android:key="maxTempo"
+        android:title="@string/pref_maxtempo"/>
 </PreferenceScreen>

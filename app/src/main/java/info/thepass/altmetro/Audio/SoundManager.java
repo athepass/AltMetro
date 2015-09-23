@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -24,15 +23,14 @@ public class SoundManager {
         return (seqCounter + 1) + "/" + barSoundsList.size();
     }
 
-    public void build(TrackData data, boolean buildPattern) {
+    public void build(Track track, boolean buildPattern) {
         barSoundsList.clear();
 //		if (data.sps.used) {
 //			BarPattern p = data.getBarPatternSelected();
 //			buildSps(data.sps, p);
 //		} else {
-        Track track = data.tracks.get(data.trackSelected);
         Repeat repeat = track.repeats.get(0);
-        Pat p = data.pats.get(repeat.indexPattern);
+        Pat p = track.getPats().get(repeat.indexPattern);
         BarSounds brs = new BarSounds(p.patBeats, p.patBeatState, 0);
         brs.buildTempo(repeat.tempo, 100, p.patSubs);
         barSoundsList.add(brs);

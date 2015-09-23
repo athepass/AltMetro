@@ -202,7 +202,7 @@ public class TrackListFragment extends ListFragment {
         b.putInt(Keys.EDITSIZE, trackData.tracks.size());
         Track track;
         if (add) {
-            track = new Track(h);
+            track = new Track(h, trackData);
         } else {
             track = trackData.tracks.get(position);
         }
@@ -218,7 +218,7 @@ public class TrackListFragment extends ListFragment {
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
         String sTrack = intent.getStringExtra(TrackData.KEYTRACKS);
         try {
-            Track track = new Track(h);
+            Track track = new Track(h, trackData);
             if (actionAdd) {
                 trackData.tracks.add(track);
                 setPosition(trackData.tracks.size() - 1, true);

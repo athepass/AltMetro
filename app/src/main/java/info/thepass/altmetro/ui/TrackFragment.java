@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,12 +48,16 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
+    public ItemsListViewManager lvManager;
+    private MenuItem menuItemPlay;
+    private MenuItem menuItemSettings;
+    private MenuItem menuItemTrackList;
     private HelperMetro h;
     private EmphasisViewManager evPlayer;
-    public ItemsListViewManager lvManager;
     private LayoutInflater myInflater;
     private View layout;
     private SoundFragment soundFragment;
+
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -101,19 +106,44 @@ public class TrackFragment extends Fragment {
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_track, menu);
+        menuItemPlay = menu.findItem(R.id.action_track_play);
+        menuItemSettings = menu.findItem(R.id.action_track_settings);
+        menuItemTrackList = menu.findItem(R.id.action_track_tracklist);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+        if (isPlaying) {
+            menuItemSettings.setIcon(R.mipmap.ic_none);
+            menuItemPlay.setIcon(R.mipmap.ic_action_stop);
+        } else {
+            menuItemSettings.setIcon(R.mipmap.ic_action_settings);
+            menuItemPlay.setIcon(R.mipmap.ic_action_play);
+        }
+        if ((!isPlaying && trackData.metroMode != Keys.METROMODESIMPLE)) {
+            menuItemTrackList.setIcon(R.mipmap.icon_list);
+        } else {
+            menuItemTrackList.setIcon(R.mipmap.ic_none);
+        }
+//        menuItemTrackList.setVisible(!isPlaying && trackData.metroMode!=Keys.METROMODESIMPLE);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_track_play:
-                doPlay(trackData.trackSelected);
+                doStartStopPlayer(trackData.trackSelected);
                 return true;
             case R.id.action_track_settings:
-                doPrefs();
+                if (!isPlaying) {
+                    doPrefs();
+                }
                 return true;
             case R.id.action_track_tracklist:
-                doTrackList();
+                if (trackData.metroMode != Keys.METROMODESIMPLE && !isPlaying) {
+                    doTrackList();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -138,7 +168,7 @@ public class TrackFragment extends Fragment {
                     setStudy(intent);
                     return;
                 case Keys.TARGETPREF:
-                    lvManager.itemsAdapter.notifyDataSetChanged();
+                    doPref();
                     return;
             }
         }
@@ -326,9 +356,7 @@ public class TrackFragment extends Fragment {
 
     public void setData() {
         track = trackData.tracks.get(trackData.trackSelected);
-
-        String s = track.getTitle(trackData, trackData.trackSelected);
-        getActivity().setTitle(s.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + s);
+        setTitle();
 
         lvManager.itemsAdapter.notifyDataSetChanged();
         tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
@@ -359,13 +387,15 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
-    public void doPlay(int position) {
+    public void doStartStopPlayer(int position) {
         // toggle
         isPlaying = !isPlaying;
+        setTitle();
         evPlayer.setEmphasisVisible(isPlaying);
         lvManager.itemsListView.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
         tv_study.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
         tvTap.setVisibility((isPlaying) ? View.INVISIBLE : View.VISIBLE);
+        getActivity().invalidateOptionsMenu();
 
         if (isPlaying) {
             bm.trackData = trackData;
@@ -408,7 +438,7 @@ public class TrackFragment extends Fragment {
         Repeat repeat = track.repeats.get(index);
         tempoTV = repeat.tempo;
         changeTempo(0);
-        Pat pat = trackData.pats.get(repeat.indexPattern);
+        Pat pat = track.getPats().get(repeat.indexPattern);
         evPlayer.data = trackData;
         evPlayer.setPattern(pat, isPlaying);
     }
@@ -418,10 +448,11 @@ public class TrackFragment extends Fragment {
         track.setTempo(tempoTV);
         displayTempo();
     }
+
     private void changeTempo(int iDelta) {
         setTempo(tempoTV + iDelta);
     }
-    
+
     private void displayTempo() {
         tvTempo.setText("" + tempoTV);
         int tempoPractice = h.validatedTempo(tempoTV * track.study.practice / 100);
@@ -433,11 +464,26 @@ public class TrackFragment extends Fragment {
         }
     }
 
+    private void setTitle() {
+        String sPlay = (isPlaying) ? " (P)" : "";
+        String sTrack = track.getTitle(trackData, trackData.trackSelected);
+        getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
+    }
+
     private int getProgressTempo(int tempoIndex) {
         return tempoIndex + Keys.MINTEMPO;
     }
 
     private int getProgressIndex(int tempo) {
         return tempo - Keys.MINTEMPO;
+    }
+
+    private void doPref() {
+        Log.d(TAG, "doPref");
+        trackData.metroMode = Integer.parseInt(h.prefs.getString(Keys.PREFMETROMODE, "" + Keys.METROMODESIMPLE));
+        trackData.checkMetroMode();
+        trackData.saveData("pref", false);
+        ActivityTrack act = (ActivityTrack) getActivity();
+        act.doRestart();
     }
 }

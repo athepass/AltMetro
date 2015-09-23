@@ -64,31 +64,44 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     @Override
     public int getItemViewType(int position) {
         int vType;
-        if (track.multi) {
+        if (trackData.metroMode == Keys.METROMODESIMPLE) {
+            switch (position) {
+                case 0:
+                    vType = ROWTYPEREPEAT;
+                    break;
+                case 1:
+                    vType = ROWTYPEPAT;
+                    break;
+                default:
+                    throw new RuntimeException("invalid ViewType simple " + position);
+            }
+            return vType;
+        } else if (track.multi) {
             if (position < (track.repeats.size())) {
                 vType = ROWTYPEREPEAT;
             } else if (position == (track.repeats.size())) {
                 vType = ROWTYPEREPEATADD;
-            } else if (position < (track.repeats.size() + 1 + trackData.pats.size())) {
+            } else if (position < (track.repeats.size() + 1 + track.getPats().size())) {
                 vType = ROWTYPEPAT;
-            } else if (position == (track.repeats.size() + 1 + trackData.pats.size())) {
+            } else if (position == (track.repeats.size() + 1 + track.getPats().size())) {
                 vType = ROWTYPEPATADD;
             } else {
                 String msg = "invalid multi item type at position " + position;
                 msg += " rep:" + track.repeats.size();
-                msg += " pat:" + trackData.pats.size();
+                msg += " pat:" + track.getPats().size();
                 throw new RuntimeException(msg);
             }
             return vType;
+
         } else {
             switch (position) {
                 case 0:
                     vType = ROWTYPEREPEAT;
                     break;
                 default:
-                    if (position < (1 + trackData.pats.size())) {
+                    if (position < (1 + track.getPats().size())) {
                         vType = ROWTYPEPAT;
-                    } else if (position == (1 + trackData.pats.size())) {
+                    } else if (position == (1 + track.getPats().size())) {
                         vType = ROWTYPEPATADD;
                     } else {
                         throw new RuntimeException("invalid single item type at position " + position);
@@ -100,7 +113,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public void notifyDataSetChanged() {
-        track.syncItems(trackData.pats);
+        track.syncItems(track.getPats());
         super.notifyDataSetChanged();
     }
 
@@ -118,7 +131,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 selectedPat = track.getItemPatPosition(position);
                 break;
             case ROWTYPEPATADD:
-                selectedPat = trackData.pats.size();
+                selectedPat = track.getPats().size();
                 break;
         }
         return position;
@@ -165,14 +178,24 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         int index = track.getItemRepeatPosition(position);
 
         Repeat repeat = track.repeats.get(index);
-        Pat pat = trackData.pats.get(repeat.indexPattern);
+        Pat pat = track.getPats().get(repeat.indexPattern);
         String patDisplay = pat.display(h, repeat.indexPattern, false);
         String s = repeat.display(h, index, patDisplay, index != selectedRepeat);
         holder.info.setText(s);
         holder.evRepeatList.setPattern(pat, false);
 
-        holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
-        holder.header.setTextColor(Color.BLACK);
+        if (index == 0) {
+            holder.header.setVisibility(View.VISIBLE);
+            holder.header.setTextColor(Color.BLACK);
+            if (trackData.metroMode == Keys.METROMODESIMPLE || !track.multi) {
+                holder.header.setText(h.getString(R.string.label_repeat));
+            } else {
+                holder.header.setText(h.getString(R.string.label_repeats));
+            }
+        } else {
+            holder.header.setVisibility(View.GONE);
+        }
+
         holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size() > 1) ? lvSelColor : Color.TRANSPARENT);
         if (track.multi) {
             holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
@@ -184,7 +207,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickRepeat(String info, View v) {
         int position = getViewPosition(v);
-        if (track.multi) {
+        if (track.repeats.size() > 1) {
             if (position >= 0) {
                 positionToolbar = (positionToolbar == position) ? -1 : position;
             } else {
@@ -239,7 +262,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemRepeatPosition(position);
                 frag.setRepeat(index);
 
-                frag.doPlay(index);
+                frag.doStartStopPlayer(index);
             }
         });
 
@@ -381,13 +404,30 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         int index = track.getItemPatPosition(position);
-        Pat pat = trackData.pats.get(index);
+        Pat pat = track.getPats().get(index);
         String s = pat.display(h, index, false);
         holder.info.setText(s);
         holder.evPatList.setPattern(pat, false);
 
-        holder.header.setVisibility((index == 0) ? View.VISIBLE : View.GONE);
-        holder.header.setTextColor(Color.BLACK);
+        if (index == 0) {
+            holder.header.setTextColor(Color.BLACK);
+            holder.header.setVisibility(View.VISIBLE);
+            switch (trackData.metroMode) {
+                case Keys.METROMODESIMPLE:
+                    holder.header.setText(h.getString(R.string.label_pattern));
+                    break;
+                case Keys.METROMODETRACKPAT:
+                    holder.header.setText(h.getString(R.string.label_trackpatterns));
+                    break;
+                case Keys.METROMODETRACKDATAPAT:
+                    holder.header.setText(h.getString(R.string.label_globalpatterns));
+                    break;
+                default:
+                    throw new RuntimeException("onbekende metromode " + trackData.metroMode);
+            }
+        } else {
+            holder.header.setVisibility(View.GONE);
+        }
 
         holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
         holder.rijBody.setBackgroundColor((position == positionToolbar) ? lvSelColor : Color.TRANSPARENT);
@@ -398,10 +438,14 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickPat(String info, View v) {
         int position = getViewPosition(v);
-        if (position >= 0) {
-            positionToolbar = (positionToolbar == position) ? -1 : position;
+        if (track.getPats().size() > 1) {
+            if (position >= 0) {
+                positionToolbar = (positionToolbar == position) ? -1 : position;
+            } else {
+                positionToolbar = position;
+            }
         } else {
-            positionToolbar = position;
+            frag.lvManager.editPattern(position, false);
         }
         notifyDataSetChanged();
     }
@@ -480,10 +524,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemPatPosition(position);
                 if (index >= 1) {
                     positionToolbar--;
-                    Pat pat0 = trackData.pats.get(index - 1);
-                    Pat pat1 = trackData.pats.get(index);
-                    trackData.pats.set(index - 1, pat1);
-                    trackData.pats.set(index, pat0);
+                    Pat pat0 = track.getPats().get(index - 1);
+                    Pat pat1 = track.getPats().get(index);
+                    track.getPats().set(index - 1, pat1);
+                    track.getPats().set(index, pat0);
                 }
                 notifyDataSetChanged();
             }
@@ -494,12 +538,12 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 int position = getViewPosition(v);
                 int index = track.getItemPatPosition(position);
-                if (index < trackData.pats.size() - 1) {
+                if (index < track.getPats().size() - 1) {
                     positionToolbar++;
-                    Pat pat0 = trackData.pats.get(index);
-                    Pat pat1 = trackData.pats.get(index + 1);
-                    trackData.pats.set(index, pat1);
-                    trackData.pats.set(index + 1, pat0);
+                    Pat pat0 = track.getPats().get(index);
+                    Pat pat1 = track.getPats().get(index + 1);
+                    track.getPats().set(index, pat1);
+                    track.getPats().set(index + 1, pat0);
                 }
                 notifyDataSetChanged();
             }

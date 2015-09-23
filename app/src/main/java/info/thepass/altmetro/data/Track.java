@@ -1,5 +1,7 @@
 package info.thepass.altmetro.data;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +20,8 @@ public class Track {
     public final static String KEYSTUDY = "TRstudy";
     public final static String KEYREPEATS = "TRrepeats";
     public final static String KEYREPEATSELECTED = "TRselrep";
+    public final static String KEYTRPATS = "TRpats";
+    public final static String KEYTRPATSELECTED = "TRselpat";
     public int nummer;
     public int hashTrack;
     public String titel;
@@ -26,8 +30,13 @@ public class Track {
     public ArrayList<Repeat> repeats;
     public int repeatSelected;
     public ArrayList<String> items;
+    private TrackData trackData;
+    private int trPatSelected;
+    private ArrayList<Pat> trPats;
 
-    public Track(HelperMetro h) {
+    public Track(HelperMetro h, TrackData data) {
+        trackData = data;
+
         nummer = 0;
         hashTrack = h.getHash();
         titel = "";
@@ -42,6 +51,11 @@ public class Track {
 
         //Laat de repeat meteen verwijzen naar de 0e pattern
         repeat.indexPattern = 0;
+
+        trPats = new ArrayList<Pat>();
+        trPatSelected = 0;
+        Pat pat = new Pat(h);
+        trPats.add(pat);
 
         items = new ArrayList<String>();
     }
@@ -63,8 +77,15 @@ public class Track {
             }
             json.put(KEYREPEATS, repeatsArray);
 
+            json.put(KEYTRPATSELECTED, trPatSelected);
+            JSONArray patsArray = new JSONArray();
+            for (int i = 0; i < trPats.size(); i++) {
+                patsArray.put(trPats.get(i).toJson());
+            }
+            json.put(KEYTRPATS, patsArray);
+
         } catch (JSONException e) {
-            throw new RuntimeException("toJson exception"+e.getMessage());
+            throw new RuntimeException("toJson exception" + e.getMessage());
         }
         return json;
     }
@@ -87,8 +108,17 @@ public class Track {
                 repeats.add(rep);
             }
 
+            trPatSelected = json.getInt(KEYTRPATSELECTED);
+            trPats.clear();
+            JSONArray patsArray = json.getJSONArray(KEYTRPATS);
+            for (int i = 0; i < patsArray.length(); i++) {
+                Pat pat = new Pat(h);
+                pat.fromJson(patsArray.getJSONObject(i));
+                trPats.add(pat);
+            }
+
         } catch (JSONException e) {
-            throw new RuntimeException("fromJson exception"+e.getMessage());
+            throw new RuntimeException("fromJson exception" + e.getMessage());
         }
     }
 
@@ -144,9 +174,18 @@ public class Track {
     }
 
     public void syncItems(ArrayList<Pat> pats) {
-        int aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + add pattern + pats
-        if (multi) {
-            aantal = repeats.size() + 1 + pats.size() + 1;
+        int aantal = -1;
+        if (trackData.metroMode == Keys.METROMODESIMPLE) {
+            Log.d(TAG, "simple");
+            aantal = 2;
+        } else {
+            if (multi) {
+                Log.d(TAG, "multi");
+                aantal = repeats.size() + 1 + pats.size() + 1;
+            } else {  // Single repeat
+                Log.d(TAG, "single");
+                aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + add pattern + pats
+            }
         }
         // maak aantal regels
         while (items.size() < aantal)
@@ -155,16 +194,16 @@ public class Track {
             items.remove(0);
 
         // controleer consistentie pat hash in repeat
-        for (int i=0;i<repeats.size();i++) {
+        for (int i = 0; i < repeats.size(); i++) {
             Repeat repeat = repeats.get(i);
-            if (repeat.hashPattern==Repeat.NOHASH) {
+            if (repeat.hashPattern == Repeat.NOHASH) {
                 // hash default: vul hash obv repeat.indexpattern
                 repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
             } else {
                 // hash ingevuld. Zet index goed.
-                for (int j=0;j<pats.size();j++) {
+                for (int j = 0; j < pats.size(); j++) {
                     Pat pat = pats.get(j);
-                    if (repeat.hashPattern==pat.patHash) {
+                    if (repeat.hashPattern == pat.patHash) {
                         repeat.indexPattern = j;
                         j = pats.size();
                     }
@@ -175,6 +214,22 @@ public class Track {
 
     public void setTempo(int newTempo) {
         repeats.get(repeatSelected).tempo = newTempo;
+    }
+
+    public ArrayList<Pat> getPats() {
+        if (trackData.metroMode == Keys.METROMODETRACKDATAPAT) {
+            return trackData.getTdPats();
+        } else {
+            return trPats;
+        }
+    }
+
+    public int getPatSelected() {
+        if (trackData.metroMode == Keys.METROMODETRACKDATAPAT) {
+            return trackData.getTdPatSelected();
+        } else {
+            return trPatSelected;
+        }
     }
 
 }

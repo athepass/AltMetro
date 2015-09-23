@@ -211,7 +211,7 @@ public class EmphasisViewManager {
             int maxBeat = 0;
             for (int i=0;i<track.repeats.size();i++){
                 Repeat repeat = track.repeats.get(i);
-                Pat patRepeat = data.pats.get(repeat.indexPattern);
+                Pat patRepeat = track.getPats().get(repeat.indexPattern);
                 maxBeat = (maxBeat<patRepeat.patBeats) ? patRepeat.patBeats : maxBeat;
             }
             // er passen er 10 op de eerste regel. Evt. 2e regel verbergen

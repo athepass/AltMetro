@@ -9,10 +9,10 @@
     <dimen name="emphasis_editor_height">32dp</dimen>
     <dimen name="emphasis_editor_marginleft">5dp</dimen>
     <dimen name="emphasis_corners">12dp</dimen>
-    <dimen name="incdec_width">37dp</dimen>
+    <dimen name="incdec_width">32dp</dimen>
     <dimen name="incdec_height">32dp</dimen>
     <dimen name="incdec_marginleft">-9dp</dimen>
-    <dimen name="incdec_textsize">15dp</dimen>
+    <dimen name="incdec_textsize">13dp</dimen>
     <dimen name="textsize_timescale">20sp</dimen>
     <dimen name="textsize_row">16sp</dimen>
     <dimen name="listitem_button_width">100dp</dimen>

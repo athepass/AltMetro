@@ -117,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_tempo"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="25dp"/>
 
 
     <RelativeLayout
@@ -190,39 +190,89 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/label_count"
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_count"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="25dp"
+        android:text="@string/label_repeatcount"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        />
 
-    <LinearLayout
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/label_noend"
+        android:id="@+id/cb_dlg_noend"
+        android:layout_gravity="center_horizontal"/>
+
+    <RelativeLayout
+        android:id="@+id/ll_dlg_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_noend"
-            android:id="@+id/cb_dlg_noend"/>
+        <Button
+            android:id="@+id/button_dlg_count_m20"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m20"
+            android:layout_alignBottom="@+id/button_dlg_count_m5"
+            android:layout_toLeftOf="@+id/button_dlg_count_m5"
+            android:layout_toStartOf="@+id/button_dlg_count_m5"/>
+
+        <Button
+            android:id="@+id/button_dlg_count_m5"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m5"
+            android:layout_alignBottom="@+id/button_dlg_count_m1"
+            android:layout_toLeftOf="@+id/button_dlg_count_m1"
+            android:layout_toStartOf="@+id/button_dlg_count_m1"/>
+
+        <Button
+            android:id="@+id/button_dlg_count_m1"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_m1"
+            android:layout_alignBottom="@+id/tv_dlg_count"
+            android:layout_toLeftOf="@+id/tv_dlg_count"
+            android:layout_toStartOf="@+id/tv_dlg_count"/>
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_dlg_count"
+            android:layout_width="35dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="@string/label_repeatcount"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_marginRight="5dp"/>
+            android:background="@color/color_emphasis_low"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/hw"
+            android:textColor="@color/color_text"
+            android:textSize="14sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
 
-        <EditText
-            android:id="@+id/et_dlg_repeat_count"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
+        <Button
+            android:id="@+id/button_dlg_count_p1"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p1"
+            android:layout_alignBottom="@+id/tv_dlg_count"
+            android:layout_toRightOf="@+id/tv_dlg_count"
+            android:layout_toEndOf="@+id/tv_dlg_count"/>
 
-    </LinearLayout>
+
+        <Button
+            android:id="@+id/button_dlg_count_p5"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p5"
+            android:layout_alignBottom="@+id/button_dlg_count_p1"
+            android:layout_toRightOf="@+id/button_dlg_count_p1"
+            android:layout_toEndOf="@+id/button_dlg_count_p1"/>
+
+        <Button
+            android:id="@+id/button_dlg_count_p20"
+            style="@style/AppTheme.TempoButton"
+            android:text="@string/label_p20"
+            android:layout_alignBottom="@+id/button_dlg_count_p5"
+            android:layout_toRightOf="@+id/button_dlg_count_p5"
+            android:layout_toEndOf="@+id/button_dlg_count_p5"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

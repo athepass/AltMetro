@@ -20,6 +20,7 @@ import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
+import info.thepass.altmetro.ui.ActivityTrack;
 
 public class DialogEditTrackInfo extends DialogFragment {
     public final static String TAG = "DialogEditTrakInfo";
@@ -76,7 +77,9 @@ public class DialogEditTrackInfo extends DialogFragment {
         index = b.getInt(Keys.EDITINDEX);
         editSize = b.getInt(Keys.EDITSIZE);
         try {
-            trak = new Track(h);
+            ActivityTrack act = (ActivityTrack) getActivity();
+            TrackData trackData = act.trackData;
+            trak = new Track(h, trackData);
             String sTrack = b.getString(TrackData.KEYTRACKS);
             trak.fromJson(new JSONObject(sTrack), h);
             etNummer.setText(String.valueOf(trak.nummer));

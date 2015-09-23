@@ -1,6 +1,7 @@
 package info.thepass.altmetro.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import info.thepass.altmetro.R;
@@ -35,7 +36,17 @@ public class ActivityTrack extends Activity {
     }
 
     private void initMetroData() {
-        h.logD(TAG, "InitMetroData start");
         trackData = new TrackData(h);
+        h.logD(TAG, "InitMetroData start " +trackData.metroMode);
+    }
+
+    public void doRestart() {
+        h.logD(TAG,"doRestart");
+        Intent intent = new Intent();
+        intent.setClass(this, ActivityTrack.class);
+        HelperMetro h = new HelperMetro(this);
+        h.logI(TAG,h.getString(R.string.error_restarting));
+        startActivity(intent);
+        finish();
     }
 }

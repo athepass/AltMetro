@@ -6,7 +6,6 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
@@ -28,7 +27,7 @@ public class BeatManager {
         beatList = new ArrayList<Beat>();
     }
 
-    public void build(Track track, ArrayList<Pat> pats) {
+    public void build(Track track) {
         beatList.clear();
         for (int iRep = 0;  iRep<track.repeats.size();iRep++) {
             Repeat repeat = track.repeats.get(iRep);
@@ -40,7 +39,7 @@ public class BeatManager {
     }
 
     public void stopPlayer() {
-        build(track, trackData.pats);
+        build(track);
         ArrayList<String> rows = display();
 
         ArrayBrowserListFragment beatFragment = new ArrayBrowserListFragment();

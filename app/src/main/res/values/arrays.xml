@@ -67,4 +67,14 @@
         <item>"350"</item>
         <item>"400"</item>
     </string-array>
+    <string-array name="array_metromode">
+        <item>Simple mode</item>
+        <item>Advanced mode, track pattern</item>
+        <item>Advanced mode, global patterns</item>
+    </string-array>
+    <string-array name="array_metromode_index">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>
