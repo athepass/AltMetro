@@ -6,6 +6,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import info.thepass.altmetro.Audio.Beat;
+import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -18,8 +20,8 @@ public class Track {
     public final static String KEYSTUDY = "TRstudy";
     public final static String KEYREPEATS = "TRrepeats";
     public final static String KEYREPEATSELECTED = "TRselrep";
-    public final static String KEYTRPATS = "TRpats";
-    public final static String KEYTRPATSELECTED = "TRselpat";
+    public final static String KEYPATS = "TRpats";
+    public final static String KEYPATSELECTED = "TRselpat";
     public int nummer;
     public int hashTrack;
     public String titel;
@@ -29,8 +31,8 @@ public class Track {
     public int repeatSelected;
     public ArrayList<String> items;
     private TrackData trackData;
-    private int trPatSelected;
-    private ArrayList<Pat> trPats;
+    public int patSelected;
+    public ArrayList<Pat> pats;
 
     public Track(HelperMetro h, TrackData data) {
         trackData = data;
@@ -50,10 +52,10 @@ public class Track {
         //Laat de repeat meteen verwijzen naar de 0e pattern
         repeat.indexPattern = 0;
 
-        trPats = new ArrayList<Pat>();
-        trPatSelected = 0;
+        pats = new ArrayList<Pat>();
+        patSelected = 0;
         Pat pat = new Pat(h);
-        trPats.add(pat);
+        pats.add(pat);
 
         items = new ArrayList<String>();
     }
@@ -75,12 +77,12 @@ public class Track {
             }
             json.put(KEYREPEATS, repeatsArray);
 
-            json.put(KEYTRPATSELECTED, trPatSelected);
+            json.put(KEYPATSELECTED, patSelected);
             JSONArray patsArray = new JSONArray();
-            for (int i = 0; i < trPats.size(); i++) {
-                patsArray.put(trPats.get(i).toJson());
+            for (int i = 0; i < pats.size(); i++) {
+                patsArray.put(pats.get(i).toJson());
             }
-            json.put(KEYTRPATS, patsArray);
+            json.put(KEYPATS, patsArray);
 
         } catch (JSONException e) {
             throw new RuntimeException("toJson exception" + e.getMessage());
@@ -106,13 +108,13 @@ public class Track {
                 repeats.add(rep);
             }
 
-            trPatSelected = json.getInt(KEYTRPATSELECTED);
-            trPats.clear();
-            JSONArray patsArray = json.getJSONArray(KEYTRPATS);
+            patSelected = json.getInt(KEYPATSELECTED);
+            pats.clear();
+            JSONArray patsArray = json.getJSONArray(KEYPATS);
             for (int i = 0; i < patsArray.length(); i++) {
                 Pat pat = new Pat(h);
                 pat.fromJson(patsArray.getJSONObject(i));
-                trPats.add(pat);
+                pats.add(pat);
             }
 
         } catch (JSONException e) {
@@ -217,20 +219,47 @@ public class Track {
         repeats.get(repeatSelected).tempo = newTempo;
     }
 
-    public ArrayList<Pat> getPats() {
-        if (trackData.metroMode == Keys.METROMODETRACKDATAPAT) {
-            return trackData.getTdPats();
+    public boolean trackOK(HelperMetro h) {
+        if (trackData.metroMode == Keys.METROMODESIMPLE || !multi) {
+            return true;
+        }
+
+        for (int i = 0; i < repeats.size(); i++) {
+            Repeat repeat = repeats.get(i);
+            if (repeat.noEnd && i < repeats.size() - 1) {
+                h.showToastAlert(h.getString1(R.string.error_unreachable, "" + (i + 1)));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void buildBeatList(ArrayList<Beat> beatList) {
+        if (trackData.metroMode == Keys.METROMODESIMPLE || !multi) {
+            repeats.get(0).buildBeatList(beatList);
         } else {
-            return trPats;
+            for (int iRep = 0; iRep < repeats.size(); iRep++) {
+                repeats.get(iRep).buildBeatList(beatList);
+            }
         }
     }
 
-    public int getPatSelected() {
-        if (trackData.metroMode == Keys.METROMODETRACKDATAPAT) {
-            return trackData.getTdPatSelected();
+    public void clean() {
+        if (trackData.metroMode==Keys.METROMODESIMPLE) {
+            while (repeats.size()>1)
+                repeats.remove(1);
+            while (pats.size()>1)
+                pats.remove(1);
+            repeats.get(0).indexPattern=0;
+            repeats.get(0).hashPattern = pats.get(0).patHash;
+            multi = false;
         } else {
-            return trPatSelected;
+            if (multi) {
+                study.used = false;
+            } else {
+                while (repeats.size()>1)
+                    repeats.remove(1);
+            }
         }
     }
-
 }

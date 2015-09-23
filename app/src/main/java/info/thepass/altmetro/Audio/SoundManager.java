@@ -30,7 +30,7 @@ public class SoundManager {
 //			buildSps(data.sps, p);
 //		} else {
         Repeat repeat = track.repeats.get(0);
-        Pat p = track.getPats().get(repeat.indexPattern);
+        Pat p = track.pats.get(repeat.indexPattern);
         BarSounds brs = new BarSounds(p.patBeats, p.patBeatState, 0);
         brs.buildTempo(repeat.tempo, 100, p.patSubs);
         barSoundsList.add(brs);

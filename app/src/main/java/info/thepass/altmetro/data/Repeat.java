@@ -3,6 +3,9 @@ package info.thepass.altmetro.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import info.thepass.altmetro.Audio.Beat;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 
@@ -63,4 +66,8 @@ public class Repeat {
         s += ", " + patDisplay;
         return s;
     }
+
+    public void buildBeatList(ArrayList<Beat> beatList) {
+    }
+
 }

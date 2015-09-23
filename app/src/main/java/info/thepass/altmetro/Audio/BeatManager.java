@@ -6,7 +6,6 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
@@ -14,12 +13,12 @@ import info.thepass.altmetro.ui.ArrayBrowserListFragment;
 
 public class BeatManager {
     public final static String TAG = "Trak:BeatManager";
-    private HelperMetro h;
-    String[] subs;
     public ArrayList<Beat> beatList;
     public Track track;
     public TrackData trackData;
     public LinearLayout llRoot;
+    String[] subs;
+    private HelperMetro h;
 
     public BeatManager(HelperMetro hh) {
         h = hh;
@@ -29,8 +28,8 @@ public class BeatManager {
 
     public void build(Track track) {
         beatList.clear();
-        for (int iRep = 0;  iRep<track.repeats.size();iRep++) {
-            Repeat repeat = track.repeats.get(iRep);
+        if (track.trackOK(h)) {
+            track.buildBeatList(beatList);
         }
     }
 
@@ -39,7 +38,6 @@ public class BeatManager {
     }
 
     public void stopPlayer() {
-        build(track);
         ArrayList<String> rows = display();
 
         ArrayBrowserListFragment beatFragment = new ArrayBrowserListFragment();
@@ -61,11 +59,13 @@ public class BeatManager {
 //        transaction.commit();
 
     }
+
     public ArrayList<String> display() {
-        ArrayList<String> rows = new ArrayList<String >();
-        for (int i=0;i<beatList.size();i++) {
+        ArrayList<String> rows = new ArrayList<String>();
+        for (int i = 0; i < beatList.size(); i++) {
             Beat beat = beatList.get(i);
-            rows.add(beat.display(i+1,subs));
-        }        return rows;
+            rows.add(beat.display(i + 1, subs));
+        }
+        return rows;
     }
 }

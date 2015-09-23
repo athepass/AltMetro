@@ -137,7 +137,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
             repeat.fromJson(new JSONObject(s));
 
             pats = new ArrayList<Pat>();
-            JSONArray patsArray = new JSONArray(b.getString(Track.KEYTRPATS));
+            JSONArray patsArray = new JSONArray(b.getString(Track.KEYPATS));
             for (int i = 0; i < patsArray.length(); i++) {
                 Pat pat = new Pat(h);
                 pat.fromJson(patsArray.getJSONObject(i));

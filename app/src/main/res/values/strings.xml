@@ -31,8 +31,7 @@
     <string name="label_multi_multi">Multiple tempos</string>
     <string name="label_number">Number</string>
     <string name="label_pattern">Pattern</string>
-    <string name="label_trackpatterns">Track patterns</string>
-    <string name="label_globalpatterns">Global patterns</string>
+    <string name="label_patterns">Patterns</string>
     <string name="label_practice">Practice</string>
     <string name="label_repeat">Repeat</string>
     <string name="label_repeats">Repeats</string>
@@ -71,6 +70,7 @@
     <string name="error_taptempohigh" formatted="false">Tempo %s exceeds maximum tempo %s. Corrected</string>
     <string name="error_patinuse">Pattern in use. Deletion not allowed</string>
     <string name="error_restarting">Restarting....</string>
+    <string name="error_unreachable" formatted="false">Track %s no end. Next repeat unreachable</string>
     <string name="pref_metromode">Preferences</string>
     <string name="pref_title">Preferences</string>
     <string name="pref_multi">Default tracktype multi?</string>

@@ -23,8 +23,6 @@ public class TrackData {
     public final static String TAG = "TrakData";
     public final static String KEYTRACKS = "TDtrack";
     public final static String KEYTRACKSELECTED = "TDseltrk";
-    public final static String KEYTDPATS = "TDpats";
-    public final static String KEYTDPATSELECTED = "TDselpat";
     public final static String KEYMETROMODE = "TDmetmod";
     public int metroMode;
     public ArrayList<Track> tracks;
@@ -33,14 +31,11 @@ public class TrackData {
     private String pad;
     private String filenaam;
     private File dataFile;
-    private int tdPatSelected;
-    private ArrayList<Pat> tdPats;
 
     public TrackData(HelperMetro hh) {
         h = hh;
         trackSelected = 0;
         tracks = new ArrayList<Track>();
-        tdPats = new ArrayList<Pat>();
 
         initDataFile();
         if (!dataFile.exists()) {
@@ -65,10 +60,6 @@ public class TrackData {
         Track track = new Track(h, this);
         tracks.add(track);
         trackSelected = 0;
-
-        tdPatSelected = 0;
-        Pat pat = new Pat(h);
-        tdPats.add(pat);
 
         metroMode = Integer.parseInt(h.prefs.getString(Keys.PREFMETROMODE, "" + Keys.METROMODESIMPLE));
     }
@@ -102,6 +93,7 @@ public class TrackData {
     }
 
     public void saveData(String tag, boolean doDump) {
+        clean();
         // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
@@ -128,8 +120,7 @@ public class TrackData {
     }
 
     public String saveInfo() {
-        return " Track sel=" + trackSelected + " size=" + tracks.size()
-                + "Pat sel=" + tdPatSelected + " size=" + tdPats.size();
+        return " Track sel=" + trackSelected + " size=" + tracks.size();
     }
 
     public JSONObject toJson() {
@@ -144,13 +135,6 @@ public class TrackData {
                 tracksArray.put(tracks.get(i).toJson());
             }
             json.put(KEYTRACKS, tracksArray);
-
-            json.put(KEYTDPATSELECTED, tdPatSelected);
-            JSONArray patsArray = new JSONArray();
-            for (int i = 0; i < tdPats.size(); i++) {
-                patsArray.put(tdPats.get(i).toJson());
-            }
-            json.put(KEYTDPATS, patsArray);
 
         } catch (JSONException e) {
             throw new RuntimeException("toJson " + e.getMessage());
@@ -170,16 +154,6 @@ public class TrackData {
                 track.fromJson(tracksArray.getJSONObject(i), h);
                 tracks.add(track);
             }
-
-            tdPatSelected = json.getInt(KEYTDPATSELECTED);
-            tdPats.clear();
-            JSONArray patsArray = json.getJSONArray(KEYTDPATS);
-            for (int i = 0; i < patsArray.length(); i++) {
-                Pat pat = new Pat(h);
-                pat.fromJson(patsArray.getJSONObject(i));
-                tdPats.add(pat);
-            }
-
         } catch (JSONException e) {
             throw new RuntimeException("fromJson " + e.getMessage());
         }
@@ -194,25 +168,13 @@ public class TrackData {
         }
     }
 
-    public ArrayList<Pat> getTdPats() {
-        return tdPats;
-    }
-
-    public int getTdPatSelected() {
-        return tdPatSelected;
-    }
-
     public int getMetroMode() {
         return metroMode;
     }
 
-    public void checkMetroMode() {
-        if (metroMode == Keys.METROMODESIMPLE) {
-            trackSelected = 0;
-            Track track = tracks.get(0);
-            Repeat repeat = track.repeats.get(0);
-            repeat.indexPattern = 0;
-            repeat.hashPattern = track.getPats().get(0).patHash;
+    public void clean() {
+        for (int i=0;i<tracks.size();i++) {
+            tracks.get(i).clean();
         }
     }
 }

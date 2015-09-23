@@ -217,8 +217,9 @@ public class TrackListFragment extends ListFragment {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
         String sTrack = intent.getStringExtra(TrackData.KEYTRACKS);
+        Track track = new Track(h, trackData);
+
         try {
-            Track track = new Track(h, trackData);
             if (actionAdd) {
                 trackData.tracks.add(track);
                 setPosition(trackData.tracks.size() - 1, true);
@@ -227,11 +228,14 @@ public class TrackListFragment extends ListFragment {
                 trackData.tracks.set(index, track);
                 setPosition(index, true);
             }
-            getListView().setItemChecked(trackListAdapter.selectedItem, true);
-            trackListAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             throw new RuntimeException("updateTrackList json exception");
         }
+
+        trackData.clean();
+        getListView().setItemChecked(trackListAdapter.selectedItem, true);
+        trackListAdapter.notifyDataSetChanged();
+
         trackData.saveData("updateTrackList", false);
     }
 

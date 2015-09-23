@@ -38,6 +38,7 @@ public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
     public TrackData trackData;
     public Track track;
+    public boolean starting = true;
     // Listview
     public ItemsListViewManager lvManager;
     // views Study
@@ -92,20 +93,24 @@ public class TrackFragment extends Fragment {
         h.logD(TAG, "activityCreated");
         h.initToastAlert(myInflater);
         setHasOptionsMenu(true);
+
+        starting = true;
         initData();
+
+        initItemsListViewManager();
+        lvManager.initListView();
 
         initListeners();
         initSeekBar();
         initTempo();
         initIncDec();
         initStudy();
-        initItemsListViewManager();
-        lvManager.initListView();
 
         initViews();
         initEmphasis();
         initSoundFragment();
         bm = new BeatManager(h);
+        starting = false;
         setData();
     }
 
@@ -364,6 +369,10 @@ public class TrackFragment extends Fragment {
     }
 
     public void setData() {
+        if (starting) {
+            return;
+        }
+
         track = trackData.tracks.get(trackData.trackSelected);
         setTitle();
 
@@ -398,6 +407,10 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStartStopPlayer(int position) {
+        if (!track.trackOK(h)) {
+            return;
+        }
+
         // toggle
         isPlaying = !isPlaying;
 
@@ -456,7 +469,7 @@ public class TrackFragment extends Fragment {
         Repeat repeat = track.repeats.get(index);
         tempoTV = repeat.tempo;
         changeTempo(0);
-        Pat pat = track.getPats().get(repeat.indexPattern);
+        Pat pat = track.pats.get(repeat.indexPattern);
         evPlayer.data = trackData;
         evPlayer.setPattern(pat, isPlaying);
     }
@@ -499,7 +512,6 @@ public class TrackFragment extends Fragment {
     private void doPref() {
         Log.d(TAG, "doPref");
         trackData.metroMode = Integer.parseInt(h.prefs.getString(Keys.PREFMETROMODE, "" + Keys.METROMODESIMPLE));
-        trackData.checkMetroMode();
         trackData.saveData("pref", false);
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();

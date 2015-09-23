@@ -70,7 +70,7 @@ public class ItemsListViewManager {
                         itemsAdapter.notifyDataSetChanged();
                         break;
                     case TrackItemsAdapter.ROWTYPEPATADD:
-                        frag.lvManager.editPattern(track.getPats().size(), true);
+                        frag.lvManager.editPattern(track.pats.size(), true);
                         break;
                     default:
                         throw new RuntimeException("listview click at position " + position);
@@ -95,10 +95,10 @@ public class ItemsListViewManager {
         b.putBoolean(Track.KEYMULTI, track.multi);
 
         JSONArray patsArray = new JSONArray();
-        for (int i = 0; i < track.getPats().size(); i++) {
-            patsArray.put(track.getPats().get(i).toJson());
+        for (int i = 0; i < track.pats.size(); i++) {
+            patsArray.put(track.pats.get(i).toJson());
         }
-        b.putString(Track.KEYTRPATS, patsArray.toString());
+        b.putString(Track.KEYPATS, patsArray.toString());
 
         Repeat repeat;
         if (add) {
@@ -144,7 +144,7 @@ public class ItemsListViewManager {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(frag.getActivity());
         Repeat repeat = track.repeats.get(indexDelRepeat);
-        String sPat = track.getPats().get(repeat.indexPattern).display(h, repeat.indexPattern, true);
+        String sPat = track.pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
         String pInfo = repeat.display(h, index, sPat, true);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
@@ -183,15 +183,15 @@ public class ItemsListViewManager {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemPatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
-        b.putInt(Keys.EDITSIZE, track.getPats().size());
+        b.putInt(Keys.EDITSIZE, track.pats.size());
 
         Pat pat;
         if (add) {
             pat = new Pat(h);
         } else {
-            pat = track.getPats().get(index);
+            pat = track.pats.get(index);
         }
-        b.putString(Track.KEYTRPATS, pat.toJson().toString());
+        b.putString(Track.KEYPATS, pat.toJson().toString());
 
         dlgEdit.setArguments(b);
         dlgEdit.show(frag.getFragmentManager(), DialogEditTrackPattern.TAG);
@@ -200,14 +200,14 @@ public class ItemsListViewManager {
     public void updatePattern(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
-        String sPat = intent.getStringExtra(Track.KEYTRPATS);
+        String sPat = intent.getStringExtra(Track.KEYPATS);
         try {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));
             if (actionAdd) {
-                track.getPats().add(index, pat);
+                track.pats.add(index, pat);
             } else {
-                track.getPats().set(index, pat);
+                track.pats.set(index, pat);
             }
             itemsAdapter.selectedPat = index;
             itemsAdapter.notifyDataSetChanged();
@@ -220,13 +220,13 @@ public class ItemsListViewManager {
     }
 
     public void confirmDeletePattern(int position) {
-        if (track.getPats().size() == 1) {
+        if (track.pats.size() == 1) {
             return;
         }
         int index = track.getItemPatPosition(position);
         indexDelPattern = index;
         itemsAdapter.selectedPat = indexDelPattern;
-        Pat pat = track.getPats().get(indexDelPattern);
+        Pat pat = track.pats.get(indexDelPattern);
         // verwijderen niet mogelijk indien nog in gebruik.!!
         if (pat.checkInUse(trackData, h)) {
             return;
@@ -252,9 +252,9 @@ public class ItemsListViewManager {
     }
 
     private void deleteItemPattern() {
-        track.getPats().remove(indexDelPattern);
-        if (indexDelPattern >= track.getPats().size() - 1) {
-            itemsAdapter.selectedPat = track.getPats().size() - 1;
+        track.pats.remove(indexDelPattern);
+        if (indexDelPattern >= track.pats.size() - 1) {
+            itemsAdapter.selectedPat = track.pats.size() - 1;
         }
         trackData.saveData("deletePattern", false);
         frag.setData();

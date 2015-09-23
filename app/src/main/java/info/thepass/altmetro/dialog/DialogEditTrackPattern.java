@@ -83,7 +83,7 @@ public class DialogEditTrackPattern extends DialogFragment {
                         pat.patTitle = etTitel.getText().toString();
 
                         Intent intent = new Intent();
-                        intent.putExtra(Track.KEYTRPATS, pat.toJson().toString());
+                        intent.putExtra(Track.KEYPATS, pat.toJson().toString());
                         intent.putExtra(Keys.EDITACTION, actionAdd);
                         intent.putExtra(Keys.EDITINDEX, index);
                         getTargetFragment().onActivityResult(Keys.TARGETEDITPATTERN, Activity.RESULT_OK, intent);
@@ -110,7 +110,7 @@ public class DialogEditTrackPattern extends DialogFragment {
         editSize = b.getInt(Keys.EDITSIZE);
         try {
             pat = new Pat(h);
-            pat.fromJson(new JSONObject(b.getString(Track.KEYTRPATS)));
+            pat.fromJson(new JSONObject(b.getString(Track.KEYPATS)));
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }

@@ -103,16 +103,6 @@ public class DialogEditTrackInfo extends DialogFragment {
 
         trak.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
 
-        if (!trak.multi) {
-            // igv single study disable
-            trak.study.used = false;
-            trak.study.setInitial();
-            // igv single verwijzen naar 1e pattern en 1e repeat
-            // 1e repeat moet oneindig doorgaan: count <=0
-            trak.repeatSelected = 0;
-            trak.repeats.get(0).count = 0;
-        }
-
         Intent intent = new Intent();
         intent.putExtra(Keys.EDITACTION, actionAdd);
         intent.putExtra(Keys.EDITINDEX, index);
