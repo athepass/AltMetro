@@ -407,7 +407,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStartStopPlayer(int position) {
-        if (!track.trackOK(h)) {
+        if (!track.trackPlayable(h)) {
             return;
         }
 

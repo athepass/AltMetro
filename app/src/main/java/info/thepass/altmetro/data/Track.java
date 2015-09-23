@@ -158,7 +158,7 @@ public class Track {
 
 
     public int getItemRepeatPosition(int position) {
-        if (trackData.metroMode != Keys.METROMODESIMPLE) {
+        if (trackData.metroMode == Keys.METROMODESIMPLE) {
             return 0;
         }
         if (multi) {
@@ -187,7 +187,7 @@ public class Track {
             if (multi) {
                 aantal = repeats.size() + 1 + pats.size() + 1;
             } else {  // Single repeat
-                aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + add pattern + pats
+                aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + pats + add pattern
             }
         }
         // maak aantal regels
@@ -219,7 +219,7 @@ public class Track {
         repeats.get(repeatSelected).tempo = newTempo;
     }
 
-    public boolean trackOK(HelperMetro h) {
+    public boolean trackPlayable(HelperMetro h) {
         if (trackData.metroMode == Keys.METROMODESIMPLE || !multi) {
             return true;
         }

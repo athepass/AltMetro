@@ -2,6 +2,7 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,6 +177,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         int index = track.getItemRepeatPosition(position);
+        Log.d(TAG,"repeat "+ position + " / "+index + "." + track.multi);
 
         Repeat repeat = track.repeats.get(index);
         Pat pat = track.pats.get(repeat.indexPattern);

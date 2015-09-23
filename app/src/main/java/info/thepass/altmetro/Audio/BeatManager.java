@@ -28,7 +28,7 @@ public class BeatManager {
 
     public void build(Track track) {
         beatList.clear();
-        if (track.trackOK(h)) {
+        if (track.trackPlayable(h)) {
             track.buildBeatList(beatList);
         }
     }
