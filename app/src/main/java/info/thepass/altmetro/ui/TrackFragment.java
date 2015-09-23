@@ -38,6 +38,8 @@ public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
     public TrackData trackData;
     public Track track;
+    // Listview
+    public ItemsListViewManager lvManager;
     // views Study
     public TextView tvTap;
     public TextView tv_study;
@@ -48,16 +50,16 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
-    public ItemsListViewManager lvManager;
+    private View layout;
+    private HelperMetro h;
+    private LayoutInflater myInflater;
     private MenuItem menuItemPlay;
     private MenuItem menuItemSettings;
     private MenuItem menuItemTrackList;
-    private HelperMetro h;
+    // player
     private EmphasisViewManager evPlayer;
-    private LayoutInflater myInflater;
-    private View layout;
+    private TextView tvInfo;
     private SoundFragment soundFragment;
-
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -91,14 +93,17 @@ public class TrackFragment extends Fragment {
         h.initToastAlert(myInflater);
         setHasOptionsMenu(true);
         initData();
-        initItemsListViewManager();
-        lvManager.initListView();
+
         initListeners();
-        initEmphasis();
         initSeekBar();
         initTempo();
         initIncDec();
         initStudy();
+        initItemsListViewManager();
+        lvManager.initListView();
+
+        initViews();
+        initEmphasis();
         initSoundFragment();
         bm = new BeatManager(h);
         setData();
@@ -337,6 +342,10 @@ public class TrackFragment extends Fragment {
         }
     }
 
+    private void initViews() {
+        tvInfo = (TextView) getActivity().findViewById(R.id.tv_track_info);
+    }
+
     private void initEmphasis() {
         evPlayer = new EmphasisViewManager("player", Keys.EVMPLAYER, layout, h);
         evPlayer.useLow = true;
@@ -363,7 +372,8 @@ public class TrackFragment extends Fragment {
 
         setRepeat(track.repeatSelected);
         setStudy(null);
-        evPlayer.setEmphasisVisible(isPlaying);
+
+        updateLayout();
     }
 
     private void doPrefs() {
@@ -390,12 +400,8 @@ public class TrackFragment extends Fragment {
     public void doStartStopPlayer(int position) {
         // toggle
         isPlaying = !isPlaying;
-        setTitle();
-        evPlayer.setEmphasisVisible(isPlaying);
-        lvManager.itemsListView.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
-        tv_study.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
-        tvTap.setVisibility((isPlaying) ? View.INVISIBLE : View.VISIBLE);
-        getActivity().invalidateOptionsMenu();
+
+        updateLayout();
 
         if (isPlaying) {
             bm.trackData = trackData;
@@ -405,6 +411,18 @@ public class TrackFragment extends Fragment {
         } else {
             bm.stopPlayer();
         }
+    }
+
+    private void updateLayout() {
+        setTitle();
+        evPlayer.setEmphasisVisible(isPlaying);
+        tvInfo.setVisibility((isPlaying) ? View.VISIBLE : View.GONE);
+
+        tv_study.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
+        tvTap.setVisibility((isPlaying) ? View.INVISIBLE : View.VISIBLE);
+        lvManager.itemsListView.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
+
+        getActivity().invalidateOptionsMenu();
     }
 
     public void setStudy(Intent intent) {

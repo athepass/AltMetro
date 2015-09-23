@@ -1,7 +1,5 @@
 package info.thepass.altmetro.data;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -158,6 +156,9 @@ public class Track {
 
 
     public int getItemRepeatPosition(int position) {
+        if (trackData.metroMode != Keys.METROMODESIMPLE) {
+            return 0;
+        }
         if (multi) {
             return position;
         } else {
@@ -166,9 +167,12 @@ public class Track {
     }
 
     public int getItemPatPosition(int position) {
+        if (trackData.metroMode == Keys.METROMODESIMPLE) {
+            return 0;
+        }
         if (multi) {
             return position - repeats.size() - 1;
-        } else {
+        } else {   // single
             return position - 1;
         }
     }
@@ -176,14 +180,11 @@ public class Track {
     public void syncItems(ArrayList<Pat> pats) {
         int aantal = -1;
         if (trackData.metroMode == Keys.METROMODESIMPLE) {
-            Log.d(TAG, "simple");
             aantal = 2;
         } else {
             if (multi) {
-                Log.d(TAG, "multi");
                 aantal = repeats.size() + 1 + pats.size() + 1;
             } else {  // Single repeat
-                Log.d(TAG, "single");
                 aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + add pattern + pats
             }
         }

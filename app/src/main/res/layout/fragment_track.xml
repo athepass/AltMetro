@@ -1,18 +1,10 @@
-<LinearLayout android:id="@+id/ll_track_root"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_editor_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="info"
-        android:textColor="@color/color_text"
-        android:textSize="@dimen/textsize_row"/>
+<LinearLayout
+    android:id="@+id/ll_track_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/ll_editor_tempo"
@@ -140,12 +132,22 @@
         android:id="@+id/tv_track_study_study"
         style="@style/AppTheme.ListviewButton"
         android:layout_width="match_parent"
+        android:layout_marginLeft="0dp"
         android:ellipsize="none"
         android:gravity="center"
-        android:layout_marginLeft="0dp"
         android:scrollHorizontally="false"
         android:text="@string/label_study_off"
         android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/tv_track_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="info"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="@dimen/textsize_row"/>
 
     <LinearLayout
         android:id="@+id/ll_player_emphasis0"
@@ -194,6 +196,15 @@
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv07"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_player_emphasis1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
         <ImageView
             android:id="@+id/iv_player_emphasis8"
             style="@style/AppTheme.EmphasisPlayer"
@@ -203,14 +214,6 @@
             android:id="@+id/iv_player_emphasis9"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv09"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_player_emphasis1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="3dp">
 
         <ImageView
             android:id="@+id/iv_player_emphasis10"
@@ -241,6 +244,15 @@
             android:id="@+id/iv_player_emphasis15"
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv15"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_player_emphasis2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
 
         <ImageView
             android:id="@+id/iv_player_emphasis16"
