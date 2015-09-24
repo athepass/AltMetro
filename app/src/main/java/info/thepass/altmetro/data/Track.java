@@ -30,9 +30,9 @@ public class Track {
     public ArrayList<Repeat> repeats;
     public int repeatSelected;
     public ArrayList<String> items;
-    private TrackData trackData;
     public int patSelected;
     public ArrayList<Pat> pats;
+    private TrackData trackData;
 
     public Track(HelperMetro h, TrackData data) {
         trackData = data;
@@ -158,9 +158,6 @@ public class Track {
 
 
     public int getItemRepeatPosition(int position) {
-        if (trackData.metroMode == Keys.METROMODESIMPLE) {
-            return 0;
-        }
         if (multi) {
             return position;
         } else {
@@ -169,32 +166,68 @@ public class Track {
     }
 
     public int getItemPatPosition(int position) {
-        if (trackData.metroMode == Keys.METROMODESIMPLE) {
-            return 0;
-        }
         if (multi) {
             return position - repeats.size() - 1;
         } else {   // single
-            return position - 1;
+            return 0;
         }
     }
 
-    public void syncItems(ArrayList<Pat> pats) {
+    public void syncItems() {
         int aantal = -1;
-        if (trackData.metroMode == Keys.METROMODESIMPLE) {
-            aantal = 2;
-        } else {
-            if (multi) {
-                aantal = repeats.size() + 1 + pats.size() + 1;
-            } else {  // Single repeat
-                aantal = 1 + pats.size() + 1;  // vaste aantal voor single items: repeat + pats + add pattern
-            }
+        if (multi) {
+            aantal = repeats.size() + 1 + pats.size() + 1;
+        } else {  // Single repeat
+            aantal = 1 + 1;  // vaste aantal voor single items: repeat + pats + add pattern
         }
         // maak aantal regels
         while (items.size() < aantal)
             items.add("-----");
         while (items.size() > aantal)
             items.remove(0);
+    }
+
+    public void setTempo(int newTempo) {
+        repeats.get(repeatSelected).tempo = newTempo;
+    }
+
+    public boolean trackPlayable(HelperMetro h) {
+        if (!multi) {
+            return true;
+        }
+
+        for (int i = 0; i < repeats.size(); i++) {
+            Repeat repeat = repeats.get(i);
+            if (repeat.noEnd && i < repeats.size() - 1) {
+                h.showToastAlert(h.getString1(R.string.error_unreachable, "" + (i + 1)));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void buildBeatList(ArrayList<Beat> beatList) {
+        if (!multi) {
+            repeats.get(0).buildBeatList(beatList);
+        } else {
+            for (int iRep = 0; iRep < repeats.size(); iRep++) {
+                repeats.get(iRep).buildBeatList(beatList);
+            }
+        }
+    }
+
+    public void clean() {
+        if (multi) {
+            study.used = false;
+        } else {
+            // singleTempo: 1 pat, 1 repeat, repeat verwijst naar pat.
+            while (repeats.size() > 1)
+                repeats.remove(1);
+            while (pats.size() > 1)
+                pats.remove(1);
+            repeats.get(0).indexPattern = 0;
+            repeats.get(0).hashPattern = pats.get(0).patHash;
+        }
 
         // controleer consistentie pat hash in repeat
         for (int i = 0; i < repeats.size(); i++) {
@@ -213,53 +246,7 @@ public class Track {
                 }
             }
         }
-    }
 
-    public void setTempo(int newTempo) {
-        repeats.get(repeatSelected).tempo = newTempo;
-    }
-
-    public boolean trackPlayable(HelperMetro h) {
-        if (trackData.metroMode == Keys.METROMODESIMPLE || !multi) {
-            return true;
-        }
-
-        for (int i = 0; i < repeats.size(); i++) {
-            Repeat repeat = repeats.get(i);
-            if (repeat.noEnd && i < repeats.size() - 1) {
-                h.showToastAlert(h.getString1(R.string.error_unreachable, "" + (i + 1)));
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void buildBeatList(ArrayList<Beat> beatList) {
-        if (trackData.metroMode == Keys.METROMODESIMPLE || !multi) {
-            repeats.get(0).buildBeatList(beatList);
-        } else {
-            for (int iRep = 0; iRep < repeats.size(); iRep++) {
-                repeats.get(iRep).buildBeatList(beatList);
-            }
-        }
-    }
-
-    public void clean() {
-        if (trackData.metroMode==Keys.METROMODESIMPLE) {
-            while (repeats.size()>1)
-                repeats.remove(1);
-            while (pats.size()>1)
-                pats.remove(1);
-            repeats.get(0).indexPattern=0;
-            repeats.get(0).hashPattern = pats.get(0).patHash;
-            multi = false;
-        } else {
-            if (multi) {
-                study.used = false;
-            } else {
-                while (repeats.size()>1)
-                    repeats.remove(1);
-            }
-        }
+        syncItems();
     }
 }

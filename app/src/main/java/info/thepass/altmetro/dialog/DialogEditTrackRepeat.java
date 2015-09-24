@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -65,6 +66,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
     private Button buttonCountP20;
     private TextView tvCount;
     private CheckBox cbNoEnd;
+    private Switch swMulti;
 
     public DialogEditTrackRepeat() {
         // Empty constructor required for DialogFragment
@@ -217,6 +219,9 @@ public class DialogEditTrackRepeat extends DialogFragment {
     }
 
     private void initCount(View dialogView) {
+        swMulti= (Switch) dialogView.findViewById(R.id.swDlgRepeat_Multi);
+        swMulti.setChecked(multi);
+
         cbNoEnd = (CheckBox) dialogView.findViewById(R.id.cb_dlg_noend);
         cbNoEnd.setChecked(repeat.noEnd);
 
@@ -272,11 +277,14 @@ public class DialogEditTrackRepeat extends DialogFragment {
         repeat.tempo = Integer.parseInt(tvTempo.getText().toString());
         repeat.count = Integer.parseInt(tvCount.getText().toString());
         repeat.noEnd = cbNoEnd.isChecked();
+        multi = swMulti.isChecked();
 
         Intent intent = new Intent();
         intent.putExtra(Keys.EDITACTION, actionAdd);
         intent.putExtra(Keys.EDITINDEX, index);
         intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
+        intent.putExtra(Track.KEYMULTI, multi);
+
         Log.d(TAG, "save " + repeat.toJson().toString());
         getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
     }

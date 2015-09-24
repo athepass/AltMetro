@@ -127,16 +127,12 @@ public class TrackFragment extends Fragment {
         if (isPlaying) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemPlay.setIcon(R.mipmap.ic_action_stop);
+            menuItemTrackList.setIcon(R.mipmap.ic_none);
         } else {
             menuItemSettings.setIcon(R.mipmap.ic_action_settings);
             menuItemPlay.setIcon(R.mipmap.ic_action_play);
-        }
-        if ((!isPlaying && trackData.metroMode != Keys.METROMODESIMPLE)) {
             menuItemTrackList.setIcon(R.mipmap.icon_list);
-        } else {
-            menuItemTrackList.setIcon(R.mipmap.ic_none);
         }
-//        menuItemTrackList.setVisible(!isPlaying && trackData.metroMode!=Keys.METROMODESIMPLE);
     }
 
     @Override
@@ -151,7 +147,7 @@ public class TrackFragment extends Fragment {
                 }
                 return true;
             case R.id.action_track_tracklist:
-                if (trackData.metroMode != Keys.METROMODESIMPLE && !isPlaying) {
+                if (!isPlaying) {
                     doTrackList();
                 }
                 return true;
@@ -431,7 +427,12 @@ public class TrackFragment extends Fragment {
         evPlayer.setEmphasisVisible(isPlaying);
         tvInfo.setVisibility((isPlaying) ? View.VISIBLE : View.GONE);
 
-        tv_study.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
+        if (isPlaying) {
+            tv_study.setVisibility(View.GONE);
+        } else {
+            boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+            tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
+        }
         tvTap.setVisibility((isPlaying) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((isPlaying) ? View.GONE : View.VISIBLE);
 
@@ -451,7 +452,7 @@ public class TrackFragment extends Fragment {
             trackData.saveData("setStudy", false);
             setData();
         }
-        // study textview onzichtbaar i.g.v. single. Gebruik anders preference
+        // study textview onzichtbaar i.g.v. multi. Gebruik anders preference
         boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
         tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         tv_study.setText(track.study.display(h));
@@ -461,7 +462,13 @@ public class TrackFragment extends Fragment {
             track.study.practice = 100;
             rg_practice.setVisibility(View.GONE);
         } else {
-            rg_practice.setVisibility((track.study.used || (!showPractice)) ? View.INVISIBLE : View.VISIBLE);
+            if (track.study.used) {
+                track.study.practice = 100;
+                rg_practice.setVisibility(View.INVISIBLE);
+            }
+            else {
+                rg_practice.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -511,7 +518,6 @@ public class TrackFragment extends Fragment {
 
     private void doPref() {
         Log.d(TAG, "doPref");
-        trackData.metroMode = Integer.parseInt(h.prefs.getString(Keys.PREFMETROMODE, "" + Keys.METROMODESIMPLE));
         trackData.saveData("pref", false);
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();

@@ -37,7 +37,7 @@ public class ActivityTrack extends Activity {
 
     private void initMetroData() {
         trackData = new TrackData(h);
-        h.logD(TAG, "InitMetroData start " +trackData.metroMode);
+        h.logD(TAG, "InitMetroData start");
     }
 
     public void doRestart() {

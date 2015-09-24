@@ -70,8 +70,7 @@
     <string name="error_taptempohigh" formatted="false">Tempo %s exceeds maximum tempo %s. Corrected</string>
     <string name="error_patinuse">Pattern in use. Deletion not allowed</string>
     <string name="error_restarting">Restarting....</string>
-    <string name="error_unreachable" formatted="false">Track %s no end. Next repeat unreachable</string>
-    <string name="pref_metromode">Preferences</string>
+    <string name="error_unreachable" formatted="false">Repeat %s has no end. Next repeat unreachable</string>
     <string name="pref_title">Preferences</string>
     <string name="pref_multi">Default tracktype multi?</string>
     <string name="pref_maxtempo">Maximum metronome tempo</string>

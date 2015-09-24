@@ -17,14 +17,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.HelperMetro;
-import info.thepass.altmetro.tools.Keys;
 
 public class TrackData {
     public final static String TAG = "TrakData";
     public final static String KEYTRACKS = "TDtrack";
     public final static String KEYTRACKSELECTED = "TDseltrk";
-    public final static String KEYMETROMODE = "TDmetmod";
-    public int metroMode;
     public ArrayList<Track> tracks;
     public int trackSelected;
     private HelperMetro h;
@@ -60,8 +57,6 @@ public class TrackData {
         Track track = new Track(h, this);
         tracks.add(track);
         trackSelected = 0;
-
-        metroMode = Integer.parseInt(h.prefs.getString(Keys.PREFMETROMODE, "" + Keys.METROMODESIMPLE));
     }
 
     private void readData(String tag, boolean doDump) {
@@ -93,7 +88,6 @@ public class TrackData {
     }
 
     public void saveData(String tag, boolean doDump) {
-        clean();
         // van TrackData naar JSONobject
         JSONObject jsonRoot = null;
         try {
@@ -126,9 +120,6 @@ public class TrackData {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-
-            json.put(KEYMETROMODE, metroMode);
-
             json.put(KEYTRACKSELECTED, trackSelected);
             JSONArray tracksArray = new JSONArray();
             for (int i = 0; i < tracks.size(); i++) {
@@ -144,8 +135,6 @@ public class TrackData {
 
     public void fromJson(JSONObject json, HelperMetro h) {
         try {
-            metroMode = json.getInt(KEYMETROMODE);
-
             trackSelected = json.getInt(KEYTRACKSELECTED);
             JSONArray tracksArray = json.getJSONArray(KEYTRACKS);
             tracks.clear();
@@ -166,10 +155,6 @@ public class TrackData {
                 tracks.add(i, trackNew);
             }
         }
-    }
-
-    public int getMetroMode() {
-        return metroMode;
     }
 
     public void clean() {

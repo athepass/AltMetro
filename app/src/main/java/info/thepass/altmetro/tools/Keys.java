@@ -37,9 +37,6 @@ public class Keys {
     public final static int EVMPLAYER = 2;
     public final static int EVMLIST = 3;
 
-    public final static int METROMODESIMPLE = 1;
-    public final static int METROMODEADVANCED = 2;
-
     public final static String PREFMULTI = "multi";
     public final static String PREFMAXTEMPO = "maxTempo";
     public final static String PREFSHOWSTUDY = "showStudy";

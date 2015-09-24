@@ -124,14 +124,17 @@ public class ItemsListViewManager {
             } else {
                 track.repeats.set(index, repeat);
             }
-            itemsAdapter.selectedRepeat = index;
-            itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             throw new RuntimeException("updateRepeat json exception");
         }
+
+        track.multi = intent.getBooleanExtra(Track.KEYMULTI,false);
+        itemsAdapter.selectedRepeat = index;
+
+        track.clean();
+        itemsAdapter.notifyDataSetChanged();
         trackData.saveData("updateRepeat", false);
         frag.setData();
-        itemsAdapter.notifyDataSetChanged();
     }
 
     public void confirmDeleteRepeat(int position) {
@@ -168,9 +171,11 @@ public class ItemsListViewManager {
         if (indexDelRepeat >= track.repeats.size() - 1) {
             itemsAdapter.selectedRepeat = track.repeats.size() - 1;
         }
+
+        track.clean();
+        itemsAdapter.notifyDataSetChanged();
         trackData.saveData("deleteRepeat", false);
         frag.setData();
-        itemsAdapter.notifyDataSetChanged();
     }
 
     public void editPattern(final int position, boolean add) {
@@ -209,14 +214,15 @@ public class ItemsListViewManager {
             } else {
                 track.pats.set(index, pat);
             }
-            itemsAdapter.selectedPat = index;
-            itemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             throw new RuntimeException("updatePattern json exception");
         }
+        itemsAdapter.selectedPat = index;
+
+        track.clean();
+        itemsAdapter.notifyDataSetChanged();
         trackData.saveData("updatePattern", false);
         frag.setData();
-        itemsAdapter.notifyDataSetChanged();
     }
 
     public void confirmDeletePattern(int position) {
@@ -256,9 +262,11 @@ public class ItemsListViewManager {
         if (indexDelPattern >= track.pats.size() - 1) {
             itemsAdapter.selectedPat = track.pats.size() - 1;
         }
+
+        track.clean();
+        itemsAdapter.notifyDataSetChanged();
         trackData.saveData("deletePattern", false);
         frag.setData();
-        itemsAdapter.notifyDataSetChanged();
     }
 
     public void editTap() {

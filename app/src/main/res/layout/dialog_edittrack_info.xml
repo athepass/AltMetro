@@ -47,29 +47,16 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
+        android:layout_marginTop="15dp"
         android:layout_height="wrap_content"
         android:text="@string/label_multi"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-    <RadioGroup
-        android:id="@+id/edittrack_rg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <RadioButton
-            android:id="@+id/edittrack_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="80dp"
-            android:text="@string/label_multi_single"/>
-
-        <RadioButton
-            android:id="@+id/edittrack_multi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="80dp"
-            android:text="@string/label_multi_multi"    />
-    </RadioGroup>
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="@string/label_multi_single"
+        android:textOn="@string/label_multi_multi"
+        android:id="@+id/swDlgInfo_Multi" />
 
 </LinearLayout>

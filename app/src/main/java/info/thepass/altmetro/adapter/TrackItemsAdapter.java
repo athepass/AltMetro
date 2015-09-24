@@ -2,7 +2,6 @@ package info.thepass.altmetro.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,19 +64,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     @Override
     public int getItemViewType(int position) {
         int vType;
-        if (trackData.metroMode == Keys.METROMODESIMPLE) {
-            switch (position) {
-                case 0:
-                    vType = ROWTYPEREPEAT;
-                    break;
-                case 1:
-                    vType = ROWTYPEPAT;
-                    break;
-                default:
-                    throw new RuntimeException("invalid ViewType simple " + position);
-            }
-            return vType;
-        } else if (track.multi) {
+        if (track.multi) {
             if (position < (track.repeats.size())) {
                 vType = ROWTYPEREPEAT;
             } else if (position == (track.repeats.size())) {
@@ -114,7 +101,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public void notifyDataSetChanged() {
-        track.syncItems(track.pats);
+        track.syncItems();
         super.notifyDataSetChanged();
     }
 
@@ -177,7 +164,6 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         int index = track.getItemRepeatPosition(position);
-        Log.d(TAG,"repeat "+ position + " / "+index + "." + track.multi);
 
         Repeat repeat = track.repeats.get(index);
         Pat pat = track.pats.get(repeat.indexPattern);
@@ -189,10 +175,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         if (index == 0) {
             holder.header.setVisibility(View.VISIBLE);
             holder.header.setTextColor(Color.BLACK);
-            if (trackData.metroMode == Keys.METROMODESIMPLE || !track.multi) {
-                holder.header.setText(h.getString(R.string.label_repeat));
-            } else {
+            if (track.multi) {
                 holder.header.setText(h.getString(R.string.label_repeats));
+            } else {
+                holder.header.setText(h.getString(R.string.label_repeat));
             }
         } else {
             holder.header.setVisibility(View.GONE);
@@ -414,15 +400,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         if (index == 0) {
             holder.header.setTextColor(Color.BLACK);
             holder.header.setVisibility(View.VISIBLE);
-            switch (trackData.metroMode) {
-                case Keys.METROMODESIMPLE:
-                    holder.header.setText(h.getString(R.string.label_pattern));
-                    break;
-                case Keys.METROMODEADVANCED:
-                    holder.header.setText(h.getString(R.string.label_patterns));
-                    break;
-                default:
-                    throw new RuntimeException("onbekende metromode " + trackData.metroMode);
+            if (track.multi) {
+                holder.header.setText(h.getString(R.string.label_patterns));
+            } else {
+                holder.header.setText(h.getString(R.string.label_pattern));
             }
         } else {
             holder.header.setVisibility(View.GONE);

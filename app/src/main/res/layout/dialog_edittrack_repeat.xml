@@ -116,7 +116,23 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/label_multi"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="@string/label_multi_single"
+        android:textOn="@string/label_multi_multi"
+        android:id="@+id/swDlgRepeat_Multi" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:text="@string/label_repeatcount"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
@@ -202,7 +218,7 @@
         android:id="@+id/label_tempo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
         android:text="@string/label_tempo"/>
 
 

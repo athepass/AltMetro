@@ -10,8 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import org.json.JSONObject;
 
@@ -29,9 +28,7 @@ public class DialogEditTrackInfo extends DialogFragment {
     private Track trak;
     private EditText etNummer;
     private EditText etTitel;
-    private RadioGroup rgMulti;
-    private RadioButton rbSingle;
-    private RadioButton rbMulti;
+    private Switch swMulti;
     private boolean actionAdd;
     private int index = 0;
     private int editSize = -1;
@@ -84,8 +81,7 @@ public class DialogEditTrackInfo extends DialogFragment {
             trak.fromJson(new JSONObject(sTrack), h);
             etNummer.setText(String.valueOf(trak.nummer));
             etTitel.setText(trak.titel);
-            rbSingle.setChecked(!trak.multi);
-            rbMulti.setChecked(trak.multi);
+            swMulti.setChecked(trak.multi);
         } catch (Exception e) {
             h.logE(TAG, "from Json", e);
         }
@@ -101,7 +97,7 @@ public class DialogEditTrackInfo extends DialogFragment {
         String sNummer = etNummer.getText().toString();
         trak.nummer = (sNummer.length() > 0) ? Integer.parseInt(sNummer): 0;
 
-        trak.multi = (rgMulti.getCheckedRadioButtonId() == R.id.edittrack_multi);
+        trak.multi = (swMulti.isChecked());
 
         Intent intent = new Intent();
         intent.putExtra(Keys.EDITACTION, actionAdd);
@@ -114,8 +110,6 @@ public class DialogEditTrackInfo extends DialogFragment {
     private void initViews(View dialogView) {
         etTitel = (EditText) dialogView.findViewById(R.id.edittrack_titel);
         etNummer = (EditText) dialogView.findViewById(R.id.edittrack_number);
-        rgMulti = (RadioGroup) dialogView.findViewById(R.id.edittrack_rg);
-        rbMulti = (RadioButton) dialogView.findViewById(R.id.edittrack_multi);
-        rbSingle = (RadioButton) dialogView.findViewById(R.id.edittrack_single);
+        swMulti = (Switch) dialogView.findViewById(R.id.swDlgInfo_Multi);
     }
 }

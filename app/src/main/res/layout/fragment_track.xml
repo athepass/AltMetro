@@ -139,6 +139,11 @@
         android:text="@string/label_study_off"
         android:textSize="15dp"/>
 
+    <ListView
+        android:id="@+id/track_listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <TextView
         android:id="@+id/tv_track_info"
         android:layout_width="match_parent"
@@ -274,10 +279,5 @@
             style="@style/AppTheme.EmphasisPlayer"
             android:tag="iv19"/>
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/track_listView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
 </LinearLayout>
