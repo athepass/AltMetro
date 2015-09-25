@@ -3,11 +3,10 @@ package info.thepass.altmetro.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import info.thepass.altmetro.Audio.Beat;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.ui.BeatManagerFragment;
 
 public class Repeat {
     public final static String TAG = "TrakRepeat";
@@ -22,6 +21,10 @@ public class Repeat {
     public int tempo;
     public int count;
     public boolean noEnd;
+
+    public int iRepeat;
+    public int iBeat;
+    public int repeatCounter;
 
     public Repeat() {
         indexPattern = 0;
@@ -61,13 +64,46 @@ public class Repeat {
     public String display(HelperMetro h, int index, String patDisplay, boolean showTempo) {
         String s = "";
         s += (index >= 0) ? "r" + (index + 1) + " " : "";
-        s += (showTempo) ? h.getString(R.string.label_tempo) + ",  " + tempo : "";
-        s += ((noEnd) ? h.getString(R.string.label_noend): h.getString1(R.string.label_repeatTimes, String.valueOf(count)));
+        s += (showTempo) ? h.getString(R.string.label_tempo) + " " + tempo + ", " : "";
+        s += ((noEnd) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeatTimes, String.valueOf(count)));
         s += ", " + patDisplay;
         return s;
     }
 
-    public void buildBeatList(ArrayList<Beat> beatList) {
+    public void buildBeatList(BeatManagerFragment bm) {
+        repeatCounter = 0;
+        if (noEnd) {
+            iRepeat = 0;
+            buildBeatListBar(bm);
+        } else {
+            for (iRepeat = 0; iRepeat < count; iRepeat++) {
+                bm.barCounter++;
+                repeatCounter++;
+                buildBeatListBar(bm);
+            }
+        }
     }
 
+    private void buildBeatListBar(BeatManagerFragment bm) {
+        Pat pat = bm.track.pats.get(this.indexPattern);
+        for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
+            Beat beat = new Beat();
+            bm.beatList.add(beat);
+            beat.repeatCount = (noEnd) ? 0 : count;
+            beat.repeatIndex = repeatCounter;
+            beat.barIndex = bm.barCounter;
+            if (iBeat == pat.patBeats - 1) {
+                beat.barNext = (noEnd) ? 1 - pat.patBeats : 1;
+            } else {
+                beat.barNext = 1;
+            }
+            beat.beats = pat.patBeats;
+            beat.beatIndex = iBeat + 1;
+            beat.beatState = pat.patBeatState[iBeat];
+            beat.sub = pat.patSubs;
+            beat.tempo = this.tempo;
+            beat.practice = bm.track.study.practice;
+            beat.tempoCalc = Math.round((beat.tempo * 100f) / beat.practice);
+        }
+    }
 }

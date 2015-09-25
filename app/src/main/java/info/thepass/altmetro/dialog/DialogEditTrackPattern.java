@@ -73,10 +73,6 @@ public class DialogEditTrackPattern extends DialogFragment {
                         int newBeat = Integer.parseInt(spBeat.getSelectedItem().toString());
                         int newTime = Integer.parseInt(spTime.getSelectedItem().toString());
                         int newSubs = spSub.getSelectedItemPosition();
-//                        if (pat.patBeats !=newBeat
-//                            || pat.patTime!=newTime
-//                            || pat.patSubs!=newSubs
-//                        //TODO Data ophalen uit UI
                         pat.patTime = newTime;
                         pat.patBeats = newBeat;
                         pat.patSubs = newSubs;

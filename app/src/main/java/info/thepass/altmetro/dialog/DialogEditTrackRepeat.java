@@ -285,7 +285,6 @@ public class DialogEditTrackRepeat extends DialogFragment {
         intent.putExtra(Track.KEYREPEATS, repeat.toJson().toString());
         intent.putExtra(Track.KEYMULTI, multi);
 
-        Log.d(TAG, "save " + repeat.toJson().toString());
         getTargetFragment().onActivityResult(Keys.TARGETEDITREPEAT, Activity.RESULT_OK, intent);
     }
 

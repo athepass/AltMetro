@@ -21,8 +21,6 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-import info.thepass.altmetro.Audio.BeatManager;
-import info.thepass.altmetro.Audio.SoundFragment;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
@@ -60,7 +58,6 @@ public class TrackFragment extends Fragment {
     // player
     private EmphasisViewManager evPlayer;
     private TextView tvInfo;
-    private SoundFragment soundFragment;
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -76,7 +73,7 @@ public class TrackFragment extends Fragment {
     private Button buttonP20;
 
     private boolean isPlaying;
-    private BeatManager bm;
+    private BeatManagerFragment bm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,6 +92,7 @@ public class TrackFragment extends Fragment {
         setHasOptionsMenu(true);
 
         starting = true;
+
         initData();
 
         initItemsListViewManager();
@@ -108,8 +106,7 @@ public class TrackFragment extends Fragment {
 
         initViews();
         initEmphasis();
-        initSoundFragment();
-        bm = new BeatManager(h);
+        initBeatManager();
         starting = false;
         setData();
     }
@@ -352,14 +349,14 @@ public class TrackFragment extends Fragment {
         evPlayer.useLow = true;
     }
 
-    private void initSoundFragment() {
-        soundFragment = (SoundFragment) getFragmentManager()
-                .findFragmentByTag(SoundFragment.TAG);
-        if (soundFragment == null) {
-            soundFragment = new SoundFragment();
+    private void initBeatManager() {
+        bm = (BeatManagerFragment) getFragmentManager()
+                .findFragmentByTag(BeatManagerFragment.TAG);
+        if (bm == null) {
+            bm = new BeatManagerFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager()
                     .beginTransaction();
-            fragmentTransaction.add(soundFragment, SoundFragment.TAG);
+            fragmentTransaction.add(bm, BeatManagerFragment.TAG);
             fragmentTransaction.commit();
         }
     }
@@ -403,11 +400,12 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStartStopPlayer(int position) {
+        Log.d(TAG,"startStop");
         if (!track.trackPlayable(h)) {
+            Log.d(TAG,"track not playable");
             return;
         }
 
-        // toggle
         isPlaying = !isPlaying;
 
         updateLayout();

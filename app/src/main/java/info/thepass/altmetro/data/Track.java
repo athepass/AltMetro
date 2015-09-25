@@ -6,10 +6,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import info.thepass.altmetro.Audio.Beat;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
+import info.thepass.altmetro.ui.BeatManagerFragment;
 
 public class Track {
     public final static String TAG = "TrakTrack";
@@ -192,7 +192,7 @@ public class Track {
     }
 
     public boolean trackPlayable(HelperMetro h) {
-        if (!multi) {
+        if (repeats.size() == 1) {
             return true;
         }
 
@@ -204,16 +204,6 @@ public class Track {
             }
         }
         return true;
-    }
-
-    public void buildBeatList(ArrayList<Beat> beatList) {
-        if (!multi) {
-            repeats.get(0).buildBeatList(beatList);
-        } else {
-            for (int iRep = 0; iRep < repeats.size(); iRep++) {
-                repeats.get(iRep).buildBeatList(beatList);
-            }
-        }
     }
 
     public void clean() {
@@ -248,5 +238,15 @@ public class Track {
         }
 
         syncItems();
+    }
+
+    public void buildBeatList(BeatManagerFragment bm) {
+        if (!multi) {
+            repeats.get(0).buildBeatList(bm);
+        } else {
+            for (int iRep = 0; iRep < repeats.size(); iRep++) {
+                repeats.get(iRep).buildBeatList(bm);
+            }
+        }
     }
 }
