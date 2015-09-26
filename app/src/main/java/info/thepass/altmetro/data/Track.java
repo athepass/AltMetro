@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.ui.BeatManagerFragment;
+import info.thepass.altmetro.Audio.BeatManagerFragment;
 
 public class Track {
     public final static String TAG = "TrakTrack";
@@ -44,7 +44,7 @@ public class Track {
 
         study = new Study();
 
-        repeatSel   ected = 0;
+        repeatSelected = 0;
         repeats = new ArrayList<Repeat>();
         Repeat repeat = new Repeat();
         repeats.add(repeat);
@@ -240,12 +240,12 @@ public class Track {
         syncItems();
     }
 
-    public void buildBeat(BeatManagerFragment bm) {
+    public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
         if (!multi) {
-            repeats.get(0).buildBeat(bm);
+            repeats.get(0).buildBeat(bm, h);
         } else {
             for (int iRep = 0; iRep < repeats.size(); iRep++) {
-                repeats.get(iRep).buildBeat(bm);
+                repeats.get(iRep).buildBeat(bm, h);
             }
         }
     }

@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import info.thepass.altmetro.Audio.BeatManagerFragment;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
@@ -136,7 +137,7 @@ public class TrackFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_track_play:
-                doStartStopPlayer(trackData.trackSelected);
+                doStartStopPlayer(trackData.trackSelected, item);
                 return true;
             case R.id.action_track_settings:
                 if (!isPlaying) {
@@ -173,7 +174,54 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETPREF:
                     doPref();
                     return;
+                case Keys.TARGETBEATMANAGER:
+                    doStartStopPlayer(0);
+                    return;
+                default:
+                    throw new RuntimeException("Requestcode unknown " + requestCode);
             }
+        }
+    }
+
+    public void doStartStopPlayer(int position, MenuItem item) {
+        Log.d(TAG, "startStop");
+        if (!track.trackPlayable(h)) {
+            Log.d(TAG, "track not playable");
+            return;
+        }
+        if (item.getIcon()==)
+            isPlaying = !isPlaying;
+
+        updateLayout();
+
+        if (isPlaying) {
+            bm.trackData = trackData;
+            bm.track = track;
+            bm.llRoot = lvManager.llRoot;
+            bm.startPlayer();
+        } else {
+            bm.stopPlayer();
+        }
+    }
+
+    public void doStartStopPlayer(int position, MenuItem item) {
+        Log.d(TAG, "startStop");
+        if (!track.trackPlayable(h)) {
+            Log.d(TAG, "track not playable");
+            return;
+        }
+        if (item.getIcon()==)
+            isPlaying = !isPlaying;
+
+        updateLayout();
+
+        if (isPlaying) {
+            bm.trackData = trackData;
+            bm.track = track;
+            bm.llRoot = lvManager.llRoot;
+            bm.startPlayer();
+        } else {
+            bm.stopPlayer();
         }
     }
 
@@ -305,6 +353,8 @@ public class TrackFragment extends Fragment {
                     case R.id.rb_track_prac100:
                         newPractice = 100;
                         break;
+                    default:
+                        throw new RuntimeException("invalid checkedid" + checkedId);
                 }
                 track.study.practice = newPractice;
                 trackData.saveData("Practice changed", false);
@@ -337,6 +387,8 @@ public class TrackFragment extends Fragment {
                 rb_prac100 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac100);
                 rb_prac100.setChecked(true);
                 break;
+            default:
+                throw new RuntimeException("invalid practice" + track.study.practice);
         }
     }
 
@@ -359,6 +411,8 @@ public class TrackFragment extends Fragment {
             fragmentTransaction.add(bm, BeatManagerFragment.TAG);
             fragmentTransaction.commit();
         }
+        bm.setTargetFragment(this, Keys.TARGETBEATMANAGER);
+        bm.tvInfo = this.tvInfo;
     }
 
     public void setData() {
@@ -397,27 +451,6 @@ public class TrackFragment extends Fragment {
         transaction.replace(R.id.fragment_container, frag);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    public void doStartStopPlayer(int position) {
-        Log.d(TAG,"startStop");
-        if (!track.trackPlayable(h)) {
-            Log.d(TAG,"track not playable");
-            return;
-        }
-
-        isPlaying = !isPlaying;
-
-        updateLayout();
-
-        if (isPlaying) {
-            bm.trackData = trackData;
-            bm.track = track;
-            bm.llRoot = lvManager.llRoot;
-            bm.startPlayer();
-        } else {
-            bm.stopPlayer();
-        }
     }
 
     private void updateLayout() {
@@ -463,8 +496,7 @@ public class TrackFragment extends Fragment {
             if (track.study.used) {
                 track.study.practice = 100;
                 rg_practice.setVisibility(View.INVISIBLE);
-            }
-            else {
+            } else {
                 rg_practice.setVisibility(View.VISIBLE);
             }
         }

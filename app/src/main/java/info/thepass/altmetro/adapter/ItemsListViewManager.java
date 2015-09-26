@@ -130,10 +130,9 @@ public class ItemsListViewManager {
 
         track.multi = intent.getBooleanExtra(Track.KEYMULTI,false);
         itemsAdapter.selectedRepeat = index;
-
         track.clean();
+        trackData.saveData("updateRepeat "+ track.multi + " S:"+track.items.size(), false);
         itemsAdapter.notifyDataSetChanged();
-        trackData.saveData("updateRepeat", false);
         frag.setData();
     }
 

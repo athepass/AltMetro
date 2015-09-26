@@ -1,7 +1,5 @@
 package info.thepass.altmetro.Audio;
 
-import info.thepass.altmetro.tools.Keys;
-
 public class Sound implements Comparable<Sound> {
     public int frameBegin;
     public int frameEnd;
@@ -12,15 +10,15 @@ public class Sound implements Comparable<Sound> {
     public String tag;
 
     @Override
-    public int compareTo(Sound bs2) {
-        if (frameBegin < bs2.frameBegin) {
+    public int compareTo(Sound sound2) {
+        if (frameBegin < sound2.frameBegin) {
             return -1;
-        } else if (frameBegin > bs2.frameBegin) {
+        } else if (frameBegin > sound2.frameBegin) {
             return 1;
         } else {
-            if (frameEnd < bs2.frameEnd) {
+            if (frameEnd < sound2.frameEnd) {
                 return -1;
-            } else if (frameEnd > bs2.frameEnd) {
+            } else if (frameEnd > sound2.frameEnd) {
                 return +1;
             } else {
                 return 0;
@@ -28,41 +26,8 @@ public class Sound implements Comparable<Sound> {
         }
     }
 
-    public String display() {
-        String s = "";
-        switch (soundType) {
-            case Keys.SOUNDTYPEBEAT:
-                s += "beat";
-                break;
-            case Keys.SOUNDTYPESUB:
-                s += "sub";
-                break;
-            case Keys.SOUNDTYPESILENCE:
-                s += "sil";
-                break;
-        }
-        s += " "
-                + frameBegin
-                + ((frameEnd == frameEndBase) ? ".." + frameEnd : "..("
-                + frameEndBase + ") " + frameEnd) + "|" + duration;
-        s += (tag != null) ? " (" + tag + ")" : "";
-        return s;
-    }
-
     public String displayKort() {
-        String s = "";
-        switch (soundType) {
-            case Keys.SOUNDTYPEBEAT:
-                s += "B";
-                break;
-            case Keys.SOUNDTYPESUB:
-                s += "S";
-                break;
-            case Keys.SOUNDTYPESILENCE:
-                s += "Q";
-                break;
-        }
-        s += " "
+        String s = tag
                 + frameBegin
                 + ((frameEnd == frameEndBase) ? ".." + frameEnd : "..("
                 + frameEndBase + ") " + frameEnd) + "|" + duration;
@@ -71,24 +36,24 @@ public class Sound implements Comparable<Sound> {
     }
 
     public Sound split(Sound sNext) {
-        Sound bs = this.kloon();
-        bs.frameBegin = sNext.frameBegin;
-        bs.calcDuration();
+        Sound sound = this.kloon();
+        sound.frameBegin = sNext.frameBegin;
+        sound.calcDuration();
 
         this.frameEnd = sNext.frameBegin;
         this.calcDuration();
-        return bs;
+        return sound;
     }
 
     public Sound kloon() {
-        Sound bs = new Sound();
-        bs.frameBeginBase = frameBeginBase;
-        bs.frameEndBase = frameEndBase;
-        bs.copyBase();
-        bs.calcDuration();
-        bs.soundType = soundType;
-        bs.tag = "split";
-        return bs;
+        Sound sound = new Sound();
+        sound.frameBeginBase = frameBeginBase;
+        sound.frameEndBase = frameEndBase;
+        sound.copyBase();
+        sound.calcDuration();
+        sound.soundType = soundType;
+        sound.tag = "split";
+        return sound;
     }
 
     public void copyBase() {

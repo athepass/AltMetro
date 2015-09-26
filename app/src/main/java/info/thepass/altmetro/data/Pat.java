@@ -10,9 +10,6 @@ import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-/**
- * Created by nl03192 on 10-9-2015.
- */
 public class Pat {
     public final static String TAG = "TrakPat";
     private final static String KEYHASHPATTERN = "PThpat";

@@ -4,13 +4,11 @@ public class Keys {
     public final static int SOUNDHIGH = 0;
     public final static int SOUNDLOW = 1;
     public final static int SOUNDNONE = 2;
-    public final static int SOUNDHIGHACTIVE = 3;
-    public final static int SOUNDLOWACTIVE = 4;
-    public final static int SOUNDNONEACTIVE = 5;
-    public final static int SOUNDSUB = 6;
-    public final static int SOUNDTYPEBEAT = 101;
-    public final static int SOUNDTYPESUB = 102;
-    public final static int SOUNDTYPESILENCE = 103;
+    public final static int SOUNDSUB = 3;
+    public final static int SOUNDFIRST = 4;
+    public final static int SOUNDSILENCE = 5;
+    public final static int BEATTYPEBEAT = 101;
+    public final static int BEATTYPESUB = 102;
 
     public final static int SUBDEFAULT = 0;
     public final static int MINTEMPO = 30;
@@ -28,6 +26,7 @@ public class Keys {
     public final static int TARGETDELETEREPEAT = 32;
     public final static int TARGETEDITSTUDY = 41;
     public final static int TARGETEDITTAP = 42;
+    public final static int TARGETBEATMANAGER = 43;
     public final static int TARGETPREF = 51;
 
     public final static String EDITACTION = "EditAction";

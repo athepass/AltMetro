@@ -167,12 +167,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         Repeat repeat = track.repeats.get(index);
         Pat pat = track.pats.get(repeat.indexPattern);
-        String patDisplay = pat.display(h, repeat.indexPattern, false);
-        String s = repeat.display(h, index, patDisplay, index != selectedRepeat);
+        String patDisplay = (track.pats.size() > 1) ? pat.display(h, repeat.indexPattern, false) : "";
+        int indexDisplay = (track.pats.size() > 1) ? index : -1;
+        String s = repeat.display(h, indexDisplay, patDisplay, index != selectedRepeat);
         holder.info.setText(s);
         holder.evRepeatList.setPattern(pat, false);
 
-        if (index == 0) {
+        if (index == 0 && track.multi) {
             holder.header.setVisibility(View.VISIBLE);
             holder.header.setTextColor(Color.BLACK);
             if (track.multi) {
@@ -184,6 +185,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.header.setVisibility(View.GONE);
         }
 
+        holder.rijEmphasis.setVisibility((track.pats.size() > 1) ? View.VISIBLE : View.INVISIBLE);
         holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size() > 1) ? lvSelColor : Color.TRANSPARENT);
         if (track.multi) {
             holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
@@ -393,11 +395,12 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         int index = track.getItemPatPosition(position);
         Pat pat = track.pats.get(index);
-        String s = pat.display(h, index, false);
+        int indexDisplay = (track.pats.size() > 1) ? index : -1;
+        String s = (track.pats.size() > 0) ? pat.display(h, indexDisplay, false) : "";
         holder.info.setText(s);
         holder.evPatList.setPattern(pat, false);
 
-        if (index == 0) {
+        if (index == 0 && track.multi) {
             holder.header.setTextColor(Color.BLACK);
             holder.header.setVisibility(View.VISIBLE);
             if (track.multi) {

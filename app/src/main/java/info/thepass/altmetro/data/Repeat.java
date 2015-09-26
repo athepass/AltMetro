@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import info.thepass.altmetro.Audio.Beat;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
-import info.thepass.altmetro.ui.BeatManagerFragment;
+import info.thepass.altmetro.tools.Keys;
+import info.thepass.altmetro.Audio.BeatManagerFragment;
 
 public class Repeat {
     public final static String TAG = "TrakRepeat";
@@ -66,28 +67,29 @@ public class Repeat {
         s += (index >= 0) ? "r" + (index + 1) + " " : "";
         s += (showTempo) ? h.getString(R.string.label_tempo) + " " + tempo + ", " : "";
         s += ((noEnd) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeatTimes, String.valueOf(count)));
-        s += ", " + patDisplay;
+        s += (patDisplay.length() > 0) ? ", " + patDisplay : "";
         return s;
     }
 
-    public void buildBeat(BeatManagerFragment bm) {
+    public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
         repeatCounter = 0;
         if (noEnd) {
             iRepeat = 0;
-            buildBeatBar(bm);
+            buildBeatBar(bm, h);
         } else {
             for (iRepeat = 0; iRepeat < count; iRepeat++) {
                 bm.barCounter++;
                 repeatCounter++;
-                buildBeatBar(bm);
+                buildBeatBar(bm, h);
             }
         }
     }
 
-    private void buildBeatBar(BeatManagerFragment bm) {
+    private void buildBeatBar(BeatManagerFragment bm, HelperMetro h) {
+        boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         Pat pat = bm.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
-            Beat beat = new Beat();
+            Beat beat = new Beat(soundFirstBeat);
             bm.beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : count;
             beat.repeatIndex = repeatCounter;

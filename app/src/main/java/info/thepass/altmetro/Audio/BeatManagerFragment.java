@@ -1,6 +1,8 @@
-package info.thepass.altmetro.ui;
+package info.thepass.altmetro.Audio;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -9,12 +11,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.thepass.altmetro.Audio.Beat;
-import info.thepass.altmetro.Audio.Sound;
-import info.thepass.altmetro.Audio.SoundCollection;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
@@ -22,10 +22,11 @@ import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
 public class BeatManagerFragment extends Fragment {
-    public final static String TAG = "BeatManagerFragment";
+    public final static String TAG = "trak:BeatMgr";
     public final static int DOORGAANSTART = 2;
     public final static int DOORGAANSTOP = 0;
     public LinearLayout llRoot;
+    public TextView tvInfo;
     public Track track;
     public TrackData trackData;
     public ArrayList<Beat> beatList;
@@ -45,7 +46,7 @@ public class BeatManagerFragment extends Fragment {
     /*****************************************************************/
     Runnable runUI = new Runnable() {
         public void run() {
-            int uiDelay = 200;
+            int uiDelay = 25;
             if (doorgaan > DOORGAANSTOP) {
                 Log.d(TAG, "beat[UI] " + iBeatUI + " info:" + beatList.get(iBeatUI).display(iBeatUI, subs));
                 iBeatUI += beatList.get(iBeatUI).barNext;
@@ -56,6 +57,9 @@ public class BeatManagerFragment extends Fragment {
                 } else {
                     Log.d(TAG, "beatUI ready");
                     doorgaan--;
+                    if (doorgaan==DOORGAANSTOP) {
+                        stopPlaying();
+                    }
                 }
             }
         }
@@ -83,7 +87,7 @@ public class BeatManagerFragment extends Fragment {
         beatList.clear();
         barCounter = 0;
         if (track.trackPlayable(h)) {
-            track.buildBeat(this);
+            track.buildBeat(this, h);
         }
 //        dumpBeatList(-1);
     }
@@ -114,7 +118,15 @@ public class BeatManagerFragment extends Fragment {
 
     public void stopPlayer() {
         Log.d(TAG, "stopPlayer");
+        metroTask = new MetronomeAsyncTask();
+        Runtime.getRuntime().gc();
         doorgaan = DOORGAANSTOP;
+    }
+
+    private void stopPlaying() {
+        Log.d(TAG, "stopPlaying");
+        Intent intent = new Intent();
+        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGER, Activity.RESULT_OK, intent);
     }
 
     private void initSound() {
@@ -133,52 +145,41 @@ public class BeatManagerFragment extends Fragment {
                 && iBeatSound < beatList.size()) {
             Beat beat = beatList.get(iBeatSound);
             Log.d(TAG, "beat[Sound] " + iBeatSound + " info:" + beatList.get(iBeatSound).display(iBeatSound, subs));
-            playBeatSounds(beat);
+//            tvInfo.setText(beat.info);
+            playSoundList(beat);
             iBeatSound += beatList.get(iBeatSound).barNext;
             if (iBeatSound >= beatList.size()) {
                 Log.d(TAG, "beatSound ready");
-                // TODO play sound
                 doorgaan--;
             }
         }
     }
 
-    private void playBeatSounds(Beat beat) {
+    private void playSoundList(Beat beat) {
         for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
             Sound sound = beat.soundList.get(iSound);
             switch (sound.soundType) {
-                case Keys.SOUNDTYPEBEAT:
-//                timeSound = h.getRelTimeNow(beginTimeOnClick);
-//                h.logD(TAG, "sound " + iBeatSound + "]" + timeSound);
-
-                    if (iBeatSound == 0 && soundFirstBeat) {
-                        writeSound(sc.soundFirst, sound.duration);
-                    } else {
-                        switch (sound.soundType) {
-                            case Keys.SOUNDHIGH:
-                                writeSound(sc.soundA, sound.duration);
-                                break;
-                            case Keys.SOUNDLOW:
-                                writeSound(sc.soundB, sound.duration);
-                                break;
-                            case Keys.SOUNDNONE:
-                                writeSound(sc.soundSilence, sound.duration);
-                                break;
-                            default:
-                                throw new RuntimeException("invalid soundType " + sound.soundType);
-                        }
-                    }
+                case Keys.SOUNDFIRST:
+                    writeSound(sc.soundFirst, sound.duration);
                     break;
-                case Keys.SOUNDTYPESUB:
-                    writeSound(sc.soundC, sound.duration);
+                case Keys.SOUNDHIGH:
+                    writeSound(sc.soundHigh, sound.duration);
                     break;
-                case Keys.SOUNDTYPESILENCE:
+                case Keys.SOUNDLOW:
+                    writeSound(sc.soundLow, sound.duration);
+                    break;
+                case Keys.SOUNDNONE:
+                    writeSound(sc.soundSilence, sound.duration);
+                    break;
+                case Keys.SOUNDSUB:
+                    writeSound(sc.soundSub, sound.duration);
+                    break;
+                case Keys.SOUNDSILENCE:
                     writeSound(sc.soundSilence, sound.duration);
                     break;
                 default:
                     throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
-            }
-        }
+            }        }
     }
 
     private void writeSound(byte[] soundBytes, int duration) {
@@ -213,5 +214,8 @@ public class BeatManagerFragment extends Fragment {
             playBeatList();
             return null;
         }
+    }
+    protected void onPostExecute(int result) {
+        stopPlaying();
     }
 }

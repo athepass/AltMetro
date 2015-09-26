@@ -3,20 +3,20 @@ package info.thepass.altmetro.Audio;
 import info.thepass.altmetro.tools.HelperMetro;
 
 public class SoundCollection {
-	private final static String TAG = "SoundCollection";
+	private final static String TAG = "trak:SoundCollection";
 	public final static int SAMPLERATE = 8000;
 	private HelperMetro h;
 	private final static double FREQFIRST = 523.25;
-	private final static double FREQA = 659.25;
-	private final static double FREQB = 880;
-	private final static double FREQC = 1046.5;
+	private final static double FREQHIGH = 659.25;
+	private final static double FREQLOW = 880;
+	private final static double FREQSUB = 1046.5;
 	private final static double FREQSILENCE = 0;
 	public final static int TICKDURATION = 30 * 8; // samples of tick
 	public final static int SOUNDLENGTH = 200 * 8;
 
-	public byte[] soundA;
-	public byte[] soundB;
-	public byte[] soundC;
+	public byte[] soundHigh;
+	public byte[] soundLow;
+	public byte[] soundSub;
 	public byte[] soundFirst;
 	public byte[] soundSilence;
 
@@ -27,9 +27,9 @@ public class SoundCollection {
 
 	private void initSounds(String tag) {
 		h.logD(TAG, "initSounds " + tag);
-		soundA = buildSound(FREQA, SOUNDLENGTH);
-		soundB = buildSound(FREQB, SOUNDLENGTH);
-		soundC = buildSound(FREQC, SOUNDLENGTH);
+		soundHigh = buildSound(FREQHIGH, SOUNDLENGTH);
+		soundLow = buildSound(FREQLOW, SOUNDLENGTH);
+		soundSub = buildSound(FREQSUB, SOUNDLENGTH);
 		soundFirst = buildSound(FREQFIRST, SOUNDLENGTH);
 		soundSilence = buildSound(FREQSILENCE, SOUNDLENGTH);
 	}
