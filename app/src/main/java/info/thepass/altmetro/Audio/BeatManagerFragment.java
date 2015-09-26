@@ -39,7 +39,8 @@ public class BeatManagerFragment extends Fragment {
     private AudioTrack audioTrack;
     private int playDuration;
     private int soundLength;
-    private int doorgaan;
+    private boolean doorgaanSound;
+    private boolean doorgaanUI;
     private boolean soundFirstBeat;
     private int iBeatSound;
     private int iBeatUI;
@@ -47,7 +48,7 @@ public class BeatManagerFragment extends Fragment {
     Runnable runUI = new Runnable() {
         public void run() {
             int uiDelay = 25;
-            if (doorgaan > DOORGAANSTOP) {
+            if (gaDoor()) {
                 Log.d(TAG, "beat[UI] " + iBeatUI + " info:" + beatList.get(iBeatUI).display(iBeatUI, subs));
                 iBeatUI += beatList.get(iBeatUI).barNext;
                 if (iBeatUI < beatList.size()) {
@@ -56,8 +57,8 @@ public class BeatManagerFragment extends Fragment {
                     mHandler.postDelayed(runUI, uiDelay);
                 } else {
                     Log.d(TAG, "beatUI ready");
-                    doorgaan--;
-                    if (doorgaan==DOORGAANSTOP) {
+                    doorgaanUI = false;
+                    if (!gaDoor()) {
                         stopPlaying();
                     }
                 }
@@ -92,6 +93,15 @@ public class BeatManagerFragment extends Fragment {
 //        dumpBeatList(-1);
     }
 
+    private boolean gaDoor() {
+        if (!doorgaanUI && !doorgaanSound) {
+            Log.d(TAG, "ga niet door ");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public void dumpBeatList(int rondom) {
         String s = "====== Dump beats =====";
         int int0 = (rondom < 0) ? 0 : (rondom > 0) ? rondom - 1 : 0;
@@ -112,7 +122,8 @@ public class BeatManagerFragment extends Fragment {
             beatList.get(i).buildSound();
             dumpBeatList(i);
         }
-        doorgaan = DOORGAANSTART;
+        doorgaanUI = true;
+        doorgaanSound = true;
         metroTask.execute();
     }
 
@@ -120,7 +131,8 @@ public class BeatManagerFragment extends Fragment {
         Log.d(TAG, "stopPlayer");
         metroTask = new MetronomeAsyncTask();
         Runtime.getRuntime().gc();
-        doorgaan = DOORGAANSTOP;
+        doorgaanUI = false;
+        doorgaanSound = false;
     }
 
     private void stopPlaying() {
@@ -141,8 +153,7 @@ public class BeatManagerFragment extends Fragment {
 
     private void playBeatList() {
         iBeatSound = 0;
-        while (doorgaan > DOORGAANSTOP
-                && iBeatSound < beatList.size()) {
+        while (gaDoor() && iBeatSound < beatList.size()) {
             Beat beat = beatList.get(iBeatSound);
             Log.d(TAG, "beat[Sound] " + iBeatSound + " info:" + beatList.get(iBeatSound).display(iBeatSound, subs));
 //            tvInfo.setText(beat.info);
@@ -150,7 +161,7 @@ public class BeatManagerFragment extends Fragment {
             iBeatSound += beatList.get(iBeatSound).barNext;
             if (iBeatSound >= beatList.size()) {
                 Log.d(TAG, "beatSound ready");
-                doorgaan--;
+                doorgaanSound = false;
             }
         }
     }
@@ -179,12 +190,13 @@ public class BeatManagerFragment extends Fragment {
                     break;
                 default:
                     throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
-            }        }
+            }
+        }
     }
 
     private void writeSound(byte[] soundBytes, int duration) {
         playDuration = duration * 2;
-        while (doorgaan > DOORGAANSTOP && playDuration > 0) {
+        while (gaDoor() && playDuration > 0) {
             if (playDuration > SoundCollection.SOUNDLENGTH) {
                 soundLength = SoundCollection.SOUNDLENGTH;
                 playDuration -= SoundCollection.SOUNDLENGTH;
@@ -207,15 +219,21 @@ public class BeatManagerFragment extends Fragment {
             h.logD(TAG, "MetronomeAsyncTask constructor");
         }
 
+        @Override
         protected String doInBackground(Void... params) {
             h.logD(TAG, "doInBackground");
             iBeatUI = 0;
             mHandler.post(runUI);
             playBeatList();
-            return null;
+            Log.d(TAG, "playBeatList ready");
+            return "playBeatList ready";
         }
-    }
-    protected void onPostExecute(int result) {
-        stopPlaying();
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, "onPostExecute");
+            stopPlaying();
+            return;
+        }
     }
 }

@@ -251,8 +251,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
                 int index = track.getItemRepeatPosition(position);
                 frag.setRepeat(index);
-
-                frag.doStartStopPlayer(index);
+                frag.doStartPlayer();
             }
         });
 

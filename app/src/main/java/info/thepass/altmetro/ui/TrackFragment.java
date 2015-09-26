@@ -56,6 +56,7 @@ public class TrackFragment extends Fragment {
     private MenuItem menuItemPlay;
     private MenuItem menuItemSettings;
     private MenuItem menuItemTrackList;
+    private boolean menuPlaying;
     // player
     private EmphasisViewManager evPlayer;
     private TextView tvInfo;
@@ -90,7 +91,9 @@ public class TrackFragment extends Fragment {
         h = new HelperMetro(getActivity());
         h.logD(TAG, "activityCreated");
         h.initToastAlert(myInflater);
+
         setHasOptionsMenu(true);
+
 
         starting = true;
 
@@ -121,14 +124,15 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
         if (isPlaying) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemPlay.setIcon(R.mipmap.ic_action_stop);
+            menuPlaying = true;
             menuItemTrackList.setIcon(R.mipmap.ic_none);
         } else {
             menuItemSettings.setIcon(R.mipmap.ic_action_settings);
             menuItemPlay.setIcon(R.mipmap.ic_action_play);
+            menuPlaying = false;
             menuItemTrackList.setIcon(R.mipmap.icon_list);
         }
     }
@@ -137,7 +141,11 @@ public class TrackFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_track_play:
-                doStartStopPlayer(trackData.trackSelected, item);
+                if (isPlaying) {
+                    doStopPlayer();
+                } else {
+                    doStartPlayer();
+                }
                 return true;
             case R.id.action_track_settings:
                 if (!isPlaying) {
@@ -175,7 +183,7 @@ public class TrackFragment extends Fragment {
                     doPref();
                     return;
                 case Keys.TARGETBEATMANAGER:
-                    doStartStopPlayer(0);
+                    doStopPlayer();
                     return;
                 default:
                     throw new RuntimeException("Requestcode unknown " + requestCode);
@@ -183,45 +191,29 @@ public class TrackFragment extends Fragment {
         }
     }
 
-    public void doStartStopPlayer(int position, MenuItem item) {
-        Log.d(TAG, "startStop");
+    public void doStartPlayer() {
         if (!track.trackPlayable(h)) {
             Log.d(TAG, "track not playable");
             return;
         }
-        if (item.getIcon()==)
-            isPlaying = !isPlaying;
 
-        updateLayout();
-
-        if (isPlaying) {
+        Log.d(TAG, "doStartPlayer " + isPlaying);
+        if (!isPlaying) {
+            isPlaying = true;
             bm.trackData = trackData;
             bm.track = track;
             bm.llRoot = lvManager.llRoot;
             bm.startPlayer();
-        } else {
-            bm.stopPlayer();
+            updateLayout();
         }
     }
 
-    public void doStartStopPlayer(int position, MenuItem item) {
-        Log.d(TAG, "startStop");
-        if (!track.trackPlayable(h)) {
-            Log.d(TAG, "track not playable");
-            return;
-        }
-        if (item.getIcon()==)
-            isPlaying = !isPlaying;
-
-        updateLayout();
-
+    public void doStopPlayer() {
+        Log.d(TAG, "doStopPlayer " + isPlaying);
         if (isPlaying) {
-            bm.trackData = trackData;
-            bm.track = track;
-            bm.llRoot = lvManager.llRoot;
-            bm.startPlayer();
-        } else {
+            isPlaying = false;
             bm.stopPlayer();
+            updateLayout();
         }
     }
 
@@ -232,6 +224,7 @@ public class TrackFragment extends Fragment {
         this.trackData = act.trackData;
         track = trackData.tracks.get(trackData.trackSelected);
         isPlaying = false;
+        menuPlaying=false;
     }
 
     private void initItemsListViewManager() {
