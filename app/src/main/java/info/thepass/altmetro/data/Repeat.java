@@ -3,11 +3,11 @@ package info.thepass.altmetro.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import info.thepass.altmetro.Audio.Beat;
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.Sound.Beat;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.Audio.BeatManagerFragment;
 
 public class Repeat {
     public final static String TAG = "TrakRepeat";

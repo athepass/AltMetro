@@ -26,8 +26,9 @@ public class Keys {
     public final static int TARGETDELETEREPEAT = 32;
     public final static int TARGETEDITSTUDY = 41;
     public final static int TARGETEDITTAP = 42;
-    public final static int TARGETBEATMANAGER = 43;
     public final static int TARGETPREF = 51;
+    public final static int TARGETBEATMANAGERSTOP = 61;
+    public final static int TARGETBEATMANAGERINIT = 62;
 
     public final static String EDITACTION = "EditAction";
     public final static String EDITINDEX = "EditIndex";

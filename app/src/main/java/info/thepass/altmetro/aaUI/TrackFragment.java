@@ -1,4 +1,4 @@
-package info.thepass.altmetro.ui;
+package info.thepass.altmetro.aaUI;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -21,8 +21,8 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-import info.thepass.altmetro.Audio.BeatManagerFragment;
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
@@ -53,10 +53,10 @@ public class TrackFragment extends Fragment {
     private View layout;
     private HelperMetro h;
     private LayoutInflater myInflater;
-    private MenuItem menuItemPlay;
+    private MenuItem menuItemStart;
+    private MenuItem menuItemStop;
     private MenuItem menuItemSettings;
     private MenuItem menuItemTrackList;
-    private boolean menuPlaying;
     // player
     private EmphasisViewManager evPlayer;
     private TextView tvInfo;
@@ -111,28 +111,25 @@ public class TrackFragment extends Fragment {
         initViews();
         initEmphasis();
         initBeatManager();
-        starting = false;
-        setData();
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_track, menu);
-        menuItemPlay = menu.findItem(R.id.action_track_play);
+        menuItemStart = menu.findItem(R.id.action_track_start);
+        menuItemStop = menu.findItem(R.id.action_track_stop);
         menuItemSettings = menu.findItem(R.id.action_track_settings);
         menuItemTrackList = menu.findItem(R.id.action_track_tracklist);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        menuItemStart.setVisible(!isPlaying);
+        menuItemStop.setVisible(isPlaying);
         if (isPlaying) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
-            menuItemPlay.setIcon(R.mipmap.ic_action_stop);
-            menuPlaying = true;
             menuItemTrackList.setIcon(R.mipmap.ic_none);
         } else {
             menuItemSettings.setIcon(R.mipmap.ic_action_settings);
-            menuItemPlay.setIcon(R.mipmap.ic_action_play);
-            menuPlaying = false;
             menuItemTrackList.setIcon(R.mipmap.icon_list);
         }
     }
@@ -140,12 +137,11 @@ public class TrackFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_track_play:
-                if (isPlaying) {
-                    doStopPlayer();
-                } else {
-                    doStartPlayer();
-                }
+            case R.id.action_track_start:
+                doStartPlayer();
+                return true;
+            case R.id.action_track_stop:
+                doStopPlayer();
                 return true;
             case R.id.action_track_settings:
                 if (!isPlaying) {
@@ -182,7 +178,12 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETPREF:
                     doPref();
                     return;
-                case Keys.TARGETBEATMANAGER:
+                case Keys.TARGETBEATMANAGERINIT:
+                    h.logD(TAG,"beat manager init ready, setting data");
+                    starting = false;
+                    setData();
+                    return;
+                case Keys.TARGETBEATMANAGERSTOP:
                     doStopPlayer();
                     return;
                 default:
@@ -204,7 +205,6 @@ public class TrackFragment extends Fragment {
             bm.track = track;
             bm.llRoot = lvManager.llRoot;
             bm.startPlayer();
-            updateLayout();
         }
     }
 
@@ -213,7 +213,6 @@ public class TrackFragment extends Fragment {
         if (isPlaying) {
             isPlaying = false;
             bm.stopPlayer();
-            updateLayout();
         }
     }
 
@@ -224,7 +223,6 @@ public class TrackFragment extends Fragment {
         this.trackData = act.trackData;
         track = trackData.tracks.get(trackData.trackSelected);
         isPlaying = false;
-        menuPlaying=false;
     }
 
     private void initItemsListViewManager() {
@@ -404,8 +402,10 @@ public class TrackFragment extends Fragment {
             fragmentTransaction.add(bm, BeatManagerFragment.TAG);
             fragmentTransaction.commit();
         }
-        bm.setTargetFragment(this, Keys.TARGETBEATMANAGER);
+        bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.tvInfo = this.tvInfo;
+        bm.trackData = trackData;
+        bm.track = track;
     }
 
     public void setData() {
@@ -423,6 +423,7 @@ public class TrackFragment extends Fragment {
         setStudy(null);
 
         updateLayout();
+        bm.build(track);
     }
 
     private void doPrefs() {
@@ -449,7 +450,7 @@ public class TrackFragment extends Fragment {
     private void updateLayout() {
         setTitle();
         evPlayer.setEmphasisVisible(isPlaying);
-        tvInfo.setVisibility((isPlaying) ? View.VISIBLE : View.GONE);
+        tvInfo.setVisibility((isPlaying) ? View.VISIBLE : View.VISIBLE);
 
         if (isPlaying) {
             tv_study.setVisibility(View.GONE);
@@ -545,4 +546,6 @@ public class TrackFragment extends Fragment {
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();
     }
+
+//    private AsyncUpdateLayoutTask extends AsyncTask
 }

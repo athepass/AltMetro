@@ -1,4 +1,4 @@
-package info.thepass.altmetro.ui;
+package info.thepass.altmetro.aaUI;
 
 import android.app.ListFragment;
 import android.os.Bundle;

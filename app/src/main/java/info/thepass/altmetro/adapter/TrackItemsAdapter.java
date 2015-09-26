@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.aaUI.TrackFragment;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
@@ -19,7 +20,6 @@ import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.ui.TrackFragment;
 
 public class TrackItemsAdapter extends ArrayAdapter<String> {
     public final static int ROWTYPEPAT = 0;

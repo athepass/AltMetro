@@ -1,4 +1,4 @@
-package info.thepass.altmetro.Audio;
+package info.thepass.altmetro.Sound;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -34,7 +33,7 @@ public class BeatManagerFragment extends Fragment {
     String[] subs;
     private HelperMetro h;
     private Handler mHandler;
-    private MetronomeAsyncTask metroTask;
+    //    private MetronomeAsyncTask metroTask;
     private SoundCollection sc;
     private AudioTrack audioTrack;
     private int playDuration;
@@ -44,9 +43,16 @@ public class BeatManagerFragment extends Fragment {
     private boolean soundFirstBeat;
     private int iBeatSound;
     private int iBeatUI;
+
+    private long timeStartPlayer;
+    private long timeStartRunSound;
+    private long timeStartRunUI;
+
     /*****************************************************************/
     Runnable runUI = new Runnable() {
         public void run() {
+            timeStartRunUI = getNanoTime();
+            h.logD(TAG, "runUI t=" + deltaTime(timeStartRunUI));
             int uiDelay = 25;
             if (gaDoor()) {
                 Log.d(TAG, "beat[UI] " + iBeatUI + " info:" + beatList.get(iBeatUI).display(iBeatUI, subs));
@@ -63,6 +69,17 @@ public class BeatManagerFragment extends Fragment {
                     }
                 }
             }
+        }
+    };
+    Runnable runSound = new Runnable() {
+        public void run() {
+            timeStartRunSound = getNanoTime();
+            h.logD(TAG, "runSound t=" + deltaTime(timeStartRunSound));
+            iBeatUI = 0;
+            mHandler.post(runUI);
+            playBeatList();
+            Log.d(TAG, "playBeatList ready");
+            stopPlaying();
         }
     };
 
@@ -82,6 +99,8 @@ public class BeatManagerFragment extends Fragment {
         beatList = new ArrayList<Beat>();
         mHandler = new Handler();
         initSound();
+        Intent intent = new Intent();
+        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
     }
 
     public void build(Track track) {
@@ -115,22 +134,21 @@ public class BeatManagerFragment extends Fragment {
     }
 
     public void startPlayer() {
+        timeStartPlayer = getNanoTime();
         Log.d(TAG, "startPlayer");
         soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         build(track);
         for (int i = 0; i < beatList.size(); i++) {
             beatList.get(i).buildSound();
-            dumpBeatList(i);
+//            dumpBeatList(i);
         }
         doorgaanUI = true;
         doorgaanSound = true;
-        metroTask.execute();
+        mHandler.post(runSound);
     }
 
     public void stopPlayer() {
         Log.d(TAG, "stopPlayer");
-        metroTask = new MetronomeAsyncTask();
-        Runtime.getRuntime().gc();
         doorgaanUI = false;
         doorgaanSound = false;
     }
@@ -138,12 +156,12 @@ public class BeatManagerFragment extends Fragment {
     private void stopPlaying() {
         Log.d(TAG, "stopPlaying");
         Intent intent = new Intent();
-        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGER, Activity.RESULT_OK, intent);
+        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERSTOP, Activity.RESULT_OK, intent);
     }
 
     private void initSound() {
         sc = new SoundCollection(h, TAG);
-        metroTask = new MetronomeAsyncTask();
+//        metroTask = new MetronomeAsyncTask();
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 SoundCollection.SAMPLERATE, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, SoundCollection.SAMPLERATE,
@@ -156,7 +174,7 @@ public class BeatManagerFragment extends Fragment {
         while (gaDoor() && iBeatSound < beatList.size()) {
             Beat beat = beatList.get(iBeatSound);
             Log.d(TAG, "beat[Sound] " + iBeatSound + " info:" + beatList.get(iBeatSound).display(iBeatSound, subs));
-//            tvInfo.setText(beat.info);
+            tvInfo.setText(beat.info);
             playSoundList(beat);
             iBeatSound += beatList.get(iBeatSound).barNext;
             if (iBeatSound >= beatList.size()) {
@@ -208,32 +226,11 @@ public class BeatManagerFragment extends Fragment {
         }
     }
 
-
-    long getTimeMillis() {
-        return System.nanoTime() / 1000000;
+    public long getNanoTime() {
+        return System.nanoTime();
     }
 
-    private class MetronomeAsyncTask extends AsyncTask<Void, Integer, String> {
-
-        public MetronomeAsyncTask() {
-            h.logD(TAG, "MetronomeAsyncTask constructor");
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            h.logD(TAG, "doInBackground");
-            iBeatUI = 0;
-            mHandler.post(runUI);
-            playBeatList();
-            Log.d(TAG, "playBeatList ready");
-            return "playBeatList ready";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Log.d(TAG, "onPostExecute");
-            stopPlaying();
-            return;
-        }
+    public int deltaTime(long newTime) {
+        return (int) (newTime - timeStartPlayer) / 1000000;
     }
 }

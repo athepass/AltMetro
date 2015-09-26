@@ -7,9 +7,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.Audio.BeatManagerFragment;
 
 public class Track {
     public final static String TAG = "TrakTrack";

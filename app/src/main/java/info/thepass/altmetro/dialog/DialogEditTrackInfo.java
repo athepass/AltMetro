@@ -15,11 +15,11 @@ import android.widget.Switch;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.aaUI.ActivityTrack;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.ui.ActivityTrack;
 
 public class DialogEditTrackInfo extends DialogFragment {
     public final static String TAG = "DialogEditTrakInfo";

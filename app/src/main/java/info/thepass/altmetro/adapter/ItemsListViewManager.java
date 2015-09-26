@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.aaUI.TrackFragment;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
@@ -25,7 +26,6 @@ import info.thepass.altmetro.dialog.DialogEditTrackStudy;
 import info.thepass.altmetro.dialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
-import info.thepass.altmetro.ui.TrackFragment;
 
 /**
  * Created by nl03192 on 22-9-2015.
