@@ -4,8 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.Sound.Beat;
-import info.thepass.altmetro.Sound.BeatManagerFragment;
+import info.thepass.altmetro.sound.Beat;
+import info.thepass.altmetro.sound.BeatManagerFragment;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -87,7 +87,7 @@ public class Repeat {
 
     private void buildBeatBar(BeatManagerFragment bm, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
-        Pat pat = bm.track.pats.get(this.indexPattern);
+        Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             bm.beatList.add(beat);
@@ -104,7 +104,7 @@ public class Repeat {
             beat.beatState = pat.patBeatState[iBeat];
             beat.sub = pat.patSubs;
             beat.tempo = this.tempo;
-            beat.practice = bm.track.study.practice;
+            beat.practice = bm.trackFragment.track.study.practice;
             beat.tempoCalc = Math.round((beat.tempo * 100f) / beat.practice);
         }
     }
