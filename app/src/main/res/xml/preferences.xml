@@ -12,6 +12,10 @@
         android:defaultValue="false"
         android:key="multi"
         android:title="@string/pref_multi"/>
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="firstBeat"
+        android:title="@string/label_firstBeat" />
     <info.thepass.altmetro.tools.MyListPreference
         android:defaultValue="250"
         android:entries="@array/array_maxtempo"

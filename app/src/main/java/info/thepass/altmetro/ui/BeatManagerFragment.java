@@ -13,43 +13,48 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.Audio.Beat;
+import info.thepass.altmetro.Audio.Sound;
 import info.thepass.altmetro.Audio.SoundCollection;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
+import info.thepass.altmetro.tools.Keys;
 
 public class BeatManagerFragment extends Fragment {
     public final static String TAG = "BeatManagerFragment";
     public final static int DOORGAANSTART = 2;
     public final static int DOORGAANSTOP = 0;
-    public ArrayList<Beat> beatList;
-    public int barCounter;
+    public LinearLayout llRoot;
     public Track track;
     public TrackData trackData;
-    public LinearLayout llRoot;
+    public ArrayList<Beat> beatList;
+    public int barCounter;
     String[] subs;
     private HelperMetro h;
-    private AudioTrack audioTrack;
-    private SoundCollection sc;
-    private MetronomeAsyncTask metroTask;
     private Handler mHandler;
+    private MetronomeAsyncTask metroTask;
+    private SoundCollection sc;
+    private AudioTrack audioTrack;
+    private int playDuration;
+    private int soundLength;
     private int doorgaan;
+    private boolean soundFirstBeat;
     private int iBeatSound;
     private int iBeatUI;
     /*****************************************************************/
     Runnable runUI = new Runnable() {
         public void run() {
             int uiDelay = 200;
-            if (doorgaan>DOORGAANSTOP ) {
-                Log.d(TAG, "beatUI " + iBeatUI + " info:" + beatList.get(iBeatUI).display(iBeatUI, subs));
-                iBeatUI+=beatList.get(iBeatUI).barNext;
+            if (doorgaan > DOORGAANSTOP) {
+                Log.d(TAG, "beat[UI] " + iBeatUI + " info:" + beatList.get(iBeatUI).display(iBeatUI, subs));
+                iBeatUI += beatList.get(iBeatUI).barNext;
                 if (iBeatUI < beatList.size()) {
                     // TODO bereken doorlooptijd synced
                     // TODO update user interface
                     mHandler.postDelayed(runUI, uiDelay);
                 } else {
-                    Log.d(TAG,"beatUI ready");
+                    Log.d(TAG, "beatUI ready");
                     doorgaan--;
                 }
             }
@@ -78,7 +83,7 @@ public class BeatManagerFragment extends Fragment {
         beatList.clear();
         barCounter = 0;
         if (track.trackPlayable(h)) {
-            track.buildBeatList(this);
+            track.buildBeat(this);
         }
 //        dumpBeatList(-1);
     }
@@ -97,6 +102,7 @@ public class BeatManagerFragment extends Fragment {
 
     public void startPlayer() {
         Log.d(TAG, "startPlayer");
+        soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         build(track);
         for (int i = 0; i < beatList.size(); i++) {
             beatList.get(i).buildSound();
@@ -107,7 +113,7 @@ public class BeatManagerFragment extends Fragment {
     }
 
     public void stopPlayer() {
-        Log.d(TAG,"stopPlayer");
+        Log.d(TAG, "stopPlayer");
         doorgaan = DOORGAANSTOP;
     }
 
@@ -123,17 +129,72 @@ public class BeatManagerFragment extends Fragment {
 
     private void playBeatList() {
         iBeatSound = 0;
-        while (doorgaan>DOORGAANSTOP
+        while (doorgaan > DOORGAANSTOP
                 && iBeatSound < beatList.size()) {
-            Log.d(TAG, "beatSound " + iBeatSound + " info:" + beatList.get(iBeatSound).display(iBeatSound, subs));
-            iBeatSound+=beatList.get(iBeatSound).barNext;
-            if (iBeatSound>=beatList.size()) {
-                Log.d(TAG,"beatSound ready");
+            Beat beat = beatList.get(iBeatSound);
+            Log.d(TAG, "beat[Sound] " + iBeatSound + " info:" + beatList.get(iBeatSound).display(iBeatSound, subs));
+            playBeatSounds(beat);
+            iBeatSound += beatList.get(iBeatSound).barNext;
+            if (iBeatSound >= beatList.size()) {
+                Log.d(TAG, "beatSound ready");
                 // TODO play sound
                 doorgaan--;
             }
         }
     }
+
+    private void playBeatSounds(Beat beat) {
+        for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
+            Sound sound = beat.soundList.get(iSound);
+            switch (sound.soundType) {
+                case Keys.SOUNDTYPEBEAT:
+//                timeSound = h.getRelTimeNow(beginTimeOnClick);
+//                h.logD(TAG, "sound " + iBeatSound + "]" + timeSound);
+
+                    if (iBeatSound == 0 && soundFirstBeat) {
+                        writeSound(sc.soundFirst, sound.duration);
+                    } else {
+                        switch (sound.soundType) {
+                            case Keys.SOUNDHIGH:
+                                writeSound(sc.soundA, sound.duration);
+                                break;
+                            case Keys.SOUNDLOW:
+                                writeSound(sc.soundB, sound.duration);
+                                break;
+                            case Keys.SOUNDNONE:
+                                writeSound(sc.soundSilence, sound.duration);
+                                break;
+                            default:
+                                throw new RuntimeException("invalid soundType " + sound.soundType);
+                        }
+                    }
+                    break;
+                case Keys.SOUNDTYPESUB:
+                    writeSound(sc.soundC, sound.duration);
+                    break;
+                case Keys.SOUNDTYPESILENCE:
+                    writeSound(sc.soundSilence, sound.duration);
+                    break;
+                default:
+                    throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
+            }
+        }
+    }
+
+    private void writeSound(byte[] soundBytes, int duration) {
+        playDuration = duration * 2;
+        while (doorgaan > DOORGAANSTOP && playDuration > 0) {
+            if (playDuration > SoundCollection.SOUNDLENGTH) {
+                soundLength = SoundCollection.SOUNDLENGTH;
+                playDuration -= SoundCollection.SOUNDLENGTH;
+            } else {
+                soundLength = playDuration;
+                playDuration = 0;
+            }
+            audioTrack.write(soundBytes, 0, soundLength);
+        }
+    }
+
 
     long getTimeMillis() {
         return System.nanoTime() / 1000000;

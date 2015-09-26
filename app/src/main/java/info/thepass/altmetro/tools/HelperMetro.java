@@ -193,7 +193,7 @@ public class HelperMetro {
     }
 
     public int getMaxTempo() {
-        return Integer.parseInt(prefs.getString(Keys.PREFMAXTEMPO, "250"));
+        return Integer.parseInt(prefs.getString(Keys.PREFMAXTEMPO, Keys.MAXTEMPODEFAULT));
     }
 
     public int validatedTempo(int newTempo) {

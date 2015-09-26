@@ -44,7 +44,7 @@ public class Track {
 
         study = new Study();
 
-        repeatSelected = 0;
+        repeatSel   ected = 0;
         repeats = new ArrayList<Repeat>();
         Repeat repeat = new Repeat();
         repeats.add(repeat);
@@ -240,12 +240,12 @@ public class Track {
         syncItems();
     }
 
-    public void buildBeatList(BeatManagerFragment bm) {
+    public void buildBeat(BeatManagerFragment bm) {
         if (!multi) {
-            repeats.get(0).buildBeatList(bm);
+            repeats.get(0).buildBeat(bm);
         } else {
             for (int iRep = 0; iRep < repeats.size(); iRep++) {
-                repeats.get(iRep).buildBeatList(bm);
+                repeats.get(iRep).buildBeat(bm);
             }
         }
     }

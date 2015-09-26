@@ -24,10 +24,10 @@ public class Beat {
     public int totFrames;
 
     public String info;
-    public ArrayList<BeatSound> beatSounds;
+    public ArrayList<Sound> soundList;
 
     public Beat() {
-        beatSounds = new ArrayList<BeatSound>();
+        soundList = new ArrayList<Sound>();
     }
 
     public void buildSound() {
@@ -40,8 +40,8 @@ public class Beat {
     }
 
     private void addBeat() {
-        BeatSound sound = new BeatSound();
-        beatSounds.add(sound);
+        Sound sound = new Sound();
+        soundList.add(sound);
         sound.duration = SoundCollection.TICKDURATION;
         sound.frameBeginBase = 0;
         sound.frameEndBase = sound.duration;
@@ -56,8 +56,8 @@ public class Beat {
             int subFrames = totFrames / subBeats.length;
             for (int j = 1; j < subBeats.length; j++) {
                 if (subBeats[j] == 1) {
-                    BeatSound sound = new BeatSound();
-                    beatSounds.add(sound);
+                    Sound sound = new Sound();
+                    soundList.add(sound);
                     sound.duration = SoundCollection.TICKDURATION;
                     sound.frameBeginBase = j * subFrames;
                     sound.frameEndBase = sound.frameBeginBase
@@ -70,9 +70,9 @@ public class Beat {
         }
     }
     private void removeOverlap() {
-        for (int i = 0; i < beatSounds.size() - 1; i++) {
-            BeatSound sThis = beatSounds.get(i);
-            BeatSound sNext = beatSounds.get(i + 1);
+        for (int i = 0; i < soundList.size() - 1; i++) {
+            Sound sThis = soundList.get(i);
+            Sound sNext = soundList.get(i + 1);
             if (sThis.frameEnd > sNext.frameBegin) {
                 sThis.frameEnd = sNext.frameBegin;
                 sThis.calcDuration();
@@ -81,9 +81,9 @@ public class Beat {
     }
 
     private void fillGaps() {
-        for (int i = 0; i < beatSounds.size() - 1; i++) {
-            BeatSound sThis = beatSounds.get(i);
-            BeatSound sNext = beatSounds.get(i + 1);
+        for (int i = 0; i < soundList.size() - 1; i++) {
+            Sound sThis = soundList.get(i);
+            Sound sNext = soundList.get(i + 1);
             if (sThis.frameEnd < sNext.frameBegin) {
                 this.addSilence(sThis.frameEnd, sNext.frameBegin, i + 1);
             }
@@ -91,8 +91,8 @@ public class Beat {
     }
 
     private void fillEndGap() {
-        int i = beatSounds.size() - 1;
-        BeatSound sThis = beatSounds.get(i);
+        int i = soundList.size() - 1;
+        Sound sThis = soundList.get(i);
         if (sThis.frameEnd > totFrames) {
             sThis.frameEnd = totFrames;
             sThis.calcDuration();
@@ -103,8 +103,8 @@ public class Beat {
     }
 
     private void addSilence(int frameFrom, int frameTo, int position) {
-        BeatSound sNew = new BeatSound();
-        beatSounds.add(position, sNew);
+        Sound sNew = new Sound();
+        soundList.add(position, sNew);
         sNew.frameBeginBase = frameFrom;
         sNew.frameEndBase = frameTo;
         sNew.copyBase();
@@ -125,8 +125,8 @@ public class Beat {
     }
     public String displayBeat() {
         String s = "";
-        for (int i=0;i<beatSounds.size();i++) {
-            s+=beatSounds.get(i).displayKort()+"|";
+        for (int i=0;i< soundList.size();i++) {
+            s+= soundList.get(i).displayKort()+"|";
             s+=(i %3 == 0&&i>0) ? "\n" : "";
         }
         return s;

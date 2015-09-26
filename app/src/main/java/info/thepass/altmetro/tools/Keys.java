@@ -15,6 +15,7 @@ public class Keys {
     public final static int SUBDEFAULT = 0;
     public final static int MINTEMPO = 30;
     public final static int MAXTEMPOMAX = 400;
+    public final static String MAXTEMPODEFAULT = "250";
     public final static int MAXEMPHASIS = 20;
     public final static int HALFEMPHASIS = 10;
 
@@ -41,5 +42,5 @@ public class Keys {
     public final static String PREFMAXTEMPO = "maxTempo";
     public final static String PREFSHOWSTUDY = "showStudy";
     public final static String PREFSHOWPRACTICE = "showPractice";
-    public final static String PREFMETROMODE = "metroMode";
+    public final static String PREFFIRSTBEAT = "firstBeat";
 }

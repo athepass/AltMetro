@@ -25,6 +25,7 @@
     <string name="label_editstudy" formatted="false">Edit study, tempo=%s</string>
     <string name="label_initStudy" >init</string>
     <string name="label_sub">Subdivision</string>
+    <string name="label_firstBeat">Different sound on first beat</string>
     <string name="label_sub2">Subdiv</string>
     <string name="label_multi">Multiple tempi</string>
     <string name="label_multi_single">Single tempo</string>

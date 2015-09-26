@@ -178,7 +178,7 @@ public class TrackFragment extends Fragment {
     }
 
     private void initData() {
-        maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO, "400"));
+        maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO, Keys.MAXTEMPODEFAULT));
 
         ActivityTrack act = (ActivityTrack) getActivity();
         this.trackData = act.trackData;

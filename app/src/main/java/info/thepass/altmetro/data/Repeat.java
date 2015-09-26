@@ -70,21 +70,21 @@ public class Repeat {
         return s;
     }
 
-    public void buildBeatList(BeatManagerFragment bm) {
+    public void buildBeat(BeatManagerFragment bm) {
         repeatCounter = 0;
         if (noEnd) {
             iRepeat = 0;
-            buildBeatListBar(bm);
+            buildBeatBar(bm);
         } else {
             for (iRepeat = 0; iRepeat < count; iRepeat++) {
                 bm.barCounter++;
                 repeatCounter++;
-                buildBeatListBar(bm);
+                buildBeatBar(bm);
             }
         }
     }
 
-    private void buildBeatListBar(BeatManagerFragment bm) {
+    private void buildBeatBar(BeatManagerFragment bm) {
         Pat pat = bm.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat();

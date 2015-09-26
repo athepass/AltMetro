@@ -2,7 +2,7 @@ package info.thepass.altmetro.Audio;
 
 import info.thepass.altmetro.tools.Keys;
 
-public class BeatSound implements Comparable<BeatSound> {
+public class Sound implements Comparable<Sound> {
     public int frameBegin;
     public int frameEnd;
     public int frameBeginBase;
@@ -12,7 +12,7 @@ public class BeatSound implements Comparable<BeatSound> {
     public String tag;
 
     @Override
-    public int compareTo(BeatSound bs2) {
+    public int compareTo(Sound bs2) {
         if (frameBegin < bs2.frameBegin) {
             return -1;
         } else if (frameBegin > bs2.frameBegin) {
@@ -70,8 +70,8 @@ public class BeatSound implements Comparable<BeatSound> {
         return s;
     }
 
-    public BeatSound split(BeatSound sNext) {
-        BeatSound bs = this.kloon();
+    public Sound split(Sound sNext) {
+        Sound bs = this.kloon();
         bs.frameBegin = sNext.frameBegin;
         bs.calcDuration();
 
@@ -80,8 +80,8 @@ public class BeatSound implements Comparable<BeatSound> {
         return bs;
     }
 
-    public BeatSound kloon() {
-        BeatSound bs = new BeatSound();
+    public Sound kloon() {
+        Sound bs = new Sound();
         bs.frameBeginBase = frameBeginBase;
         bs.frameEndBase = frameEndBase;
         bs.copyBase();
