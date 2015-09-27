@@ -119,7 +119,8 @@
         <RadioButton
             android:id="@+id/rb_track_prac95"
             style="@style/AppTheme.RadioButtonPractice"
-            android:text="@string/label_prac95"/>
+            android:text="@string/label_prac95"
+            />
 
         <RadioButton
             android:id="@+id/rb_track_prac100"
@@ -151,8 +152,9 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:text="info"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="@dimen/textsize_row"/>
+        android:textColor="@color/color_practice"
+        android:textSize="15dp"
+        android:background="@color/color_listview"/>
 
     <LinearLayout
         android:id="@+id/ll_player_emphasis0"

@@ -50,6 +50,7 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac90;
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
+    public TextView tvInfo;
     private View layout;
     private HelperMetro h;
     private LayoutInflater myInflater;
@@ -59,7 +60,6 @@ public class TrackFragment extends Fragment {
     private MenuItem menuItemTrackList;
     // player
     private EmphasisViewManager evPlayer;
-    public TextView tvInfo;
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -178,7 +178,7 @@ public class TrackFragment extends Fragment {
                     doPref();
                     return;
                 case Keys.TARGETBEATMANAGERINIT:
-                    h.logD(TAG,"beat manager init ready, setting data");
+                    h.logD(TAG, "beat manager init ready, setting data");
                     starting = false;
                     setData();
                     return;
@@ -193,12 +193,18 @@ public class TrackFragment extends Fragment {
 
     public void doStartPlayer() {
         if (!track.trackPlayable(h)) {
-            Log.d(TAG, "track not playable");
             return;
         }
 
-        Log.d(TAG, "doStartPlayer " + bm.playing);
+        if (bm.building) {
+            String msg = h.getString(R.string.error_building);
+            Log.d(TAG,msg);
+            h.showToast(msg);
+            return;
+        }
+
         if (!bm.playing) {
+            Log.d(TAG, "doStartPlayer " + bm.playing);
             bm.playing = true;
             bm.startPlayer();
         }
@@ -417,7 +423,6 @@ public class TrackFragment extends Fragment {
         setStudy(null);
 
         updateLayout();
-        bm.build(track);
     }
 
     private void doPrefs() {
@@ -445,7 +450,7 @@ public class TrackFragment extends Fragment {
         Log.d(TAG, "updateLayout");
         setTitle();
         evPlayer.setEmphasisVisible(bm.playing);
-        tvInfo.setVisibility((bm.playing) ? View.VISIBLE : View.VISIBLE);
+        tvInfo.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
 
         if (bm.playing) {
             tv_study.setVisibility(View.GONE);
@@ -455,6 +460,9 @@ public class TrackFragment extends Fragment {
         }
         tvTap.setVisibility((bm.playing) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((bm.playing) ? View.GONE : View.VISIBLE);
+        if (track.trackPlayable(h)) {
+            bm.buildBeat(track);
+        }
 
         getActivity().invalidateOptionsMenu();
     }
@@ -512,7 +520,7 @@ public class TrackFragment extends Fragment {
 
     private void displayTempo() {
         tvTempo.setText("" + tempoTV);
-        int tempoPractice = h.validatedTempo(tempoTV * track.study.practice / 100);
+        int tempoPractice = h.validatedTempo(Math.round(tempoTV * track.study.practice / 100f));
         tvTempoPractice.setText("" + tempoPractice);
 
         int indexSB = getProgressIndex(tempoTV);
@@ -541,6 +549,4 @@ public class TrackFragment extends Fragment {
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();
     }
-
-//    private AsyncUpdateLayoutTask extends AsyncTask
 }

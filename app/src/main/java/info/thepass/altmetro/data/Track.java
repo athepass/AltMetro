@@ -1,13 +1,23 @@
 package info.thepass.altmetro.data;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.sound.Beat;
 import info.thepass.altmetro.sound.BeatManagerFragment;
+import info.thepass.altmetro.sound.Sound;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -199,7 +209,9 @@ public class Track {
         for (int i = 0; i < repeats.size(); i++) {
             Repeat repeat = repeats.get(i);
             if (repeat.noEnd && i < repeats.size() - 1) {
-                h.showToastAlert(h.getString1(R.string.error_unreachable, "" + (i + 1)));
+                String msg = h.getString1(R.string.error_unreachable, "" + (i + 1));
+                Log.d(TAG, msg);
+                h.showToastAlert(msg);
                 return false;
             }
         }
@@ -241,12 +253,43 @@ public class Track {
     }
 
     public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
-        if (!multi) {
-            repeats.get(0).buildBeat(bm, h);
-        } else {
-            for (int iRep = 0; iRep < repeats.size(); iRep++) {
-                repeats.get(iRep).buildBeat(bm, h);
+        bm.barCounter = 0;
+        bm.beatList.clear();
+        for (int iRep = 0; iRep < repeats.size(); iRep++) {
+            repeats.get(iRep).buildBeat(bm, iRep, h);
+        }
+    }
+
+    public void soundDump(HelperMetro h, BeatManagerFragment bm) {
+        String[] subs = h.getStringArray(R.array.sub_pattern);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.hhmm", Locale.getDefault());
+        String pad = h.getLogFilePath();
+        String filename = pad + sdf.format(new Date()) + ".txt";
+        File padFile = new File(pad);
+        boolean res = padFile.mkdirs();
+        File dumpFile = new File(filename);
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(
+                    new FileWriter(dumpFile, true));
+            bufferedWriter.write("======== repeats ======== build:"
+                    + bm.buildCounter + " bars:" + bm.barCounter + " beats: " + bm.beatList.size() + "\n");
+            for (int irep = 0; irep < repeats.size(); irep++) {
+                Repeat repeat = repeats.get(irep);
+                String dispPat = pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
+                bufferedWriter.write("rep " + irep + repeats.get(irep).display(h, irep, dispPat, true) + "\n");
             }
+            for (int ibeat = 0; ibeat < bm.beatList.size(); ibeat++) {
+                Beat beat = bm.beatList.get(ibeat);
+                bufferedWriter.write("======== beat " + ibeat + " ========\n"
+                        + beat.display(ibeat, subs) + "\n");
+                for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
+                    Sound sound = beat.soundList.get(iSound);
+                    bufferedWriter.write(sound.display() + "\n");
+                }
+            }
+            bufferedWriter.close();
+        } catch (Exception e) {
+            throw new RuntimeException("write " + filename + ": " + e.getMessage());
         }
     }
 }

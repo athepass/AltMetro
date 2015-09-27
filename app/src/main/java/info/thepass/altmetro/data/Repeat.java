@@ -23,7 +23,7 @@ public class Repeat {
     public int count;
     public boolean noEnd;
 
-    public int iRepeat;
+    public int iBar;
     public int iBeat;
     public int repeatCounter;
 
@@ -71,33 +71,33 @@ public class Repeat {
         return s;
     }
 
-    public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
+    public void buildBeat(BeatManagerFragment bm, int indexRepeat, HelperMetro h) {
         repeatCounter = 0;
         if (noEnd) {
-            iRepeat = 0;
-            buildBeatBar(bm, h);
+            iBar = 0;
+            buildBeatBar(bm, 0, iBar, h);
         } else {
-            for (iRepeat = 0; iRepeat < count; iRepeat++) {
+            for (iBar = 0; iBar< count; iBar++) {
                 bm.barCounter++;
-                repeatCounter++;
-                buildBeatBar(bm, h);
+                buildBeatBar(bm, indexRepeat, iBar, h);
             }
         }
     }
 
-    private void buildBeatBar(BeatManagerFragment bm, HelperMetro h) {
+    private void buildBeatBar(BeatManagerFragment bm, int idxRepeat, int idxBar, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             bm.beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : count;
-            beat.repeatIndex = repeatCounter;
+            beat.repeatIndex = idxRepeat;
+            beat.repeatBar = idxBar;
             beat.barIndex = bm.barCounter;
             if (iBeat == pat.patBeats - 1) {
-                beat.barNext = (noEnd) ? 1 - pat.patBeats : 1;
+                beat.barStep = (noEnd) ? 1 - pat.patBeats : 1;
             } else {
-                beat.barNext = 1;
+                beat.barStep = 1;
             }
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat + 1;
@@ -105,7 +105,12 @@ public class Repeat {
             beat.sub = pat.patSubs;
             beat.tempo = this.tempo;
             beat.practice = bm.trackFragment.track.study.practice;
-            beat.tempoCalc = Math.round((beat.tempo * 100f) / beat.practice);
+            beat.tempoCalc = Math.round((beat.tempo * beat.practice) / 100f);
+            beat.info = "r" + (beat.repeatIndex+1)
+                    + " bar " + (beat.repeatBar+ 1)
+                    + " beat " + beat.beatIndex
+                    + " tempo " + beat.tempo
+                    + ((beat.practice==100) ? "": " " + beat.practice + "%=" + beat.tempoCalc);
         }
     }
 }
