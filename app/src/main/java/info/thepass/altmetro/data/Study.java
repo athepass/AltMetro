@@ -5,6 +5,8 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 
@@ -16,51 +18,58 @@ public class Study {
     private final static String KEYROUNDS = "STrnd";
     private final static String KEYUSED = "STuse";
     private final static String KEYPRACTICE = "STprac";
-    public int tempoFrom;
-    public int tempoTo;
-    public int tempoIncrement;
-    public int rounds;
+    public int percentageFrom;
+    public int percentageTo;
+    public int percentageIncr;
+    public int times;
     public int practice;
     public boolean used;
 
+    private ArrayList<Repeat> repeats;
+
     public Study() {
         used = false;
-        setInitial();
+        percentageFrom = 75;
+        percentageTo = 100;
+        percentageIncr = 5;
+        times = 4;
+        practice = 100;
+        repeats = new ArrayList<Repeat> ();
     }
 
     public Study(Bundle b) {
-        tempoFrom = b.getInt(KEYTEMPOFROM);
-        tempoTo = b.getInt(KEYTEMPOTO);
-        tempoIncrement = b.getInt(KEYTEMPOINCREMENT);
-        rounds = b.getInt(KEYROUNDS);
+        percentageFrom = b.getInt(KEYTEMPOFROM);
+        percentageTo = b.getInt(KEYTEMPOTO);
+        percentageIncr = b.getInt(KEYTEMPOINCREMENT);
+        times = b.getInt(KEYROUNDS);
         used = b.getBoolean(KEYUSED);
         practice = b.getInt(KEYPRACTICE, 100);
     }
 
     public Bundle toBundle() {
         Bundle b = new Bundle();
-        b.putInt(KEYTEMPOFROM, tempoFrom);
-        b.putInt(KEYTEMPOTO, tempoTo);
-        b.putInt(KEYTEMPOINCREMENT, tempoIncrement);
-        b.putInt(KEYROUNDS, rounds);
+        b.putInt(KEYTEMPOFROM, percentageFrom);
+        b.putInt(KEYTEMPOTO, percentageTo);
+        b.putInt(KEYTEMPOINCREMENT, percentageIncr);
+        b.putInt(KEYROUNDS, times);
         b.putBoolean(KEYUSED, used);
         b.putInt(KEYPRACTICE, practice);
         return b;
     }
 
     public boolean isChanged(Study newSps) {
-        return newSps.tempoFrom != tempoFrom || newSps.tempoTo != tempoTo
-                || newSps.tempoIncrement != tempoIncrement
-                || newSps.rounds != rounds || newSps.used != used;
+        return newSps.percentageFrom != percentageFrom || newSps.percentageTo != percentageTo
+                || newSps.percentageIncr != percentageIncr
+                || newSps.times != times || newSps.used != used;
     }
 
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-            json.put(KEYTEMPOFROM, tempoFrom);
-            json.put(KEYTEMPOTO, tempoTo);
-            json.put(KEYTEMPOINCREMENT, tempoIncrement);
-            json.put(KEYROUNDS, rounds);
+            json.put(KEYTEMPOFROM, percentageFrom);
+            json.put(KEYTEMPOTO, percentageTo);
+            json.put(KEYTEMPOINCREMENT, percentageIncr);
+            json.put(KEYROUNDS, times);
             json.put(KEYUSED, used);
             json.put(KEYPRACTICE, practice);
         } catch (JSONException e) {
@@ -71,10 +80,10 @@ public class Study {
 
     public void fromJson(JSONObject json) {
         try {
-            tempoFrom = json.getInt(KEYTEMPOFROM);
-            tempoTo = json.getInt(KEYTEMPOTO);
-            tempoIncrement = json.getInt(KEYTEMPOINCREMENT);
-            rounds = json.getInt(KEYROUNDS);
+            percentageFrom = json.getInt(KEYTEMPOFROM);
+            percentageTo = json.getInt(KEYTEMPOTO);
+            percentageIncr = json.getInt(KEYTEMPOINCREMENT);
+            times = json.getInt(KEYROUNDS);
             used = json.getBoolean(KEYUSED);
             if (json.has(KEYPRACTICE))
                 practice = json.getInt(KEYPRACTICE);
@@ -94,29 +103,19 @@ public class Study {
             return h.getString(R.string.label_study_off);
         } else {
             String s = h.getString(R.string.label_study_on) +": ";
-            s += h.getString(R.string.label_tempo_from) + " " + tempoFrom + " ";
-            s += h.getString(R.string.label_tempo_to) + " " + tempoTo + " ";
-            s += h.getString(R.string.label_tempo_increment) + " " + tempoIncrement + " ";
-            s += h.getString(R.string.label_tempo_rondes) + " " + rounds;
+            s += percentageFrom + "% ";
+            s += h.getString(R.string.label_tempo_to) + " " + percentageTo + "% ";
+            s += h.getString(R.string.label_tempo_increment) + " " + percentageIncr + "% ";
+            s += h.getString1(R.string.label_repeatTimes, ""+ times);
             s = s.toLowerCase();
             return s;
         }
     }
 
-    public void setInitial() {
-        tempoIncrement = -1;
-        rounds = -1;
-        practice = 100;
-    }
-
-    public boolean isInitial() {
-        return (rounds==-1);
-    }
-
     public String toStringKort() {
-        String s = tempoFrom + ".." + tempoTo;
-        s += "[+" + tempoIncrement;
-        s += "]" + rounds + "*";
+        String s = percentageFrom + ".." + percentageTo;
+        s += "[+" + percentageIncr;
+        s += "]" + times + "*";
         return s;
     }
 }

@@ -15,9 +15,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.sound.Beat;
-import info.thepass.altmetro.sound.BeatManagerFragment;
-import info.thepass.altmetro.sound.Sound;
+import info.thepass.altmetro.Sound.Beat;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.Sound;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -254,9 +254,9 @@ public class Track {
 
     public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
         bm.barCounter = 0;
-        bm.beatList.clear();
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
-            repeats.get(iRep).buildBeat(bm, iRep, h);
+            repeats.get(iRep).buildBeatList(bm, iRep, h);
+            repeats.get(iRep).buildSound();
         }
     }
 
@@ -272,19 +272,19 @@ public class Track {
             BufferedWriter bufferedWriter = new BufferedWriter(
                     new FileWriter(dumpFile, true));
             bufferedWriter.write("======== repeats ======== build:"
-                    + bm.buildCounter + " bars:" + bm.barCounter + " beats: " + bm.beatList.size() + "\n");
+                    + bm.buildCounter + " bars:" + bm.barCounter + "\n");
             for (int irep = 0; irep < repeats.size(); irep++) {
-                Repeat repeat = repeats.get(irep);
-                String dispPat = pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
+                Repeat tRepeat = repeats.get(irep);
+                String dispPat = pats.get(tRepeat.indexPattern).display(h, tRepeat.indexPattern, true);
                 bufferedWriter.write("rep " + irep + repeats.get(irep).display(h, irep, dispPat, true) + "\n");
-            }
-            for (int ibeat = 0; ibeat < bm.beatList.size(); ibeat++) {
-                Beat beat = bm.beatList.get(ibeat);
-                bufferedWriter.write("======== beat " + ibeat + " ========\n"
-                        + beat.display(ibeat, subs) + "\n");
-                for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
-                    Sound sound = beat.soundList.get(iSound);
-                    bufferedWriter.write(sound.display() + "\n");
+                for (int ibeat = 0; ibeat < tRepeat.beatList.size(); ibeat++) {
+                    Beat beat = tRepeat.beatList.get(ibeat);
+                    bufferedWriter.write("       ======== beat " + ibeat + " ========\n"
+                            + beat.display(ibeat, subs) + "\n");
+                    for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
+                        Sound sound = beat.soundList.get(iSound);
+                        bufferedWriter.write(sound.display() + "\n");
+                    }
                 }
             }
             bufferedWriter.close();

@@ -49,6 +49,7 @@
     <string name="label_timesigsep">/</string>
     <string name="label_track">Track</string>
     <string name="label_repeatTimes">%s times</string>
+    <string name="label_times">times</string>
     <string name="label_noend">no end</string>
     <string name="label_repeatcount">Number of repeats</string>
     <string name="label_p1">+1</string>
@@ -73,6 +74,7 @@
     <string name="error_restarting">Restarting....</string>
     <string name="error_building">Track build in progress....</string>
     <string name="error_unreachable" formatted="false">Repeat %s has no end. Next repeat unreachable</string>
+    <string name="error_studyfromto">From not smaller than to</string>
     <string name="pref_title">Preferences</string>
     <string name="pref_multi">Default tracktype multi?</string>
     <string name="pref_maxtempo">Maximum metronome tempo</string>

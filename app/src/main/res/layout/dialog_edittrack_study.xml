@@ -96,7 +96,7 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/label_tempo_rondes"/>
+                    android:text="@string/label_times"/>
 
                 <NumberPicker
                     android:id="@+id/npDlgTempoCount"
@@ -106,20 +106,4 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btnDlgInit"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="@string/label_initStudy"
-            android:textOff="@string/label_study_off"
-            android:textOn="@string/label_study_on"/>
-    </RelativeLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package info.thepass.altmetro.dialog;
+package info.thepass.altmetro.aadialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -226,7 +225,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         cbNoEnd.setChecked(repeat.noEnd);
 
         tvCount = (TextView) dialogView.findViewById(R.id.tv_dlg_count);
-        tvCount.setText(String.valueOf(repeat.count));
+        tvCount.setText(String.valueOf(repeat.barCount));
 
         buttonCountM1 = (Button) dialogView.findViewById(R.id.button_dlg_count_m1);
         buttonCountM1.setOnClickListener(new View.OnClickListener() {
@@ -275,7 +274,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         repeat.indexPattern = spPat.getSelectedItemPosition();
         repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
         repeat.tempo = Integer.parseInt(tvTempo.getText().toString());
-        repeat.count = Integer.parseInt(tvCount.getText().toString());
+        repeat.barCount = Integer.parseInt(tvCount.getText().toString());
         repeat.noEnd = cbNoEnd.isChecked();
         multi = swMulti.isChecked();
 

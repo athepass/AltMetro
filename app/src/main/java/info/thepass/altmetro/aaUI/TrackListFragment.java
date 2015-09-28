@@ -26,7 +26,7 @@ import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackListAdapter;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.dialog.DialogEditTrackInfo;
+import info.thepass.altmetro.aadialog.DialogEditTrackInfo;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 

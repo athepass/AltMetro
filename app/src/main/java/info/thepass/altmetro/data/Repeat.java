@@ -3,9 +3,11 @@ package info.thepass.altmetro.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.sound.Beat;
-import info.thepass.altmetro.sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.Beat;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -20,8 +22,10 @@ public class Repeat {
     public int indexPattern;
     public int hashPattern;
     public int tempo;
-    public int count;
+    public int barCount;
     public boolean noEnd;
+
+    public ArrayList<Beat> beatList;
 
     public int iBar;
     public int iBeat;
@@ -31,8 +35,10 @@ public class Repeat {
         indexPattern = 0;
         hashPattern = NOHASH;
         tempo = 90;
-        count = 1;
+        barCount = 1;
         noEnd = true;
+
+        beatList = new ArrayList<Beat>();
     }
 
     public JSONObject toJson() {
@@ -41,7 +47,7 @@ public class Repeat {
             json.put(KEYINDEX, indexPattern);
             json.put(KEYHASH, hashPattern);
             json.put(KEYTEMPO, tempo);
-            json.put(KEYCOUNT, count);
+            json.put(KEYCOUNT, barCount);
             json.put(KEYNOEND, noEnd);
 
         } catch (JSONException e) {
@@ -55,7 +61,7 @@ public class Repeat {
             indexPattern = json.getInt(KEYINDEX);
             hashPattern = json.getInt(KEYHASH);
             tempo = json.getInt(KEYTEMPO);
-            count = json.getInt(KEYCOUNT);
+            barCount = json.getInt(KEYCOUNT);
             noEnd = json.getBoolean(KEYNOEND);
         } catch (JSONException e) {
             throw new RuntimeException("fromJson exception" + e.getMessage());
@@ -66,18 +72,19 @@ public class Repeat {
         String s = "";
         s += (index >= 0) ? "r" + (index + 1) + " " : "";
         s += (showTempo) ? h.getString(R.string.label_tempo) + " " + tempo + ", " : "";
-        s += ((noEnd) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeatTimes, String.valueOf(count)));
+        s += ((noEnd) ? h.getString(R.string.label_noend) : h.getString1(R.string.label_repeatTimes, String.valueOf(barCount)));
         s += (patDisplay.length() > 0) ? ", " + patDisplay : "";
         return s;
     }
 
-    public void buildBeat(BeatManagerFragment bm, int indexRepeat, HelperMetro h) {
+    public void buildBeatList(BeatManagerFragment bm, int indexRepeat, HelperMetro h) {
         repeatCounter = 0;
+        beatList.clear();
         if (noEnd) {
             iBar = 0;
             buildBeatBar(bm, 0, iBar, h);
         } else {
-            for (iBar = 0; iBar< count; iBar++) {
+            for (iBar = 0; iBar< barCount; iBar++) {
                 bm.barCounter++;
                 buildBeatBar(bm, indexRepeat, iBar, h);
             }
@@ -89,16 +96,11 @@ public class Repeat {
         Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
-            bm.beatList.add(beat);
-            beat.repeatCount = (noEnd) ? 0 : count;
+            beatList.add(beat);
+            beat.repeatCount = (noEnd) ? 0 : barCount;
             beat.repeatIndex = idxRepeat;
             beat.repeatBar = idxBar;
             beat.barIndex = bm.barCounter;
-            if (iBeat == pat.patBeats - 1) {
-                beat.barStep = (noEnd) ? 1 - pat.patBeats : 1;
-            } else {
-                beat.barStep = 1;
-            }
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat + 1;
             beat.beatState = pat.patBeatState[iBeat];
@@ -112,5 +114,13 @@ public class Repeat {
                     + " tempo " + beat.tempo
                     + ((beat.practice==100) ? "": " " + beat.practice + "%=" + beat.tempoCalc);
         }
+    }
+
+    public void buildSound() {
+        for (int i = 0; i < beatList.size(); i++) {
+            Beat beat = beatList.get(i);
+            beat.buildSound();
+        }
+//        bmTrack.soundDump(h, this.thisFrag);
     }
 }

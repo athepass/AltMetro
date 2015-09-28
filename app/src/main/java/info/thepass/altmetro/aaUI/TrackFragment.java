@@ -28,7 +28,7 @@ import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -42,7 +42,7 @@ public class TrackFragment extends Fragment {
     public ItemsListViewManager lvManager;
     // views Study
     public TextView tvTap;
-    public TextView tv_study;
+    public TextView tvStudy;
     public RadioGroup rg_practice;
     public RadioButton rb_prac50;
     public RadioButton rb_prac70;
@@ -313,8 +313,8 @@ public class TrackFragment extends Fragment {
                 lvManager.editTap();
             }
         });
-        tv_study = (TextView) getActivity().findViewById(R.id.tv_track_study_study);
-        tv_study.setOnClickListener(new View.OnClickListener() {
+        tvStudy = (TextView) getActivity().findViewById(R.id.tv_track_study_study);
+        tvStudy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 lvManager.editSpeedStudy();
@@ -453,10 +453,10 @@ public class TrackFragment extends Fragment {
         tvInfo.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
 
         if (bm.playing) {
-            tv_study.setVisibility(View.GONE);
+            tvStudy.setVisibility(View.GONE);
         } else {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
-            tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
+            tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
         tvTap.setVisibility((bm.playing) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((bm.playing) ? View.GONE : View.VISIBLE);
@@ -482,8 +482,8 @@ public class TrackFragment extends Fragment {
         }
         // study textview onzichtbaar i.g.v. multi. Gebruik anders preference
         boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
-        tv_study.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
-        tv_study.setText(track.study.display(h));
+        tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
+        tvStudy.setText(track.study.display(h));
 
         boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
         if (!showPractice) {

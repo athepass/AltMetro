@@ -10,10 +10,10 @@ import info.thepass.altmetro.tools.Keys;
 public class Beat {
     // #rep
     public boolean noEnd;
-    public int repeatCount;     // repeat.count
-    public int repeatIndex;     // 1..repeat.count
+    public int repeatCount;     // repeat.barCount
+    public int repeatIndex;     // 1..repeat.barCount
+    public int repeatBar;
     public int barIndex;        // bm.barCounter
-    public int barNext;
     public int beats;
     public int beatIndex;
     public int beatState;
@@ -32,6 +32,7 @@ public class Beat {
     }
 
     public void buildSound() {
+        soundList.clear();
         totFrames = Math.round(60f * SoundCollection.SAMPLERATE / tempoCalc);
         addBeat();
         addSub();
@@ -135,18 +136,17 @@ public class Beat {
     public String display(int seq, String[] subs) {
         String s = "";
         s += "#" + (seq + 1) + " ";
-        s += " rep:" + repeatCount + "|" + repeatIndex;
-        s += " bar:" + barIndex + "|" + barNext;
-        s += " beat:" + beats + "|" + beatIndex + "|" + beatState;
+        s += " rep[" + repeatCount + "]" + repeatIndex;
+        s += " beat[" + beats + "]" + beatIndex + " state:" + beatState;
         s += " sub:" + subs[sub];
-        s += " tempo:" + tempo + "|" + practice + "|" + tempoCalc;
+        s += " tempo:" + tempo + " prac:" + practice + " calc:" + tempoCalc;
         return s;
     }
 
     public String displayBeat() {
         String s = "";
         for (int i = 0; i < soundList.size(); i++) {
-            s += soundList.get(i).displayKort() + "|";
+            s += soundList.get(i).display() + "|";
             s += (i % 3 == 0 && i > 0) ? "\n" : "";
         }
         return s;

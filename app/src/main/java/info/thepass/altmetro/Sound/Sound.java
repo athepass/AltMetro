@@ -26,12 +26,11 @@ public class Sound implements Comparable<Sound> {
         }
     }
 
-    public String displayKort() {
+    public String display() {
         String s = tag
-                + frameBegin
+                + "["+frameBegin
                 + ((frameEnd == frameEndBase) ? ".." + frameEnd : "..("
-                + frameEndBase + ") " + frameEnd) + "|" + duration;
-        s += (tag != null) ? " (" + tag + ")" : "";
+                + frameEndBase + ") " + frameEnd) + "] dur" + duration;
         return s;
     }
 

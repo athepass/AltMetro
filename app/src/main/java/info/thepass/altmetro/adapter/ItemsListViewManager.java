@@ -20,10 +20,10 @@ import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.dialog.DialogEditTrackPattern;
-import info.thepass.altmetro.dialog.DialogEditTrackRepeat;
-import info.thepass.altmetro.dialog.DialogEditTrackStudy;
-import info.thepass.altmetro.dialog.DialogEditTrackTap;
+import info.thepass.altmetro.aadialog.DialogEditTrackPattern;
+import info.thepass.altmetro.aadialog.DialogEditTrackRepeat;
+import info.thepass.altmetro.aadialog.DialogEditTrackStudy;
+import info.thepass.altmetro.aadialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 

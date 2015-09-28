@@ -1,4 +1,4 @@
-package info.thepass.altmetro.dialog;
+package info.thepass.altmetro.aadialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,9 +7,9 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.ToggleButton;
 
@@ -33,7 +33,11 @@ public class DialogEditTrackStudy extends DialogFragment {
     private NumberPicker npIncrement;
     private NumberPicker npRounds;
     private ToggleButton tbUsed;
-    private Button btnInit;
+    //    private Button btnInit;
+    private int[] waardes = {10, 20, 30, 40, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120};
+    private String[] percentages = {"10%", "20%", "30%", "40%", "50%", "55%", "60%", "65%", "70%", "75%",
+            "80%", "85%", "90%", "95%", "100%", "105%", "110%", "115%", "120%"};
+    ;
 
     public DialogEditTrackStudy() {
         // Empty constructor required for DialogFragment
@@ -45,23 +49,17 @@ public class DialogEditTrackStudy extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edittrack_study, null);
+        h.initToastAlert(inflater);
 
         initView(dialogView);
-        initData(true);
+        initData();
 
         builder.setView(dialogView)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        study.tempoFrom = npFrom.getValue();
-                        study.tempoTo = npTo.getValue();
-                        study.tempoIncrement = npIncrement.getValue();
-                        study.rounds = npRounds.getValue();
-                        study.used = tbUsed.isChecked();
-
-                        Intent intent = new Intent();
-                        intent.putExtra(Track.KEYSTUDY, study.toJson().toString());
-                        getTargetFragment().onActivityResult(Keys.TARGETEDITSTUDY, Activity.RESULT_OK, intent);
+                        if (validateData())
+                            updateData();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -76,31 +74,42 @@ public class DialogEditTrackStudy extends DialogFragment {
         return builder.create();
     }
 
-    private void initData(boolean fromArgs) {
-        if (fromArgs) {
-            Bundle b = getArguments();
-            tempo = b.getInt(Repeat.KEYTEMPO, -1);
-            String sStudy = b.getString(Track.KEYSTUDY);
-            try {
-                study = new Study();
-                study.fromJson(new JSONObject(sStudy));
-            } catch (Exception e) {
-                h.logE(TAG, "from Json", e);
-            }
+    private void initData() {
+        Bundle b = getArguments();
+        tempo = b.getInt(Repeat.KEYTEMPO, -1);
+        String sStudy = b.getString(Track.KEYSTUDY);
+        try {
+            study = new Study();
+            study.fromJson(new JSONObject(sStudy));
+        } catch (Exception e) {
+            h.logE(TAG, "from Json", e);
         }
-        if (!fromArgs || (study.rounds <= 0)) {
-            study.used = true;
-            study.tempoFrom = Math.round(tempo * 0.8f);
-            study.tempoTo = Math.round(tempo * 1.2f);
-            study.tempoIncrement = 5;
-            study.rounds = 4;
-        }
-
-        npFrom.setValue(study.tempoFrom);
-        npTo.setValue(study.tempoTo);
-        npIncrement.setValue(study.tempoIncrement);
-        npRounds.setValue(study.rounds);
+        npFrom.setValue(getPercentage(study.percentageFrom));
+        npTo.setValue(getPercentage(study.percentageTo));
+        npIncrement.setValue(study.percentageIncr);
+        npRounds.setValue(study.times);
         tbUsed.setChecked(study.used);
+    }
+
+    private boolean validateData() {
+        if (npFrom.getValue() >= npTo.getValue()) {
+            h.showToastAlert(h.getString(R.string.error_studyfromto));
+            return false;
+        }
+        return true;
+    }
+
+    private void updateData() {
+        study.percentageFrom = waardes[npFrom.getValue()];
+        study.percentageTo = waardes[npTo.getValue()];
+        Log.d(TAG, "study update" + study.percentageFrom + ".." + study.percentageTo);
+        study.percentageIncr = npIncrement.getValue();
+        study.times = npRounds.getValue();
+        study.used = tbUsed.isChecked();
+
+        Intent intent = new Intent();
+        intent.putExtra(Track.KEYSTUDY, study.toJson().toString());
+        getTargetFragment().onActivityResult(Keys.TARGETEDITSTUDY, Activity.RESULT_OK, intent);
     }
 
     private void initView(View dialogView) {
@@ -114,14 +123,16 @@ public class DialogEditTrackStudy extends DialogFragment {
         tbUsed = (ToggleButton) dialogView.findViewById(R.id.tbDlgStudy);
 
         npFrom = (NumberPicker) dialogView.findViewById(R.id.npDlgTempoFrom);
-        npFrom.setMinValue(Keys.MINTEMPO);
-        npFrom.setMaxValue(Keys.MAXTEMPOMAX);
+        npFrom.setMinValue(0);
+        npFrom.setMaxValue(percentages.length - 1);
+        npFrom.setDisplayedValues(percentages);
         npFrom.setWrapSelectorWheel(false);
         npFrom.setOnValueChangedListener(npChange);
 
         npTo = (NumberPicker) dialogView.findViewById(R.id.npDlgTempoTo);
-        npTo.setMinValue(Keys.MINTEMPO);
-        npTo.setMaxValue(Keys.MAXTEMPOMAX);
+        npTo.setMinValue(0);
+        npTo.setMaxValue(percentages.length - 1);
+        npTo.setDisplayedValues(percentages);
         npTo.setWrapSelectorWheel(false);
         npTo.setOnValueChangedListener(npChange);
 
@@ -137,14 +148,16 @@ public class DialogEditTrackStudy extends DialogFragment {
         npRounds.setMaxValue(50);
         npRounds.setWrapSelectorWheel(false);
         npRounds.setOnValueChangedListener(npChange);
+    }
 
-        btnInit = (Button) dialogView.findViewById(R.id.btnDlgInit);
-        btnInit.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                initData(false);
+    private int getPercentage(int percent) {
+        int idx = 0;
+        for (int i = 0; i < waardes.length; i++) {
+            if (percent >= waardes[i]) {
+                idx = i;
+                Log.d(TAG, "getPerc" + i + ":" + idx + "/" + percent + "/" + waardes[idx]);
             }
-        });
-
-
+        }
+        return idx;
     }
 }
