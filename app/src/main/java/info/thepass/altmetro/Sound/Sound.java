@@ -30,7 +30,7 @@ public class Sound implements Comparable<Sound> {
         String s = tag
                 + "["+frameBegin
                 + ((frameEnd == frameEndBase) ? ".." + frameEnd : "..("
-                + frameEndBase + ") " + frameEnd) + "] dur" + duration;
+                + frameEndBase + ") " + frameEnd) + "]" + duration;
         return s;
     }
 

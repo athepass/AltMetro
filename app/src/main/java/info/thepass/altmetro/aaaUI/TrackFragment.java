@@ -1,4 +1,4 @@
-package info.thepass.altmetro.aaUI;
+package info.thepass.altmetro.aaaUI;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -381,7 +381,7 @@ public class TrackFragment extends Fragment {
                 rb_prac100.setChecked(true);
                 break;
             default:
-                throw new RuntimeException("invalid practice" + track.study.practice);
+                throw new RuntimeException("invalid percentage" + track.study.practice);
         }
     }
 

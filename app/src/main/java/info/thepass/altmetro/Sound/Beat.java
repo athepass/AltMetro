@@ -19,7 +19,7 @@ public class Beat {
     public int beatState;
     public int sub;
     public int tempo;
-    public int practice;
+    public int percentage;
     public int tempoCalc;
     public int totFrames;
     public String info;
@@ -139,7 +139,7 @@ public class Beat {
         s += " rep[" + repeatCount + "]" + repeatIndex;
         s += " beat[" + beats + "]" + beatIndex + " state:" + beatState;
         s += " sub:" + subs[sub];
-        s += " tempo:" + tempo + " prac:" + practice + " calc:" + tempoCalc;
+        s += " tempo:" + tempo + " prac:" + percentage + " calc:" + tempoCalc;
         return s;
     }
 
@@ -147,7 +147,7 @@ public class Beat {
         String s = "";
         for (int i = 0; i < soundList.size(); i++) {
             s += soundList.get(i).display() + "|";
-            s += (i % 3 == 0 && i > 0) ? "\n" : "";
+            s += "\n";
         }
         return s;
     }

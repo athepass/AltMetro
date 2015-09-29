@@ -80,39 +80,29 @@ public class Repeat {
     public void buildBeatList(BeatManagerFragment bm, int indexRepeat, HelperMetro h) {
         repeatCounter = 0;
         beatList.clear();
-        if (noEnd) {
-            iBar = 0;
-            buildBeatBar(bm, 0, iBar, h);
-        } else {
-            for (iBar = 0; iBar< barCount; iBar++) {
-                bm.barCounter++;
-                buildBeatBar(bm, indexRepeat, iBar, h);
-            }
-        }
+        buildBeatBar(bm, indexRepeat, h);
     }
 
-    private void buildBeatBar(BeatManagerFragment bm, int idxRepeat, int idxBar, HelperMetro h) {
+    private void buildBeatBar(BeatManagerFragment bm, int idxRepeat, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : barCount;
-            beat.repeatIndex = idxRepeat;
-            beat.repeatBar = idxBar;
             beat.barIndex = bm.barCounter;
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat + 1;
             beat.beatState = pat.patBeatState[iBeat];
             beat.sub = pat.patSubs;
             beat.tempo = this.tempo;
-            beat.practice = bm.trackFragment.track.study.practice;
-            beat.tempoCalc = Math.round((beat.tempo * beat.practice) / 100f);
-            beat.info = "r" + (beat.repeatIndex+1)
-                    + " bar " + (beat.repeatBar+ 1)
+            beat.percentage = bm.trackFragment.track.study.practice;
+            beat.tempoCalc = Math.round((beat.tempo * beat.percentage) / 100f);
+            beat.info = "r" + (beat.repeatIndex + 1)
+                    + " bar " + (beat.repeatBar + 1)
                     + " beat " + beat.beatIndex
                     + " tempo " + beat.tempo
-                    + ((beat.practice==100) ? "": " " + beat.practice + "%=" + beat.tempoCalc);
+                    + ((beat.percentage == 100) ? "" : " " + beat.percentage + "%=" + beat.tempoCalc);
         }
     }
 

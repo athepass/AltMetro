@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.aaUI.TrackFragment;
+import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
@@ -276,7 +276,7 @@ public class BeatManagerFragment extends Fragment {
 
             building = false;
             timeBuild4 = getNanoTime();
-            Log.d(TAG, "finished building beat bar:" + barCounter
+            Log.d(TAG, "finished building beat and sound: " + buildCounter
                     + " time:" + deltaTime(timeBuild1, timeBuild2)
                     + "|" + deltaTime(timeBuild2, timeBuild3)
                     + "|" + deltaTime(timeBuild3, timeBuild4));

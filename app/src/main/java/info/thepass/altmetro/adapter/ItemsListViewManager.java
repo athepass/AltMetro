@@ -14,16 +14,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.aaUI.TrackFragment;
+import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.aadialog.DialogEditTrackPattern;
-import info.thepass.altmetro.aadialog.DialogEditTrackRepeat;
-import info.thepass.altmetro.aadialog.DialogEditTrackStudy;
-import info.thepass.altmetro.aadialog.DialogEditTrackTap;
+import info.thepass.altmetro.abDialog.DialogEditTrackPattern;
+import info.thepass.altmetro.abDialog.DialogEditTrackRepeat;
+import info.thepass.altmetro.abDialog.DialogEditTrackStudy;
+import info.thepass.altmetro.abDialog.DialogEditTrackTap;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 

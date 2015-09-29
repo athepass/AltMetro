@@ -6,9 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,6 +181,36 @@ public class Track {
         }
     }
 
+    public void clean() {
+        // singleTempo: 1 pat, 1 repeat, repeat verwijst naar pat.
+        if (!multi) {
+            while (repeats.size() > 1)
+                repeats.remove(1);
+            while (pats.size() > 1)
+                pats.remove(1);
+            repeats.get(0).indexPattern = 0;
+            repeats.get(0).hashPattern = pats.get(0).patHash;
+        }
+        // controleer consistentie pat hash in repeat
+        for (int i = 0; i < repeats.size(); i++) {
+            Repeat repeat = repeats.get(i);
+            if (repeat.hashPattern == Repeat.NOHASH) {
+                // hash default: vul hash obv repeat.indexpattern
+                repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
+            } else {
+                // hash ingevuld. Zet index goed.
+                for (int j = 0; j < pats.size(); j++) {
+                    Pat pat = pats.get(j);
+                    if (repeat.hashPattern == pat.patHash) {
+                        repeat.indexPattern = j;
+                        j = pats.size();
+                    }
+                }
+            }
+        }
+        syncItems();
+    }
+
     public void syncItems() {
         int aantal = -1;
         if (multi) {
@@ -218,40 +246,6 @@ public class Track {
         return true;
     }
 
-    public void clean() {
-        if (multi) {
-            study.used = false;
-        } else {
-            // singleTempo: 1 pat, 1 repeat, repeat verwijst naar pat.
-            while (repeats.size() > 1)
-                repeats.remove(1);
-            while (pats.size() > 1)
-                pats.remove(1);
-            repeats.get(0).indexPattern = 0;
-            repeats.get(0).hashPattern = pats.get(0).patHash;
-        }
-
-        // controleer consistentie pat hash in repeat
-        for (int i = 0; i < repeats.size(); i++) {
-            Repeat repeat = repeats.get(i);
-            if (repeat.hashPattern == Repeat.NOHASH) {
-                // hash default: vul hash obv repeat.indexpattern
-                repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
-            } else {
-                // hash ingevuld. Zet index goed.
-                for (int j = 0; j < pats.size(); j++) {
-                    Pat pat = pats.get(j);
-                    if (repeat.hashPattern == pat.patHash) {
-                        repeat.indexPattern = j;
-                        j = pats.size();
-                    }
-                }
-            }
-        }
-
-        syncItems();
-    }
-
     public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
         bm.barCounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
@@ -268,28 +262,20 @@ public class Track {
         File padFile = new File(pad);
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(
-                    new FileWriter(dumpFile, true));
-            bufferedWriter.write("======== repeats ======== build:"
-                    + bm.buildCounter + " bars:" + bm.barCounter + "\n");
-            for (int irep = 0; irep < repeats.size(); irep++) {
-                Repeat tRepeat = repeats.get(irep);
-                String dispPat = pats.get(tRepeat.indexPattern).display(h, tRepeat.indexPattern, true);
-                bufferedWriter.write("rep " + irep + repeats.get(irep).display(h, irep, dispPat, true) + "\n");
-                for (int ibeat = 0; ibeat < tRepeat.beatList.size(); ibeat++) {
-                    Beat beat = tRepeat.beatList.get(ibeat);
-                    bufferedWriter.write("       ======== beat " + ibeat + " ========\n"
-                            + beat.display(ibeat, subs) + "\n");
-                    for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
-                        Sound sound = beat.soundList.get(iSound);
-                        bufferedWriter.write(sound.display() + "\n");
-                    }
+        String s = "\n======== repeats ======== build:"
+                + bm.buildCounter + " bars:" + bm.barCounter;
+        for (int irep = 0; irep < repeats.size(); irep++) {
+            Repeat tRepeat = repeats.get(irep);
+            String dispPat = pats.get(tRepeat.indexPattern).display(h, tRepeat.indexPattern, true);
+            s += "\n ======== [rep " + irep + "] " + repeats.get(irep).display(h, irep, dispPat, true);
+            for (int ibeat = 0; ibeat < tRepeat.beatList.size(); ibeat++) {
+                Beat beat = tRepeat.beatList.get(ibeat);
+                s += "\n=== beat " + ibeat + ": " + beat.display(ibeat, subs) + "\n";
+                for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
+                    Sound sound = beat.soundList.get(iSound);
+                    s += sound.display() + "  ";
                 }
             }
-            bufferedWriter.close();
-        } catch (Exception e) {
-            throw new RuntimeException("write " + filename + ": " + e.getMessage());
         }
     }
 }

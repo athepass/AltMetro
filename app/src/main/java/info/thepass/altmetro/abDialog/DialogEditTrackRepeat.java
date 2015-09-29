@@ -1,4 +1,4 @@
-package info.thepass.altmetro.aadialog;
+package info.thepass.altmetro.abDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;

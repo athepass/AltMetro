@@ -1,4 +1,4 @@
-package info.thepass.altmetro.aadialog;
+package info.thepass.altmetro.abDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,7 +15,7 @@ import android.widget.Switch;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.aaUI.ActivityTrack;
+import info.thepass.altmetro.aaaUI.ActivityTrack;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
