@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -22,14 +23,13 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.Sound.BeatManagerFragment;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.Sound.BeatManagerFragment;
-import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -51,6 +51,8 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
     public TextView tvInfo;
+    public LinearLayout llPlayer;
+    public EmphasisView emphasisView;
     private View layout;
     private HelperMetro h;
     private LayoutInflater myInflater;
@@ -58,8 +60,6 @@ public class TrackFragment extends Fragment {
     private MenuItem menuItemStop;
     private MenuItem menuItemSettings;
     private MenuItem menuItemTrackList;
-    // player
-    private EmphasisViewManager evPlayer;
     // views tempo
     private int maxTempo;
     private TextView tvTempo;
@@ -73,7 +73,6 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
-
     private BeatManagerFragment bm;
 
     @Override
@@ -198,7 +197,7 @@ public class TrackFragment extends Fragment {
 
         if (bm.building) {
             String msg = h.getString(R.string.error_building);
-            Log.d(TAG,msg);
+            Log.d(TAG, msg);
             h.showToast(msg);
             return;
         }
@@ -390,8 +389,12 @@ public class TrackFragment extends Fragment {
     }
 
     private void initEmphasis() {
-        evPlayer = new EmphasisViewManager("player", Keys.EVMPLAYER, layout, h);
-        evPlayer.useLow = true;
+        llPlayer = (LinearLayout) getActivity().findViewById(R.id.ll_player_emphasis);
+        ViewGroup.LayoutParams layoutParams = llPlayer.getLayoutParams();
+        emphasisView = new EmphasisView(getActivity());
+        emphasisView.setLayoutParams(layoutParams);
+        llPlayer.addView(emphasisView);
+        emphasisView.getInfo();
     }
 
     private void initBeatManager() {
@@ -406,6 +409,7 @@ public class TrackFragment extends Fragment {
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
+        emphasisView.bm = bm;
     }
 
     public void setData() {
@@ -447,10 +451,13 @@ public class TrackFragment extends Fragment {
     }
 
     public void updateLayout() {
-        Log.d(TAG, "updateLayout");
         setTitle();
-        evPlayer.setEmphasisVisible(bm.playing);
+
+        llPlayer.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
         tvInfo.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
+        if (llPlayer.getVisibility() == View.VISIBLE) {
+            emphasisView.initPoint(track.pats.get(track.patSelected));
+        }
 
         if (bm.playing) {
             tvStudy.setVisibility(View.GONE);
@@ -504,8 +511,6 @@ public class TrackFragment extends Fragment {
         tempoTV = repeat.tempo;
         changeTempo(0);
         Pat pat = track.pats.get(repeat.indexPattern);
-        evPlayer.data = trackData;
-        evPlayer.setPattern(pat, bm.playing);
     }
 
     private void setTempo(int newTempo) {

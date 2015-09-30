@@ -92,15 +92,17 @@ public class Repeat {
             beat.repeatCount = (noEnd) ? 0 : barCount;
             beat.barIndex = bm.barCounter;
             beat.beats = pat.patBeats;
-            beat.beatIndex = iBeat + 1;
+            beat.beatIndex = iBeat;
+            beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 2 : 1;
             beat.beatState = pat.patBeatState[iBeat];
+            beat.beatStateNext = (iBeat < pat.patBeats - 1) ? pat.patBeatState[iBeat + 1] : pat.patBeatState[0];
             beat.sub = pat.patSubs;
             beat.tempo = this.tempo;
             beat.percentage = bm.trackFragment.track.study.practice;
             beat.tempoCalc = Math.round((beat.tempo * beat.percentage) / 100f);
             beat.info = "r" + (beat.repeatIndex + 1)
                     + " bar " + (beat.repeatBar + 1)
-                    + " beat " + beat.beatIndex
+                    + " beat " + (beat.beatIndex + 1)
                     + " tempo " + beat.tempo
                     + ((beat.percentage == 100) ? "" : " " + beat.percentage + "%=" + beat.tempoCalc);
         }

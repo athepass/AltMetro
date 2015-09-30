@@ -39,7 +39,7 @@ public class BeatManagerFragment extends Fragment {
     private int soundLength;
     private long timeStart1;
     private long timeStop1;
-    private long timeBeat1;
+    public long timeBeat1;
     private long timeLayout1;
     private long timeBuild1;
     private Metronome metronome;
@@ -48,6 +48,8 @@ public class BeatManagerFragment extends Fragment {
     private Stopper stopper;
     private SoundBuilder soundBuilder;
 
+    public int delayCounter;
+    public int delaySum;
     /*****************************************************************/
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -165,7 +167,6 @@ public class BeatManagerFragment extends Fragment {
                             }
                         }
                     }
-                    Log.d(TAG,"play rep:"+iRepeat + " bar:"+barCounter + " beat"+ iBeatList);
                     playSoundList(beat);
 
                     if (iBeatList == beat.beats - 1) { // bar counter ophogen
@@ -187,6 +188,8 @@ public class BeatManagerFragment extends Fragment {
 
         private void playSoundList(Beat beat) {
             for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
+                long nu = getNanoTime();
+//                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
                 Sound sound = beat.soundList.get(iSound);
                 switch (sound.soundType) {
                     case Keys.SOUNDFIRST:
@@ -243,8 +246,11 @@ public class BeatManagerFragment extends Fragment {
             long timeBeat2 = getNanoTime();
             if (iBeatList < bmRepeat.beatList.size()) {
                 Beat beat = bmRepeat.beatList.get(iBeatList);
-                trackFragment.tvInfo.setText("" + bmRepeat.beatList.get(iBeatList).info);
-//            TODO UPDATE EMPHASIS
+                trackFragment.emphasisView.beat = beat.beatIndex;
+                trackFragment.emphasisView.invalidate();
+                long timeBeat3 = getNanoTime();
+//                Log.d(TAG, "beatUpdater " + deltaTime(timeBeat1, timeBeat2)
+//                        + "/" + deltaTime(timeBeat1, timeBeat3));
             }
         }
     }
@@ -280,7 +286,7 @@ public class BeatManagerFragment extends Fragment {
                     + " time:" + deltaTime(timeBuild1, timeBuild2)
                     + "|" + deltaTime(timeBuild2, timeBuild3)
                     + "|" + deltaTime(timeBuild3, timeBuild4));
-            bmTrack.soundDump(h,thisFrag);
+            bmTrack.soundDump(h, thisFrag);
         }
     }
 }

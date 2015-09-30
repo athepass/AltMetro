@@ -1,12 +1,11 @@
 package info.thepass.altmetro.Sound;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.Keys;
 
-/**
- * Created by nl03192 on 20-9-2015.
- */
 public class Beat {
     // #rep
     public boolean noEnd;
@@ -17,6 +16,8 @@ public class Beat {
     public int beats;
     public int beatIndex;
     public int beatState;
+    public int beatNext;
+    public int beatStateNext;
     public int sub;
     public int tempo;
     public int percentage;
@@ -39,6 +40,7 @@ public class Beat {
         removeOverlap();
         fillGaps();
         fillEndGap();
+        addNextBeat();
     }
 
     private void addBeat() {
@@ -48,7 +50,7 @@ public class Beat {
         sound.frameBeginBase = 0;
         sound.frameEndBase = sound.duration;
         sound.copyBase();
-        if (soundFirst && beatIndex == 1) {
+        if (soundFirst && beatIndex == 0) {
             sound.soundType = Keys.SOUNDFIRST;
             sound.tag = "F";
         } else {
@@ -82,7 +84,7 @@ public class Beat {
                     sound.frameEndBase = sound.frameBeginBase
                             + sound.duration;
                     sound.copyBase();
-                    sound.soundType = Keys.SOUNDSUB ;
+                    sound.soundType = Keys.SOUNDSUB;
                     sound.tag = "S" + j;
                 }
             }
@@ -122,6 +124,16 @@ public class Beat {
         }
     }
 
+    private void addNextBeat() {
+        int factor = totFrames - 18 * 8;
+        for (int i=0;i<soundList.size();i++) {
+            Sound sound = soundList.get(i);
+            if (sound.frameBegin<=factor && sound.frameEnd>=factor) {
+                Log.d("Trak:beat",i + "addNextBeat "+ factor + " - "+ sound.display());
+            }
+        }
+    }
+
     private void addSilence(int frameFrom, int frameTo, int position) {
         Sound sNew = new Sound();
         soundList.add(position, sNew);
@@ -137,7 +149,7 @@ public class Beat {
         String s = "";
         s += "#" + (seq + 1) + " ";
         s += " rep[" + repeatCount + "]" + repeatIndex;
-        s += " beat[" + beats + "]" + beatIndex + " state:" + beatState;
+        s += " beat[" + beats + "]" + (beatIndex + 1) + " state:" + beatState;
         s += " sub:" + subs[sub];
         s += " tempo:" + tempo + " prac:" + percentage + " calc:" + tempoCalc;
         return s;
@@ -188,7 +200,7 @@ public class Beat {
                 int[] a51 = {1, 1, 1, 1, 1};
                 return a51;
             default:
-                throw new RuntimeException("getSubPattern i invalid "+i);
+                throw new RuntimeException("getSubPattern i invalid " + i);
         }
     }
 }
