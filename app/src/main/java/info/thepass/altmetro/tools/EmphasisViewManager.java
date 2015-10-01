@@ -1,19 +1,20 @@
 package info.thepass.altmetro.tools;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
-import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 
 public class EmphasisViewManager {
     private final static String TAG = "EmphasisTrak";
     public boolean useLow = true;
+    public Pat pat;
+    public Track track;
     private HelperMetro h;
     private boolean settingMetroData;
     private int type;
@@ -26,24 +27,24 @@ public class EmphasisViewManager {
     private String prefix;
     private int[] ivIndexArray;
     private int[] ivReverseIndex;
-    private int empType;
+    private int evmType;
     private boolean isPlayer;
-    private Pat pat;
-    public TrackData data;
     private View.OnClickListener emphasisListener;
     private View layout;
 
     public EmphasisViewManager(String prefx,
-                               int type, View llayout, HelperMetro hh) {
+                               int type,
+                               View llayout,
+                               HelperMetro hh) {
         h = hh;
 //        h.logD(TAG, "constructor " + prefx + " type=" + type);
 
-        empType = type;
+        evmType = type;
         prefix = prefx;
-        isPlayer = (empType == Keys.EVMPLAYER);
+        isPlayer = (evmType == Keys.EVMPLAYER);
         layout = llayout;
 
-        switch (empType) {
+        switch (evmType) {
             case Keys.EVMEDITOR:
                 llCount = 3;
                 break;
@@ -54,7 +55,7 @@ public class EmphasisViewManager {
                 llCount = 2;
                 break;
             default:
-                llCount = -1;
+                throw new RuntimeException("invalid evmType " + evmType);
         }
 
         // find View LinearLayout
@@ -81,7 +82,7 @@ public class EmphasisViewManager {
             String ivId = "iv_" + prefix + "_emphasis" + i;
             int resId = h.getResIdentifier(ivId, "id");
             ivArray[i] = (ImageView) layout.findViewById(resId);
-            if (empType == Keys.EVMEDITOR) {
+            if (evmType == Keys.EVMEDITOR) {
                 ivArray[i].setOnClickListener(emphasisListener);
             }
         }
@@ -91,7 +92,7 @@ public class EmphasisViewManager {
         String s = (String) v.getTag();
         int i = Integer.parseInt(s.substring(2, 4));
         pat.patBeatState[i] = (pat.patBeatState[i] < Keys.SOUNDNONE) ? pat.patBeatState[i] + 1
-                : 0;
+                : Keys.SOUNDHIGH;
         ImageView iv = (ImageView) v;
         iv.setImageLevel(pat.patBeatState[i]);
     }
@@ -192,7 +193,7 @@ public class EmphasisViewManager {
     private void setLinLayoutVisibility(boolean isPlaying) {
         if (pat == null)
             return;
-        if (empType == Keys.EVMEDITOR) {
+        if (evmType == Keys.EVMEDITOR) {
             if (pat.patBeats > 16) {
                 llEmphasis[1].setVisibility(View.VISIBLE);
                 llEmphasis[2].setVisibility(View.VISIBLE);
@@ -204,28 +205,15 @@ public class EmphasisViewManager {
                 llEmphasis[2].setVisibility(View.GONE);
             }
         }
-        if (empType == Keys.EVMPLAYER) {
-            // bepaal het maximum van de beats van alle repeats
-            // er mag niet worden versprongen
-            Track track = data.tracks.get(data.trackSelected);
-            int maxBeat = 0;
-            for (int i=0;i<track.repeats.size();i++){
-                Repeat repeat = track.repeats.get(i);
-                Pat patRepeat = track.pats.get(repeat.indexPattern);
-                maxBeat = (maxBeat<patRepeat.patBeats) ? patRepeat.patBeats : maxBeat;
-            }
-            // er passen er 10 op de eerste regel. Evt. 2e regel verbergen
-            llCountVisible = (maxBeat<=10) ? 1 : 2;
-            for (int i=0;i<llCount;i++)
-            llEmphasis[i].setVisibility((isPlaying && i < llCountVisible) ? View.VISIBLE : View.GONE);
-        }
     }
 
     public void updateEmphasisView(int currentBeat) {
         if (isPlayer) {
-            ivLast = currentBeat - 1;
-            animArray[ivIndexArray[ivLast]].stop();
-            animArray[ivIndexArray[ivLast]].start();
+            Log.d(TAG,"beat="+ currentBeat);
+            checkLlVisibility();
+//            ivLast = currentBeat - 1;
+            animArray[ivIndexArray[currentBeat]].stop();
+            animArray[ivIndexArray[currentBeat]].start();
         } else {
             if (ivLast != -1) {
                 ivArray[ivIndexArray[ivLast]]
@@ -237,9 +225,16 @@ public class EmphasisViewManager {
         }
     }
 
-    public void setEmphasisVisible (boolean isPlayer) {
-        for (int i=0;i<llCount;i++)
-            llEmphasis[i].setVisibility ((isPlayer&&(i<llCountVisible))? View.VISIBLE: View.GONE);
+    private void checkLlVisibility() {
+        int vis = (pat.patBeats<=10)? View.GONE : View.VISIBLE;
+        if (llEmphasis[1].getVisibility()!=vis) {
+            llEmphasis[1].setVisibility(vis);
+        }
+    }
+
+    public void setEmphasisVisible(boolean isPlayer) {
+        for (int i = 0; i < llCount; i++)
+            llEmphasis[i].setVisibility((isPlayer && (i < llCountVisible)) ? View.VISIBLE : View.GONE);
     }
 
     private int[] getViewIndex(int beatCount) {

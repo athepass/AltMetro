@@ -1,7 +1,5 @@
 package info.thepass.altmetro.Sound;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.Keys;
@@ -129,7 +127,7 @@ public class Beat {
         for (int i=0;i<soundList.size();i++) {
             Sound sound = soundList.get(i);
             if (sound.frameBegin<=factor && sound.frameEnd>=factor) {
-                Log.d("Trak:beat",i + "addNextBeat "+ factor + " - "+ sound.display());
+//                Log.d("Trak:beat",i + "addNextBeat "+ factor + " - "+ sound.display());
                 Sound sNew = sound.kloon();
                 soundList.add(i, sNew);
                 sound.frameBeginBase = factor;

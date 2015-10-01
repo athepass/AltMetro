@@ -8,6 +8,9 @@
     <dimen name="emphasis_editor_width">30dp</dimen>
     <dimen name="emphasis_editor_height">32dp</dimen>
     <dimen name="emphasis_editor_marginleft">5dp</dimen>
+    <dimen name="emphasis_player_width">30dp</dimen>
+    <dimen name="emphasis_player_height">32dp</dimen>
+    <dimen name="emphasis_player_marginleft">5dp</dimen>
     <dimen name="emphasis_corners">12dp</dimen>
     <dimen name="incdec_width">32dp</dimen>
     <dimen name="incdec_height">32dp</dimen>

@@ -16,11 +16,10 @@
     </style>
 
     <style name="AppTheme.EmphasisPlayer">
-        <item name="android:layout_width">@dimen/emphasis_editor_width</item>
-        <item name="android:layout_height">@dimen/emphasis_editor_height</item>
-        <item name="android:layout_marginLeft">@dimen/emphasis_editor_marginleft</item>
+        <item name="android:layout_width">@dimen/emphasis_player_width</item>
+        <item name="android:layout_height">@dimen/emphasis_player_height</item>
+        <item name="android:layout_marginLeft">@dimen/emphasis_player_marginleft</item>
         <item name="android:clickable">true</item>
-        <item name="android:src">@drawable/levellist_emphasis_list</item>
         <item name="android:contentDescription">@string/hw</item>
     </style>
 

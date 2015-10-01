@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -30,6 +29,7 @@ import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -51,9 +51,7 @@ public class TrackFragment extends Fragment {
     public RadioButton rb_prac95;
     public RadioButton rb_prac100;
     public TextView tvInfo;
-    public LinearLayout llPlayer;
-    public EmphasisView emphasisView;
-    private View layout;
+    public View layout;
     private HelperMetro h;
     private LayoutInflater myInflater;
     private MenuItem menuItemStart;
@@ -107,8 +105,8 @@ public class TrackFragment extends Fragment {
         initStudy();
 
         initViews();
-        initEmphasis();
         initBeatManager();
+        initEmphasis();
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -389,12 +387,9 @@ public class TrackFragment extends Fragment {
     }
 
     private void initEmphasis() {
-        llPlayer = (LinearLayout) getActivity().findViewById(R.id.ll_player_emphasis);
-        ViewGroup.LayoutParams layoutParams = llPlayer.getLayoutParams();
-        emphasisView = new EmphasisView(getActivity());
-        emphasisView.setLayoutParams(layoutParams);
-        llPlayer.addView(emphasisView);
-        emphasisView.getInfo();
+        bm.evmPlayer = new EmphasisViewManager("ed_player",
+                Keys.EVMPLAYER, layout, h);
+        bm.evmPlayer.useLow = true;
     }
 
     private void initBeatManager() {
@@ -409,7 +404,7 @@ public class TrackFragment extends Fragment {
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
-        emphasisView.bm = bm;
+//        emphasisView.bm = bm;
     }
 
     public void setData() {
@@ -453,11 +448,7 @@ public class TrackFragment extends Fragment {
     public void updateLayout() {
         setTitle();
 
-        llPlayer.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
-        tvInfo.setVisibility((bm.playing) ? View.VISIBLE : View.INVISIBLE);
-        if (llPlayer.getVisibility() == View.VISIBLE) {
-            emphasisView.initPoint(track.pats.get(track.patSelected));
-        }
+        bm.evmPlayer.setEmphasisVisible(bm.playing);
 
         if (bm.playing) {
             tvStudy.setVisibility(View.GONE);

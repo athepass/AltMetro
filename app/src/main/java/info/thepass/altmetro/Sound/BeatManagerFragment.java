@@ -11,8 +11,10 @@ import android.util.Log;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.TrackFragment;
+import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -27,6 +29,11 @@ public class BeatManagerFragment extends Fragment {
     public int barCounter;
     public int buildCounter;
     public boolean building;
+    public EmphasisViewManager evmPlayer;
+    public long timeStart1;
+    public long timeBeat1;
+    public int delayCounter;
+    public int delaySum;
     private BeatManagerFragment thisFrag;
     private SoundCollection sc;
     private AudioTrack audioTrack;
@@ -37,9 +44,7 @@ public class BeatManagerFragment extends Fragment {
     private int iBeatList;
     private int playDuration;
     private int soundLength;
-    public long timeStart1;
     private long timeStop1;
-    public long timeBeat1;
     private long timeLayout1;
     private long timeBuild1;
     private Metronome metronome;
@@ -48,8 +53,6 @@ public class BeatManagerFragment extends Fragment {
     private Stopper stopper;
     private SoundBuilder soundBuilder;
 
-    public int delayCounter;
-    public int delaySum;
     /*****************************************************************/
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,8 +136,12 @@ public class BeatManagerFragment extends Fragment {
             h.logD(TAG, "Run metronome t=" + deltaTime(timeStart1, timeStart2)
                     + ".." + deltaTime(timeStart2, timeStart3));
 
+            evmPlayer.track = bmTrack;
             for (int irep = 0; irep < bmTrack.repeats.size(); irep++) {
                 bmRepeat = bmTrack.repeats.get(irep);
+                Pat pat = bmTrack.pats.get(bmTrack.patSelected);
+
+                evmPlayer.setPattern(pat, true);
                 playRepeat();
             }
 
@@ -250,11 +257,14 @@ public class BeatManagerFragment extends Fragment {
             long timeBeat2 = getNanoTime();
             if (iBeatList < bmRepeat.beatList.size()) {
                 Beat beat = bmRepeat.beatList.get(iBeatList);
-                trackFragment.emphasisView.beat = beat.beatNext;
-                trackFragment.emphasisView.invalidate();
+                evmPlayer.updateEmphasisView(beat.beatNext);
+
+                // TODO update emphasis
+//                trackFragment.emphasisView.beat = beat.beatNext;
+//                trackFragment.emphasisView.invalidate();
                 long timeBeat3 = getNanoTime();
-//                Log.d(TAG, "beatUpdater " + deltaTime(timeBeat1, timeBeat2)
-//                        + "/" + deltaTime(timeBeat1, timeBeat3));
+                Log.d(TAG, "beatUpdater " + beat.beatNext + " time:" + deltaTime(timeBeat1, timeBeat2)
+                        + "/" + deltaTime(timeBeat1, timeBeat3));
             }
         }
     }
