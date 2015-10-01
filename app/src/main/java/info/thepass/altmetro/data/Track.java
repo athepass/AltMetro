@@ -250,14 +250,14 @@ public class Track {
         bm.barCounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
-            repeats.get(iRep).buildSound();
+            repeats.get(iRep).buildSound(bm);
         }
     }
 
-    public void soundDump(HelperMetro h, BeatManagerFragment bm) {
-        String[] subs = h.getStringArray(R.array.sub_pattern);
+    public void soundDump(BeatManagerFragment bm) {
+        String[] subs = bm.h.getStringArray(R.array.sub_pattern);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.hhmm", Locale.getDefault());
-        String pad = h.getLogFilePath();
+        String pad = bm.h.getLogFilePath();
         String filename = pad + sdf.format(new Date()) + ".txt";
         File padFile = new File(pad);
         boolean res = padFile.mkdirs();
@@ -266,8 +266,8 @@ public class Track {
                 + bm.buildCounter + " bars:" + bm.barCounter;
         for (int irep = 0; irep < repeats.size(); irep++) {
             Repeat tRepeat = repeats.get(irep);
-            String dispPat = pats.get(tRepeat.indexPattern).display(h, tRepeat.indexPattern, true);
-            s += "\n ======== [rep " + irep + "] " + repeats.get(irep).display(h, irep, dispPat, true);
+            String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);
+            s += "\n ======== [rep " + irep + "] " + repeats.get(irep).display(bm.h, irep, dispPat, true);
             for (int ibeat = 0; ibeat < tRepeat.beatList.size(); ibeat++) {
                 Beat beat = tRepeat.beatList.get(ibeat);
                 s += "\n=== beat " + ibeat + ": " + beat.display(ibeat, subs) + "\n";
@@ -277,5 +277,6 @@ public class Track {
                 }
             }
         }
+        Log.d(TAG,s);
     }
 }

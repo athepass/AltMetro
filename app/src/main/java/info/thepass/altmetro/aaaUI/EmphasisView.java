@@ -83,6 +83,7 @@ public class EmphasisView extends View {
             bm.delaySum += (timeDraw - bm.timeBeat1) / 1000000f;
             Log.d(TAG, "onDraw beat:" + beat + " x:" + p.x + " y:" + p.y + " r" + radius
                     + " time:" + bm.deltaTime(bm.timeBeat1, timeDraw)
+                    + "|" + bm.deltaTime(bm.timeStart1, timeDraw)
                     + "|" + Math.round(bm.delaySum / bm.delayCounter));
         }
     }

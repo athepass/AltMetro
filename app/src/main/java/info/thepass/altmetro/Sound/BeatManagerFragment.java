@@ -37,7 +37,7 @@ public class BeatManagerFragment extends Fragment {
     private int iBeatList;
     private int playDuration;
     private int soundLength;
-    private long timeStart1;
+    public long timeStart1;
     private long timeStop1;
     public long timeBeat1;
     private long timeLayout1;
@@ -153,7 +153,6 @@ public class BeatManagerFragment extends Fragment {
                     Beat beat = bmRepeat.beatList.get(iBeatList);
                     Log.d(TAG, "beat[Sound] " + iBeatList + " info:" + bmRepeat.beatList.get(iBeatList).display(iBeatList, subs));
                     timeBeat1 = getNanoTime();
-                    getActivity().runOnUiThread(beatUpdater);
                     if (iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
                         step = 1;
                     } else {    // laatste beat
@@ -191,6 +190,11 @@ public class BeatManagerFragment extends Fragment {
                 long nu = getNanoTime();
 //                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
                 Sound sound = beat.soundList.get(iSound);
+
+                if (sound.playBeat) {
+                    getActivity().runOnUiThread(beatUpdater);
+                }
+
                 switch (sound.soundType) {
                     case Keys.SOUNDFIRST:
                         writeSound(sc.soundFirst, sound.duration);
@@ -246,7 +250,7 @@ public class BeatManagerFragment extends Fragment {
             long timeBeat2 = getNanoTime();
             if (iBeatList < bmRepeat.beatList.size()) {
                 Beat beat = bmRepeat.beatList.get(iBeatList);
-                trackFragment.emphasisView.beat = beat.beatIndex;
+                trackFragment.emphasisView.beat = beat.beatNext;
                 trackFragment.emphasisView.invalidate();
                 long timeBeat3 = getNanoTime();
 //                Log.d(TAG, "beatUpdater " + deltaTime(timeBeat1, timeBeat2)
@@ -286,7 +290,7 @@ public class BeatManagerFragment extends Fragment {
                     + " time:" + deltaTime(timeBuild1, timeBuild2)
                     + "|" + deltaTime(timeBuild2, timeBuild3)
                     + "|" + deltaTime(timeBuild3, timeBuild4));
-            bmTrack.soundDump(h, thisFrag);
+//            bmTrack.soundDump(thisFrag);
         }
     }
 }

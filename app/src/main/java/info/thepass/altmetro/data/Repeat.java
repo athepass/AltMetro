@@ -93,7 +93,7 @@ public class Repeat {
             beat.barIndex = bm.barCounter;
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat;
-            beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 2 : 1;
+            beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 1 : 0;
             beat.beatState = pat.patBeatState[iBeat];
             beat.beatStateNext = (iBeat < pat.patBeats - 1) ? pat.patBeatState[iBeat + 1] : pat.patBeatState[0];
             beat.sub = pat.patSubs;
@@ -108,11 +108,11 @@ public class Repeat {
         }
     }
 
-    public void buildSound() {
+    public void buildSound(BeatManagerFragment bm) {
         for (int i = 0; i < beatList.size(); i++) {
             Beat beat = beatList.get(i);
             beat.buildSound();
         }
-//        bmTrack.soundDump(h, this.thisFrag);
+        bm.trackFragment.track.soundDump(bm);
     }
 }

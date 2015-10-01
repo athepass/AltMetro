@@ -8,6 +8,11 @@ public class Sound implements Comparable<Sound> {
     public int duration;
     public int soundType;
     public String tag;
+    public boolean playBeat;
+
+    public Sound() {
+        playBeat = false;
+    }
 
     @Override
     public int compareTo(Sound sound2) {
@@ -28,9 +33,10 @@ public class Sound implements Comparable<Sound> {
 
     public String display() {
         String s = tag
-                + "["+frameBegin
+                + "[" + frameBegin
                 + ((frameEnd == frameEndBase) ? ".." + frameEnd : "..("
-                + frameEndBase + ") " + frameEnd) + "]" + duration;
+                + frameEndBase + ") " + frameEnd) + "]" + duration
+                + ((playBeat) ? "BEAT " : "");
         return s;
     }
 

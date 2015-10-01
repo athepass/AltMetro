@@ -130,6 +130,17 @@ public class Beat {
             Sound sound = soundList.get(i);
             if (sound.frameBegin<=factor && sound.frameEnd>=factor) {
                 Log.d("Trak:beat",i + "addNextBeat "+ factor + " - "+ sound.display());
+                Sound sNew = sound.kloon();
+                soundList.add(i, sNew);
+                sound.frameBeginBase = factor;
+                sNew.frameEndBase = factor;
+                sNew.copyBase();
+                sNew.calcDuration();
+                sound.copyBase();
+                sound.calcDuration();
+                sound.playBeat = true;
+                sNew.tag = sound.tag;
+                i = soundList.size();
             }
         }
     }
