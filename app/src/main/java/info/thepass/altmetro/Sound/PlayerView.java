@@ -8,20 +8,23 @@ import android.view.SurfaceView;
 
 public class PlayerView extends SurfaceView
         implements SurfaceHolder.Callback {
-    public final static String TAG = "trak:SurfaceView";
+    public final static String TAG = "trak:PlayerView";
+    public BeatManager bm;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         Log.d(TAG, "constructor");
     }
 
-    public void initSurfaceHolder(BeatManager bm) {
+    public void initSurfaceHolder() {
         bm.metronome.sh = getHolder();
         bm.metronome.sh.addCallback(this);
+        Log.d(TAG, "initSurfaceHolder " + (bm.metronome.sh == null));
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated");
+        initSurfaceHolder();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,

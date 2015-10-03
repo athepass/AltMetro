@@ -74,7 +74,7 @@ public class BeatManager extends Fragment {
     }
 
     private void initRunnables() {
-        metronome = new Metronome(h);
+        metronome = new Metronome(h, this);
         metroThread = new Thread(metronome);
         metroThread.start();
 

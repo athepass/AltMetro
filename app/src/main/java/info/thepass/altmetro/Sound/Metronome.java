@@ -51,8 +51,9 @@ public class Metronome implements Runnable {
     public SurfaceHolder sh = null;
     public boolean shConstructed = false;
 
-    public Metronome(HelperMetro hh) {
+    public Metronome(HelperMetro hh, BeatManager bm) {
         h = hh;
+        this.bm = bm;
         Log.d(TAG, "constructor");
         mPauseLock = new Object();
         mPaused = true;
@@ -73,9 +74,9 @@ public class Metronome implements Runnable {
                 doWait();
 
             } else {
-                Log.d(TAG,"constructing")
                 try {
-                    wait(200);
+
+                    wait(2000);
                 } catch (Exception e) {
                 }
             }
