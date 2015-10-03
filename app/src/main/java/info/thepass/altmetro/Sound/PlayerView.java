@@ -9,13 +9,15 @@ import android.view.SurfaceView;
 public class PlayerView extends SurfaceView
         implements SurfaceHolder.Callback {
     public final static String TAG = "trak:SurfaceView";
-    private SurfaceHolder sh;
 
     public PlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         Log.d(TAG, "constructor");
-        sh = getHolder();
-        sh.addCallback(this);
+    }
+
+    public void initSurfaceHolder(BeatManager bm) {
+        bm.metronome.sh = getHolder();
+        bm.metronome.sh.addCallback(this);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {

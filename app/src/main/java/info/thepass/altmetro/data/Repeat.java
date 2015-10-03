@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.Sound.Beat;
-import info.thepass.altmetro.Sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.BeatManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -77,20 +77,20 @@ public class Repeat {
         return s;
     }
 
-    public void buildBeatList(BeatManagerFragment bm, int indexRepeat, HelperMetro h) {
+    public void buildBeatList(BeatManager bm, int indexRepeat, HelperMetro h) {
         repeatCounter = 0;
         beatList.clear();
         buildBeatBar(bm, indexRepeat, h);
     }
 
-    private void buildBeatBar(BeatManagerFragment bm, int idxRepeat, HelperMetro h) {
+    private void buildBeatBar(BeatManager bm, int idxRepeat, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : barCount;
-            beat.barIndex = bm.barCounter;
+            beat.barIndex = bm.metronome.barCounter;
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat;
             beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 1 : 0;
@@ -108,7 +108,7 @@ public class Repeat {
         }
     }
 
-    public void buildSound(BeatManagerFragment bm) {
+    public void buildSound(BeatManager bm) {
         for (int i = 0; i < beatList.size(); i++) {
             Beat beat = beatList.get(i);
             beat.buildSound();

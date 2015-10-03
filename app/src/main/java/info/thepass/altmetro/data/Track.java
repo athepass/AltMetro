@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.Sound.Beat;
-import info.thepass.altmetro.Sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.BeatManager;
 import info.thepass.altmetro.Sound.Sound;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -246,15 +246,15 @@ public class Track {
         return true;
     }
 
-    public void buildBeat(BeatManagerFragment bm, HelperMetro h) {
-        bm.barCounter = 0;
+    public void buildBeat(BeatManager bm, HelperMetro h) {
+        bm.metronome.barCounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
             repeats.get(iRep).buildSound(bm);
         }
     }
 
-    public void soundDump(BeatManagerFragment bm) {
+    public void soundDump(BeatManager bm) {
         String[] subs = bm.h.getStringArray(R.array.sub_pattern);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.hhmm", Locale.getDefault());
         String pad = bm.h.getLogFilePath();
@@ -263,7 +263,7 @@ public class Track {
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
         String s = "\n======== repeats ======== build:"
-                + bm.buildCounter + " bars:" + bm.barCounter;
+                + bm.buildCounter + " bars:" + bm.metronome.barCounter;
         for (int irep = 0; irep < repeats.size(); irep++) {
             Repeat tRepeat = repeats.get(irep);
             String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);

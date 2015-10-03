@@ -22,14 +22,14 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.Sound.BeatManagerFragment;
+import info.thepass.altmetro.Sound.BeatManager;
+import info.thepass.altmetro.Sound.PlayerView;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.data.TrackData;
-import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -71,7 +71,7 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
-    private BeatManagerFragment bm;
+    private BeatManager bm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,9 +119,9 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menuItemStart.setVisible(!bm.playing);
-        menuItemStop.setVisible(bm.playing);
-        if (bm.playing) {
+        menuItemStart.setVisible(!bm.metronome.mPlaying);
+        menuItemStop.setVisible(bm.metronome.mPlaying);
+        if (bm.metronome.mPlaying) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemTrackList.setIcon(R.mipmap.ic_none);
         } else {
@@ -140,12 +140,12 @@ public class TrackFragment extends Fragment {
                 doStopPlayer();
                 return true;
             case R.id.action_track_settings:
-                if (!bm.playing) {
+                if (!bm.metronome.mPlaying) {
                     doPrefs();
                 }
                 return true;
             case R.id.action_track_tracklist:
-                if (!bm.playing) {
+                if (!bm.metronome.mPlaying) {
                     doTrackList();
                 }
                 return true;
@@ -200,17 +200,17 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        if (!bm.playing) {
-            Log.d(TAG, "doStartPlayer " + bm.playing);
-            bm.playing = true;
+        if (!bm.metronome.mPlaying) {
+            Log.d(TAG, "doStartPlayer " + bm.metronome.mPlaying);
+            bm.metronome.mPlaying = true;
             bm.startPlayer();
         }
     }
 
     public void doStopPlayer() {
-        Log.d(TAG, "doStopPlayer " + bm.playing);
-        if (bm.playing) {
-            bm.playing = false;
+        Log.d(TAG, "doStopPlayer " + bm.metronome.mPlaying);
+        if (bm.metronome.mPlaying) {
+            bm.metronome.mPlaying = false;
             bm.stopPlayer();
         }
         updateLayout();
@@ -387,24 +387,24 @@ public class TrackFragment extends Fragment {
     }
 
     private void initEmphasis() {
-        bm.evmPlayer = new EmphasisViewManager("ed_player",
-                Keys.EVMPLAYER, layout, h);
-        bm.evmPlayer.useLow = true;
+//        bm.evmPlayer = new EmphasisViewManager("ed_player",
+//                Keys.EVMPLAYER, layout, h);
+//        bm.evmPlayer.useLow = true;
     }
 
     private void initBeatManager() {
-        bm = (BeatManagerFragment) getFragmentManager()
-                .findFragmentByTag(BeatManagerFragment.TAG);
+        bm = (BeatManager) getFragmentManager()
+                .findFragmentByTag(BeatManager.TAG);
         if (bm == null) {
-            bm = new BeatManagerFragment();
+            bm = new BeatManager();
             FragmentTransaction fragmentTransaction = getFragmentManager()
                     .beginTransaction();
-            fragmentTransaction.add(bm, BeatManagerFragment.TAG);
+            fragmentTransaction.add(bm, BeatManager.TAG);
             fragmentTransaction.commit();
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
-//        emphasisView.bm = bm;
+        bm.playerView = (PlayerView) getActivity().findViewById(R.id.playerview);
     }
 
     public void setData() {
@@ -448,16 +448,16 @@ public class TrackFragment extends Fragment {
     public void updateLayout() {
         setTitle();
 
-        bm.evmPlayer.setEmphasisVisible(bm.playing);
+//        bm.evmPlayer.setEmphasisVisible(bm.metronome.mPlaying);
 
-        if (bm.playing) {
+        if (bm.metronome.mPlaying) {
             tvStudy.setVisibility(View.GONE);
         } else {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
-        tvTap.setVisibility((bm.playing) ? View.INVISIBLE : View.VISIBLE);
-        lvManager.itemsListView.setVisibility((bm.playing) ? View.GONE : View.VISIBLE);
+        tvTap.setVisibility((bm.metronome.mPlaying) ? View.INVISIBLE : View.VISIBLE);
+        lvManager.itemsListView.setVisibility((bm.metronome.mPlaying) ? View.GONE : View.VISIBLE);
         if (track.trackPlayable(h)) {
             bm.buildBeat(track);
         }
@@ -526,7 +526,7 @@ public class TrackFragment extends Fragment {
     }
 
     private void setTitle() {
-        String sPlay = (bm.playing) ? " (P)" : "";
+        String sPlay = (bm.metronome.mPlaying) ? " (P)" : "";
         String sTrack = track.getTitle(trackData, trackData.trackSelected);
         getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }

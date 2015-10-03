@@ -6,31 +6,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class BeatManagerFragment extends Fragment {
-    public final static String TAGF = "trak:BeatMgr";
-    public final static int playingSTART = 2;
-    public final static int playingSTOP = 0;
-    // Objecten
+public class BeatManager extends Fragment {
+    public final static String TAG = "trak:BeatMgr";
+
     public TrackFragment trackFragment;
     public HelperMetro h;
     public boolean building;
-    public Metronome metronome;
 
-    private BeatManagerFragment thisFrag;
-    // declaraties
-    private String[] subs;
-    private Thread metroThread;
+    public BeatManager thisFrag;
+    public PlayerView playerView;
 
-    private LayoutUpdater layoutUpdater;
-    private Stopper stopper;
-    private SoundBuilder soundBuilder;
+    public SoundBuilder soundBuilder;
     public int buildCounter;
+
+    public Thread metroThread;
+    public Metronome metronome;
+    public LayoutUpdater layoutUpdater;
+    public Stopper stopper;
 
     /*****************************************************************/
     @Override
@@ -46,8 +43,6 @@ public class BeatManagerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         h = new HelperMetro(getActivity());
-        subs = h.getStringArray(R.array.sub_pattern);
-        metronome.playing = false;
         initRunnables();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
@@ -65,16 +60,16 @@ public class BeatManagerFragment extends Fragment {
     }
 
     public void startPlayer() {
-        Log.d(TAGF, "startPlayer");
+        Log.d(TAG, "startPlayer");
         metronome.timeStart1 = h.getNanoTime();
-        metronome.playing = true;
+        metronome.mPlaying = true;
         metronome.onResume();
     }
 
     public void stopPlayer() {
-        Log.d(TAGF, "stopPlayer");
+        Log.d(TAG, "stopPlayer");
         metronome.timeStop1 = h.getNanoTime();
-        metronome.playing = false;
+        metronome.mPlaying = false;
         metronome.onPause();
     }
 
@@ -91,7 +86,7 @@ public class BeatManagerFragment extends Fragment {
     public class LayoutUpdater implements Runnable {
         public void run() {
             long timeLayout2 = h.getNanoTime();
-            Log.d(TAGF, "LayoutUpdater " + h.deltaTime(metronome.timeLayout1, timeLayout2)
+            Log.d(TAG, "LayoutUpdater " + h.deltaTime(metronome.timeLayout1, timeLayout2)
                     + "/" + h.deltaTime(metronome.timeStart1, timeLayout2));
             trackFragment.updateLayout();
         }
@@ -102,7 +97,7 @@ public class BeatManagerFragment extends Fragment {
             long timeStop2 = h.getNanoTime();
             trackFragment.doStopPlayer();
             long timeStop3 = h.getNanoTime();
-            Log.d(TAGF, "Stopper time:" + h.deltaTime(metronome.timeStop1, timeStop2) + "|" + h.deltaTime(timeStop2, timeStop3));
+            Log.d(TAG, "Stopper time:" + h.deltaTime(metronome.timeStop1, timeStop2) + "|" + h.deltaTime(timeStop2, timeStop3));
         }
     }
 
@@ -124,7 +119,7 @@ public class BeatManagerFragment extends Fragment {
 
             building = false;
             timeBuild4 = h.getNanoTime();
-            Log.d(TAGF, "SoundBuilder: finished building beat and sound: " + buildCounter
+            Log.d(TAG, "SoundBuilder: finished building beat and sound: " + buildCounter
                     + " time:" + h.deltaTime(metronome.timeBuild1, timeBuild2)
                     + "|" + h.deltaTime(timeBuild2, timeBuild3)
                     + "|" + h.deltaTime(timeBuild3, timeBuild4));
