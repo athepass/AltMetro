@@ -119,6 +119,8 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        if (bm.metronome==null) return;
+
         menuItemStart.setVisible(!bm.metronome.mPlaying);
         menuItemStop.setVisible(bm.metronome.mPlaying);
         if (bm.metronome.mPlaying) {
@@ -177,7 +179,7 @@ public class TrackFragment extends Fragment {
                 case Keys.TARGETBEATMANAGERINIT:
                     h.logD(TAG, "beat manager init ready, setting data");
                     starting = false;
-                    bm.playerView.initSurfaceHolder();
+//                    bm.playerView.initSurfaceHolder();
                     setData();
                     return;
                 case Keys.TARGETBEATMANAGERSTOP:
@@ -405,10 +407,12 @@ public class TrackFragment extends Fragment {
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
-        Log.d(TAG,"init playerview?");
+
+        Log.d(TAG, "init playerview");
         bm.playerView = (PlayerView) getActivity().findViewById(R.id.playerview);
-        Log.d(TAG,"init playerview?");
         bm.playerView.bm = bm;
+        bm.sh = bm.playerView.getHolder();
+        bm.sh.addCallback(bm.playerView);
     }
 
     public void setData() {
@@ -451,6 +455,7 @@ public class TrackFragment extends Fragment {
 
     public void updateLayout() {
         setTitle();
+        if (bm.metronome == null) return;
 
 //        bm.evmPlayer.setEmphasisVisible(bm.metronome.mPlaying);
 
@@ -530,7 +535,10 @@ public class TrackFragment extends Fragment {
     }
 
     private void setTitle() {
-        String sPlay = (bm.metronome.mPlaying) ? " (P)" : "";
+        String sPlay = "";
+        if (bm.metronome != null) {
+            sPlay = (bm.metronome.mPlaying) ? " (P)" : "";
+        }
         String sTrack = track.getTitle(trackData, trackData.trackSelected);
         getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }

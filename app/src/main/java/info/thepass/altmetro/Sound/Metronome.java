@@ -7,7 +7,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.Log;
-import android.view.SurfaceHolder;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
@@ -48,8 +47,9 @@ public class Metronome implements Runnable {
     public int soundLength;
     public SoundCollection sc;
     public AudioTrack audioTrack;
-    public SurfaceHolder sh = null;
-    public boolean shConstructed = false;
+
+    public Canvas canvas;
+    public int currentBeat;
 
     public Metronome(HelperMetro hh, BeatManager bm) {
         h = hh;
@@ -63,19 +63,20 @@ public class Metronome implements Runnable {
         subs = h.getStringArray(R.array.sub_pattern);
         initAudio();
         initPaint();
-        shConstructed = false;
+        bm.shConstructed = false;
     }
 
     public void run() {
 
         while (!mFinished) {
             if (initCanvas()) {
-                doStep();
+                if (mPlaying) {
+                    doStep();
+                }
                 doWait();
 
             } else {
                 try {
-
                     wait(2000);
                 } catch (Exception e) {
                 }
@@ -84,14 +85,20 @@ public class Metronome implements Runnable {
     }
 
     private boolean initCanvas() {
-        if (sh != null & !shConstructed) {
+        if (bm.sh != null & !bm.shConstructed) {
             Log.d(TAG, "initCanvas");
-            shConstructed = true;
-            Canvas canvas = sh.lockCanvas(null);
+            bm.shConstructed = true;
+            try {
+                wait(200);
+            } catch (Exception e) {
+            }
+            canvas = bm.sh.lockCanvas();
+            Log.d(TAG, "canvas==null");
             canvas.drawColor(Color.BLACK);
-            sh.unlockCanvasAndPost(canvas);
+            canvas.drawCircle(20 + 10, 20, 10, paintHigh);
+            bm.sh.unlockCanvasAndPost(canvas);
         }
-        return shConstructed;
+        return bm.shConstructed;
     }
 
     private void doStep() {
@@ -135,12 +142,13 @@ public class Metronome implements Runnable {
     }
 
     private void runInit() {
+        Log.d(TAG, "runInit");
         timeStart2 = h.getNanoTime();
         timeLayout1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.layoutUpdater);
-        Canvas canvas = sh.lockCanvas(null);
-        canvas.drawColor(Color.TRANSPARENT);
-        sh.unlockCanvasAndPost(canvas);
+        canvas = bm.sh.lockCanvas();
+        canvas.drawColor(Color.BLACK);
+        bm.sh.unlockCanvasAndPost(canvas);
         timeStart3 = h.getNanoTime();
     }
 
@@ -152,6 +160,7 @@ public class Metronome implements Runnable {
             iBeatList = 0;
             while (mPlaying && iBeatList < bmRepeat.beatList.size()) {
                 Beat beat = bmRepeat.beatList.get(iBeatList);
+                currentBeat = beat.beatIndex + 1;
                 Log.d(TAG, "beat[Sound] " + iBeatList + " info:" + bmRepeat.beatList.get(iBeatList).display(iBeatList, subs));
                 timeBeat1 = h.getNanoTime();
                 if (iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
@@ -191,7 +200,7 @@ public class Metronome implements Runnable {
 //                long nu = h.getNanoTime();
 //                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
             Sound sound = beat.soundList.get(iSound);
-
+            doDraw();
 //                if (sound.playBeat) {
 //                    getActivity().runOnUiThread(beatUpdater);
 //                }
@@ -235,11 +244,14 @@ public class Metronome implements Runnable {
         }
     }
 
-    private void doDraw(Canvas canvas) {
-//            canvas.restore();
+    private void doDraw() {
+        Log.d(TAG,"doDraw");
+        canvas = bm.sh.lockCanvas();
         canvas.drawColor(Color.BLACK);
-        canvas.drawCircle(20 + barCounter * 10, 20, 50, paintHigh);
-        canvas.drawText("counter=" + barCounter, 20, 20, paintText);
+        canvas.drawCircle(20 + currentBeat * 10, 20, 20, paintHigh);
+        canvas.drawText("#" + currentBeat, 22 + currentBeat * 10, 20, paintText);
+        bm.sh.unlockCanvasAndPost(canvas);
+        Log.d(TAG, "doDraw");
     }
 
     private void initPaint() {

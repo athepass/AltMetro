@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Track;
@@ -24,8 +25,10 @@ public class BeatManager extends Fragment {
     public SoundBuilder soundBuilder;
     public int buildCounter;
 
-    public Thread metroThread;
-    public Metronome metronome;
+    public Thread metroThread = null;
+    public Metronome metronome = null;
+    public SurfaceHolder sh = null;
+    public boolean shConstructed = false;
     public LayoutUpdater layoutUpdater;
     public Stopper stopper;
 
@@ -46,6 +49,14 @@ public class BeatManager extends Fragment {
         initRunnables();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
+    }
+
+    public void startMetro() {
+        if (metronome == null) {
+            metronome = new Metronome(h, this);
+            metroThread = new Thread(metronome);
+            metroThread.start();
+        }
     }
 
     public void buildBeat(Track newTrack) {
@@ -74,10 +85,6 @@ public class BeatManager extends Fragment {
     }
 
     private void initRunnables() {
-        metronome = new Metronome(h, this);
-        metroThread = new Thread(metronome);
-        metroThread.start();
-
         layoutUpdater = new LayoutUpdater();
         stopper = new Stopper();
         soundBuilder = new SoundBuilder();
