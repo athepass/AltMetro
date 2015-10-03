@@ -2,24 +2,30 @@ package info.thepass.altmetro.Sound;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.TrackFragment;
-import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
 public class BeatManagerFragment extends Fragment {
-    public final static String TAG = "trak:BeatMgr";
+    public final static String TAGF = "trak:BeatMgr";
+    public final static String TAGV = "trak:SurfaceView";
+    public final static String TAGM = "trak:Metronome";
     public final static int playingSTART = 2;
     public final static int playingSTOP = 0;
     // Objecten
@@ -29,9 +35,9 @@ public class BeatManagerFragment extends Fragment {
     public int barCounter;
     public int buildCounter;
     public boolean building;
-    public EmphasisViewManager evmPlayer;
-    public long timeStart1;
-    public long timeBeat1;
+    //    public EmphasisViewManager evmPlayer;
+    private long timeStart1;
+    private long timeBeat1;
     public int delayCounter;
     public int delaySum;
     private BeatManagerFragment thisFrag;
@@ -47,11 +53,20 @@ public class BeatManagerFragment extends Fragment {
     private long timeStop1;
     private long timeLayout1;
     private long timeBuild1;
+
     private Metronome metronome;
+    private Thread metroThread;
+    private SurfaceHolder sh;
+    private PlayerView pv;
+
     private LayoutUpdater layoutUpdater;
-    private BeatUpdater beatUpdater;
+//    private BeatUpdater beatUpdater;
     private Stopper stopper;
     private SoundBuilder soundBuilder;
+    private final Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     /*****************************************************************/
     @Override
@@ -70,6 +85,7 @@ public class BeatManagerFragment extends Fragment {
         subs = h.getStringArray(R.array.sub_pattern);
         playing = false;
         initSound();
+        initPaint();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
     }
@@ -88,32 +104,48 @@ public class BeatManagerFragment extends Fragment {
     public void startPlayer() {
         playing = true;
         timeStart1 = getNanoTime();
-        Log.d(TAG, "startPlayer");
-
-
-        Thread threadMetro = new Thread(metronome);
-        threadMetro.start();
+        Log.d(TAGF, "startPlayer");
+        metronome.onResume();
     }
 
     public void stopPlayer() {
-        Log.d(TAG, "stopPlayer");
+        Log.d(TAGF, "stopPlayer");
         timeStop1 = getNanoTime();
         playing = false;
     }
 
     private void initSound() {
+        // start Metronome runnable in non-stop thread
         metronome = new Metronome();
+        metroThread = new Thread(metronome);
+        metroThread.start();
+        // construct worker runnables
         layoutUpdater = new LayoutUpdater();
-        beatUpdater = new BeatUpdater();
+//        beatUpdater = new BeatUpdater();
         stopper = new Stopper();
         soundBuilder = new SoundBuilder();
-
-        sc = new SoundCollection(h, TAG);
+        // initialise audio
+        sc = new SoundCollection(h, TAGF);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 SoundCollection.SAMPLERATE, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, SoundCollection.SAMPLERATE,
                 AudioTrack.MODE_STREAM);
         audioTrack.play();
+    }
+
+    private void initPaint() {
+        paintHigh.setColor(Color.RED);
+        paintHigh.setStyle(Paint.Style.FILL);
+
+        paintLow.setColor(Color.YELLOW);
+        paintLow.setStyle(Paint.Style.FILL);
+
+        paintNone.setColor(Color.BLUE);
+        paintNone.setStyle(Paint.Style.FILL);
+
+        paintText.setColor(Color.GREEN);
+        paintText.setStyle(Paint.Style.FILL);
+        paintText.setTextSize(20);
     }
 
     public long getNanoTime() {
@@ -124,121 +156,36 @@ public class BeatManagerFragment extends Fragment {
         return String.format("%.3f", (float) (time2 - time1) / 1000000f) + "ms";
     }
 
-    public class Metronome implements Runnable {
+    public class PlayerView extends SurfaceView
+            implements SurfaceHolder.Callback {
 
-        public void run() {
-            long timeStart2 = getNanoTime();
-            timeLayout1 = getNanoTime();
+        private SurfaceHolder sh;
+        private PlayerView pv;
+        private Thread thread;
+        private Metronome metronome;
+        private Context ctx;
+        private int counter = 0;
 
-            getActivity().runOnUiThread(layoutUpdater);
-
-            long timeStart3 = getNanoTime();
-            h.logD(TAG, "Run metronome t=" + deltaTime(timeStart1, timeStart2)
-                    + ".." + deltaTime(timeStart2, timeStart3));
-
-            evmPlayer.track = bmTrack;
-            for (int irep = 0; irep < bmTrack.repeats.size(); irep++) {
-                bmRepeat = bmTrack.repeats.get(irep);
-                Pat pat = bmTrack.pats.get(bmTrack.patSelected);
-
-                evmPlayer.setPattern(pat, true);
-                playRepeat();
-            }
-
-            Log.d(TAG, "Run metronome finished");
-            timeStop1 = getNanoTime();
-            getActivity().runOnUiThread(stopper);
+        public PlayerView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            Log.d(TAGV, "constructor");
+            ctx = context;
+            pv = this;
+            sh = getHolder();
+            sh.addCallback(this);
         }
 
-        private void playRepeat() {
-            int iRepeat = 0;
-            int step = 0;
-            int barCounter = 0;
-            while (playing && iRepeat < bmRepeat.barCount) {
-                iBeatList = 0;
-                while (playing && iBeatList < bmRepeat.beatList.size()) {
-                    Beat beat = bmRepeat.beatList.get(iBeatList);
-                    Log.d(TAG, "beat[Sound] " + iBeatList + " info:" + bmRepeat.beatList.get(iBeatList).display(iBeatList, subs));
-                    timeBeat1 = getNanoTime();
-                    if (iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
-                        step = 1;
-                    } else {    // laatste beat
-                        if (bmRepeat.noEnd) {   // noend: altijd naar 1
-                            step = 1 - beat.beats;
-                        } else {
-                            if (barCounter == bmRepeat.barCount - 1) { // laatste bar binnen repeat
-                                step = 1;
-                            } else { // naar 1 voor afspelen volgende bar
-                                step = 1 - beat.beats;
-                            }
-                        }
-                    }
-                    playSoundList(beat);
-
-                    if (iBeatList == beat.beats - 1) { // bar counter ophogen
-                        barCounter++;
-                    }
-
-                    iBeatList += step;
-                    if (iBeatList >= bmRepeat.beatList.size()) {
-                        Log.d(TAG, "beatSound ready");
-                        playing = false;
-                    }
-                }
-
-                if (!bmRepeat.noEnd) {
-                    iRepeat++;
-                }
-            }
+        public void surfaceCreated(SurfaceHolder holder) {
+            Log.d(TAGV, "surfaceCreated");
         }
 
-        private void playSoundList(Beat beat) {
-            for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
-                long nu = getNanoTime();
-//                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
-                Sound sound = beat.soundList.get(iSound);
-
-                if (sound.playBeat) {
-                    getActivity().runOnUiThread(beatUpdater);
-                }
-
-                switch (sound.soundType) {
-                    case Keys.SOUNDFIRST:
-                        writeSound(sc.soundFirst, sound.duration);
-                        break;
-                    case Keys.SOUNDHIGH:
-                        writeSound(sc.soundHigh, sound.duration);
-                        break;
-                    case Keys.SOUNDLOW:
-                        writeSound(sc.soundLow, sound.duration);
-                        break;
-                    case Keys.SOUNDNONE:
-                        writeSound(sc.soundSilence, sound.duration);
-                        break;
-                    case Keys.SOUNDSUB:
-                        writeSound(sc.soundSub, sound.duration);
-                        break;
-                    case Keys.SOUNDSILENCE:
-                        writeSound(sc.soundSilence, sound.duration);
-                        break;
-                    default:
-                        throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
-                }
-            }
+        public void surfaceChanged(SurfaceHolder holder, int format, int width,
+                                   int height) {
+            Log.d(TAGV, "surfaceChanged");
         }
 
-        private void writeSound(byte[] soundBytes, int duration) {
-            playDuration = duration * 2;
-            while (playing && playDuration > 0) {
-                if (playDuration > SoundCollection.SOUNDLENGTH) {
-                    soundLength = SoundCollection.SOUNDLENGTH;
-                    playDuration -= SoundCollection.SOUNDLENGTH;
-                } else {
-                    soundLength = playDuration;
-                    playDuration = 0;
-                }
-                audioTrack.write(soundBytes, 0, soundLength);
-            }
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            Log.d(TAGV, "surfaceDestroyed");
         }
 
     }
@@ -246,35 +193,34 @@ public class BeatManagerFragment extends Fragment {
     public class LayoutUpdater implements Runnable {
         public void run() {
             long timeLayout2 = getNanoTime();
-            Log.d(TAG, "LayoutUpdater " + deltaTime(timeLayout1, timeLayout2)
+            Log.d(TAGM, "LayoutUpdater " + deltaTime(timeLayout1, timeLayout2)
                     + "/" + deltaTime(timeStart1, timeLayout2));
             trackFragment.updateLayout();
         }
     }
 
-    public class BeatUpdater implements Runnable {
-        public void run() {
-            long timeBeat2 = getNanoTime();
-            if (iBeatList < bmRepeat.beatList.size()) {
-                Beat beat = bmRepeat.beatList.get(iBeatList);
-                evmPlayer.updateEmphasisView(beat.beatNext);
-
-                // TODO update emphasis
-//                trackFragment.emphasisView.beat = beat.beatNext;
-//                trackFragment.emphasisView.invalidate();
-                long timeBeat3 = getNanoTime();
-                Log.d(TAG, "beatUpdater " + beat.beatNext + " time:" + deltaTime(timeBeat1, timeBeat2)
-                        + "/" + deltaTime(timeBeat1, timeBeat3));
-            }
-        }
-    }
-
+//    public class BeatUpdater implements Runnable {
+//        public void run() {
+//            long timeBeat2 = getNanoTime();
+//            if (iBeatList < bmRepeat.beatList.size()) {
+//                Beat beat = bmRepeat.beatList.get(iBeatList);
+//
+//                // TODO update emphasis
+////                trackFragment.emphasisView.beat = beat.beatNext;
+////                trackFragment.emphasisView.invalidate();
+//                long timeBeat3 = getNanoTime();
+//                Log.d(TAG, "beatUpdater " + beat.beatNext + " time:" + deltaTime(timeBeat1, timeBeat2)
+//                        + "/" + deltaTime(timeBeat1, timeBeat3));
+//            }
+//        }
+//    }
+//
     public class Stopper implements Runnable {
         public void run() {
             long timeStop2 = getNanoTime();
             trackFragment.doStopPlayer();
             long timeStop3 = getNanoTime();
-            Log.d(TAG, "stopper time:" + deltaTime(timeStop1, timeStop2) + "|" + deltaTime(timeStop2, timeStop3));
+            Log.d(TAGM, "stopper time:" + deltaTime(timeStop1, timeStop2) + "|" + deltaTime(timeStop2, timeStop3));
         }
     }
 
@@ -296,7 +242,7 @@ public class BeatManagerFragment extends Fragment {
 
             building = false;
             timeBuild4 = getNanoTime();
-            Log.d(TAG, "finished building beat and sound: " + buildCounter
+            Log.d(TAGM, "finished building beat and sound: " + buildCounter
                     + " time:" + deltaTime(timeBuild1, timeBuild2)
                     + "|" + deltaTime(timeBuild2, timeBuild3)
                     + "|" + deltaTime(timeBuild3, timeBuild4));

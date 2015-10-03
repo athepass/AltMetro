@@ -161,7 +161,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="3dp">
+        android:padding="3dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_ed_player_emphasis0"
@@ -219,7 +220,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="3dp">
+        android:padding="3dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_ed_player_emphasis10"
@@ -272,5 +274,7 @@
             android:tag="iv19"/>
     </LinearLayout>
 
-
+    <info.thepass.altmetro.Sound.PlayerView
+        android:layout_width="match_parent"
+        android:layout_height="60dp"/>
 </LinearLayout>
