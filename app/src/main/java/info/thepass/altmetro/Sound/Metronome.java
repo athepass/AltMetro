@@ -2,54 +2,90 @@ package info.thepass.altmetro.Sound;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import info.thepass.altmetro.data.Pat;
+import info.thepass.altmetro.data.Repeat;
+import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
 public class Metronome implements Runnable {
+    public final static String TAG = "trak:Metronome";
+    private final Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public int delayCounter;
+    public int delaySum;
+    public long timeStart1;
+    public long timeBeat1;
+    public long timeStop1;
+    public long timeLayout1;
+    public long timeBuild1;
+    public Track bmTrack;
+    public int barCounter;
+    public boolean playing;
+
+    private HelperMetro h;
     private Object mPauseLock;
     private boolean mPaused;
     private boolean mFinished;
+    private Repeat bmRepeat;
+    private int iBeatList;
+    private int playDuration;
+    private int soundLength;
+    private SoundCollection sc;
+    private AudioTrack audioTrack;
+    private SurfaceHolder sh;
 
-    public Metronome() {
-        Log.d(TAGM, "constructor");
+    public Metronome(HelperMetro hh) {
+        h = hh;
+        Log.d(TAG, "constructor");
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
+
+        initAudio();
+        initPaint();
     }
 
     public void run() {
-        long timeStart2 = getNanoTime();
-        timeLayout1 = getNanoTime();
+        long timeStart2 = h.getNanoTime();
+        timeLayout1 = h.getNanoTime();
         getActivity().runOnUiThread(layoutUpdater);
         Canvas canvas = sh.lockCanvas(null);
         canvas.drawColor(Color.BLACK);
         sh.unlockCanvasAndPost(canvas);
-        long timeStart3 = getNanoTime();
+        long timeStart3 = h.getNanoTime();
 
 
-        h.logD(TAGM, "Run metronome t=" + deltaTime(timeStart1, timeStart2) + ".." + deltaTime(timeStart2, timeStart3));
+        h.logD(TAG, "Run metronome t=" + h.deltaTime(timeStart1, timeStart2) + ".." + deltaTime(timeStart2, timeStart3));
         for (int irep = 0; irep < bmTrack.repeats.size(); irep++) {
             bmRepeat = bmTrack.repeats.get(irep);
             Pat pat = bmTrack.pats.get(bmTrack.patSelected);
             playRepeat();
         }
 
-        Log.d(TAGM, "Run metronome finished");
-        timeStop1 = getNanoTime();
+        Log.d(TAG, "Run metronome finished");
+        timeStop1 = h.getNanoTime();
         getActivity().runOnUiThread(stopper);
     }
 
     public void onPause() {
-        Log.d(TAGM, "onPause");
+        Log.d(TAG, "onPause");
         synchronized (mPauseLock) {
             mPaused = true;
         }
     }
 
     public void onResume() {
-        Log.d(TAGM, "onResume");
+        Log.d(TAG, "onResume");
         synchronized (mPauseLock) {
             mPaused = false;
             mPauseLock.notify();
@@ -64,8 +100,8 @@ public class Metronome implements Runnable {
             iBeatList = 0;
             while (playing && iBeatList < bmRepeat.beatList.size()) {
                 Beat beat = bmRepeat.beatList.get(iBeatList);
-                Log.d(TAGM, "beat[Sound] " + iBeatList + " info:" + bmRepeat.beatList.get(iBeatList).display(iBeatList, subs));
-                timeBeat1 = getNanoTime();
+                Log.d(TAG, "beat[Sound] " + iBeatList + " info:" + bmRepeat.beatList.get(iBeatList).display(iBeatList, subs));
+                timeBeat1 = h.getNanoTime();
                 if (iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
                     step = 1;
                 } else {    // laatste beat
@@ -87,7 +123,7 @@ public class Metronome implements Runnable {
 
                 iBeatList += step;
                 if (iBeatList >= bmRepeat.beatList.size()) {
-                    Log.d(TAGM, "beatSound ready");
+                    Log.d(TAG, "beatSound ready");
                     playing = false;
                 }
             }
@@ -97,9 +133,10 @@ public class Metronome implements Runnable {
             }
         }
     }
+
     private void playSoundList(Beat beat) {
         for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
-//                long nu = getNanoTime();
+//                long nu = h.getNanoTime();
 //                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
             Sound sound = beat.soundList.get(iSound);
 
@@ -153,4 +190,27 @@ public class Metronome implements Runnable {
         canvas.drawText("counter=" + barCounter, 20, 20, paintText);
     }
 
+    private void initPaint() {
+        paintHigh.setColor(Color.RED);
+        paintHigh.setStyle(Paint.Style.FILL);
+
+        paintLow.setColor(Color.YELLOW);
+        paintLow.setStyle(Paint.Style.FILL);
+
+        paintNone.setColor(Color.BLUE);
+        paintNone.setStyle(Paint.Style.FILL);
+
+        paintText.setColor(Color.GREEN);
+        paintText.setStyle(Paint.Style.FILL);
+        paintText.setTextSize(20);
+    }
+
+    private void initAudio() {
+        sc = new SoundCollection(h, TAG);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                SoundCollection.SAMPLERATE, AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, SoundCollection.SAMPLERATE,
+                AudioTrack.MODE_STREAM);
+        audioTrack.play();
+    }
 }

@@ -104,6 +104,14 @@ public class HelperMetro {
         return act;
     }
 
+    public long getNanoTime() {
+        return System.nanoTime();
+    }
+
+    public String deltaTime(long time1, long time2) {
+        return String.format("%.3f", (float) (time2 - time1) / 1000000f) + "ms";
+    }
+
     public long getTimeMillis() {
         return System.nanoTime() / 1000000;
     }
