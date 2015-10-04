@@ -19,7 +19,7 @@ public class PlayerView extends SurfaceView
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated");
-        bm.bootPlayer();
+        bm.pd.videoStarted = true;
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -28,6 +28,7 @@ public class PlayerView extends SurfaceView
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
+        bm.pd.videoStarted = false;
         Log.d(TAG, "surfaceDestroyed");
     }
 }

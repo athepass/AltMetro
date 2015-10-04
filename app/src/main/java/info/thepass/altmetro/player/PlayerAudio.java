@@ -1,5 +1,7 @@
 package info.thepass.altmetro.player;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -89,12 +91,12 @@ public class PlayerAudio implements Runnable {
         bm.getActivity().runOnUiThread(bm.layoutUpdater);
         pd.timeLayout1 = h.getNanoTime();
         pd.timeStart3 = h.getNanoTime();
-        h.logD(TAG, "start t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
+        h.logD(TAG, "initPlay t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
                 + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
     }
 
     private void finishPlay() {
-        Log.d(TAG, "finish");
+        Log.d(TAG, "finish Play");
         pd.timeStop1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.stopper);
     }
@@ -112,6 +114,7 @@ public class PlayerAudio implements Runnable {
                 pd.timeBeat1 = h.getNanoTime();
                 step = getNextStep();
 
+                doDraw();
                 playSoundList(pd.bmBeat);
 
                 if (pd.iBeatList == pd.bmBeat.beats - 1) { // bar counter ophogen
@@ -127,6 +130,16 @@ public class PlayerAudio implements Runnable {
             if (!pd.bmRepeat.noEnd) {
                 iRepeat++;
             }
+        }
+    }
+
+    private void doDraw() {
+        if (pd.videoStarted) {
+            Canvas canvas = bm.sh.lockCanvas();
+            canvas.drawColor(Color.BLACK);
+            canvas.drawText("" + pd.currentBeat, 10, 10, pd.paintText);
+            canvas.drawCircle(30 + 20 * pd.currentBeat, 30, 20, pd.paintHigh);
+            bm.sh.unlockCanvasAndPost(canvas);
         }
     }
 

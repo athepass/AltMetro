@@ -1,5 +1,8 @@
 package info.thepass.altmetro.player;
 
+import android.graphics.Color;
+import android.graphics.Paint;
+
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
@@ -26,6 +29,8 @@ public class PlayerData {
     public long timeBuild3;
     public long timeBuild4;
 
+    public boolean videoStarted = false;
+
     public Track bmTrack;
     public Repeat bmRepeat;
     public Beat bmBeat;
@@ -37,8 +42,29 @@ public class PlayerData {
     public int iBeatList;
 
     public String[] subs;
+    public Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+
 
     public PlayerData(HelperMetro h) {
         subs = h.getStringArray(R.array.sub_pattern);
+        initPaint();
+    }
+
+    private void initPaint() {
+        paintHigh.setColor(Color.RED);
+        paintHigh.setStyle(Paint.Style.FILL);
+
+        paintLow.setColor(Color.YELLOW);
+        paintLow.setStyle(Paint.Style.FILL);
+
+        paintNone.setColor(Color.BLUE);
+        paintNone.setStyle(Paint.Style.FILL);
+
+        paintText.setColor(Color.GREEN);
+        paintText.setStyle(Paint.Style.FILL);
+        paintText.setTextSize(30);
     }
 }

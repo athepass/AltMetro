@@ -50,22 +50,29 @@ public class Player extends Fragment {
         h = new HelperMetro(getActivity());
         pd = new PlayerData(h);
         initRunnables();
+        bootAudio();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
     }
 
-    public void bootPlayer() {
-        if (playerAudio == null) {
+    public void bootAudio() {
+        playerAudio = new PlayerAudio(h, this);
+        audioThread = new Thread(playerAudio);
+        audioThread.setPriority(Thread.MIN_PRIORITY);
+        audioThread.start();
+    }
 
-            playerAudio = new PlayerAudio(h, this);
-            audioThread = new Thread(playerAudio);
-            audioThread.setPriority(Thread.MIN_PRIORITY);
-            audioThread.start();
+    public void bootVideo() {
+        if (!pd.videoStarted) {
+            pd.videoStarted = true;
 
-            playerVideo = new PlayerVideo(h, this);
-            videoThread = new Thread(playerVideo);
-            videoThread.setPriority(Thread.NORM_PRIORITY - 2);
-            videoThread.start();
+//            audioThread.setPriority(Thread.MIN_PRIORITY);
+
+////            playerVideo = new PlayerVideo(h, this);
+//            videoThread = new Thread(playerVideo);
+//            Log.d(TAG,"bootVideo start thread");
+//            videoThread.setPriority(Thread.MIN_PRIORITY + 1);
+//            videoThread.start();
         }
     }
 
@@ -85,15 +92,15 @@ public class Player extends Fragment {
         pd.timeStart1 = h.getNanoTime();
         pd.playing = Keys.PLAYGO;
         playerAudio.onResume();
-        playerVideo.onResume();
+//        playerVideo.onResume();
     }
 
     public void stopPlayer() {
         Log.d(TAG, "stopPlayer");
         pd.timeStop1 = h.getNanoTime();
         pd.playing = Keys.PLAYPAUSED;
-        playerVideo.onPause();
         playerAudio.onPause();
+//        playerVideo.onPause();
     }
 
     private void initRunnables() {

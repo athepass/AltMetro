@@ -122,13 +122,13 @@ public class TrackFragment extends Fragment {
         Log.d(TAG, "onPrepareOptions " + bm.isPlaying());
         menuItemStart.setVisible(!bm.isPlaying());
         menuItemStop.setVisible(bm.isPlaying());
-//        if (bm.isPlaying()) {
-//            menuItemSettings.setIcon(R.mipmap.ic_none);
-//            menuItemTrackList.setIcon(R.mipmap.ic_none);
-//        } else {
-//            menuItemSettings.setIcon(R.mipmap.ic_action_settings);
-//            menuItemTrackList.setIcon(R.mipmap.icon_list);
-//        }
+        if (bm.isPlaying()) {
+            menuItemSettings.setIcon(R.mipmap.ic_none);
+            menuItemTrackList.setIcon(R.mipmap.ic_none);
+        } else {
+            menuItemSettings.setIcon(R.mipmap.ic_action_settings);
+            menuItemTrackList.setIcon(R.mipmap.icon_list);
+        }
     }
 
     @Override

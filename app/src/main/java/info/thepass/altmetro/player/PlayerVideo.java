@@ -154,7 +154,7 @@ public class PlayerVideo implements Runnable {
     }
 
     private void initRun() {
-        Log.d(TAG, "start Runnable " + bm.videoThread.getPriority());
+        Log.d(TAG, "initRun " + bm.videoThread.getPriority());
         bootCanvas();
     }
 
