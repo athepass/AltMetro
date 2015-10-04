@@ -1,34 +1,34 @@
-package info.thepass.altmetro.Sound;
+package info.thepass.altmetro.player;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.SurfaceHolder;
 
 import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class BeatManager extends Fragment {
-    public final static String TAG = "trak:BeatMgr";
+public class Player extends Fragment {
+    public final static String TAG = "trak:Player";
 
     public TrackFragment trackFragment;
     public HelperMetro h;
-    public boolean building;
+    public PlayerData pd;
 
-    public BeatManager thisFrag;
+    public Player thisFrag;
     public PlayerView playerView;
 
     public SoundBuilder soundBuilder;
     public int buildCounter;
 
-    public Thread metroThread = null;
-    public Metronome metronome = null;
-    public SurfaceHolder sh = null;
-    public boolean shConstructed = false;
+    public Thread audioThread = null;
+    public PlayerAudio playerAudio = null;
+    public Thread videoThread = null;
+    public PlayerAudio playerVideo = null;
+
     public LayoutUpdater layoutUpdater;
     public Stopper stopper;
 
@@ -52,19 +52,19 @@ public class BeatManager extends Fragment {
     }
 
     public void startMetro() {
-        if (metronome == null) {
-            metronome = new Metronome(h, this);
-            metroThread = new Thread(metronome);
-            metroThread.start();
+        if (playerAudio == null) {
+            playerAudio = new PlayerAudio(h, this);
+            audioThread = new Thread(playerAudio);
+            audioThread.start();
         }
     }
 
     public void buildBeat(Track newTrack) {
-        metronome.timeBuild1 = h.getNanoTime();
-        metronome.bmTrack = newTrack;
+        pd.timeBuild1 = h.getNanoTime();
+        pd.bmTrack = newTrack;
         trackFragment.track = newTrack;
         buildCounter++;
-        if (!building) {
+        if (!pd.building) {
             Thread t = new Thread(soundBuilder);
             t.start();
         }
@@ -72,16 +72,16 @@ public class BeatManager extends Fragment {
 
     public void startPlayer() {
         Log.d(TAG, "startPlayer");
-        metronome.timeStart1 = h.getNanoTime();
-        metronome.mPlaying = true;
-        metronome.onResume();
+        pd.timeStart1 = h.getNanoTime();
+        pd.mPlaying = true;
+        playerAudio.onResume();
     }
 
     public void stopPlayer() {
         Log.d(TAG, "stopPlayer");
-        metronome.timeStop1 = h.getNanoTime();
-        metronome.mPlaying = false;
-        metronome.onPause();
+        pd.timeStop1 = h.getNanoTime();
+        pd.mPlaying = false;
+        playerAudio.onPause();
     }
 
     private void initRunnables() {
@@ -93,43 +93,40 @@ public class BeatManager extends Fragment {
     public class LayoutUpdater implements Runnable {
         public void run() {
             long timeLayout2 = h.getNanoTime();
-            Log.d(TAG, "LayoutUpdater " + h.deltaTime(metronome.timeLayout1, timeLayout2)
-                    + "/" + h.deltaTime(metronome.timeStart1, timeLayout2));
+            Log.d(TAG, "LayoutUpdater " + h.deltaTime(pd.timeLayout1, timeLayout2)
+                    + "/" + h.deltaTime(pd.timeStart1, timeLayout2));
             trackFragment.updateLayout();
         }
     }
 
     public class Stopper implements Runnable {
         public void run() {
-            long timeStop2 = h.getNanoTime();
+            pd.timeStop2 = h.getNanoTime();
             trackFragment.doStopPlayer();
-            long timeStop3 = h.getNanoTime();
-            Log.d(TAG, "Stopper time:" + h.deltaTime(metronome.timeStop1, timeStop2) + "|" + h.deltaTime(timeStop2, timeStop3));
+            pd.timeStop3 = h.getNanoTime();
+            Log.d(TAG, "Stopper time:" + h.deltaTime(pd.timeStop1, pd.timeStop2) + "|" + h.deltaTime(pd.timeStop2, pd.timeStop3));
         }
     }
 
     public class SoundBuilder implements Runnable {
         int thisBuildCounter;
-        long timeBuild2;
-        long timeBuild3;
-        long timeBuild4;
 
         public void run() {
-            timeBuild2 = h.getNanoTime();
-            building = true;
+            pd.timeBuild2 = h.getNanoTime();
+            pd.building = true;
             do {
                 thisBuildCounter = buildCounter;
-                metronome.bmTrack.buildBeat(thisFrag, h);
-                timeBuild3 = h.getNanoTime();
+                pd.bmTrack.buildBeat(thisFrag, h);
+                pd.timeBuild3 = h.getNanoTime();
 
             } while (thisBuildCounter < buildCounter);
 
-            building = false;
-            timeBuild4 = h.getNanoTime();
+            pd.building = false;
+            pd.timeBuild4 = h.getNanoTime();
             Log.d(TAG, "SoundBuilder: finished building beat and sound: " + buildCounter
-                    + " time:" + h.deltaTime(metronome.timeBuild1, timeBuild2)
-                    + "|" + h.deltaTime(timeBuild2, timeBuild3)
-                    + "|" + h.deltaTime(timeBuild3, timeBuild4));
+                    + " time:" + h.deltaTime(pd.timeBuild1, pd.timeBuild2)
+                    + "|" + h.deltaTime(pd.timeBuild2, pd.timeBuild3)
+                    + "|" + h.deltaTime(pd.timeBuild3, pd.timeBuild4));
 //            bmTrack.soundDump(thisFrag);
         }
     }

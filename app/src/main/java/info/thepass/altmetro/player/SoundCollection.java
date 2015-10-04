@@ -1,4 +1,4 @@
-package info.thepass.altmetro.Sound;
+package info.thepass.altmetro.player;
 
 import info.thepass.altmetro.tools.HelperMetro;
 

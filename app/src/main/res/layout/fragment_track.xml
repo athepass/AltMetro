@@ -156,7 +156,7 @@
         android:textColor="@color/color_practice"
         android:textSize="15dp"/>
 
-    <info.thepass.altmetro.Sound.PlayerView
+    <info.thepass.altmetro.player.PlayerView
         android:id="@+id/playerview"
         android:layout_width="match_parent"
         android:layout_height="60dp"/>

@@ -22,8 +22,8 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.Sound.BeatManager;
-import info.thepass.altmetro.Sound.PlayerView;
+import info.thepass.altmetro.player.Player;
+import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
@@ -71,7 +71,7 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
-    private BeatManager bm;
+    private Player bm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -396,13 +396,13 @@ public class TrackFragment extends Fragment {
     }
 
     private void initBeatManager() {
-        bm = (BeatManager) getFragmentManager()
-                .findFragmentByTag(BeatManager.TAG);
+        bm = (Player) getFragmentManager()
+                .findFragmentByTag(Player.TAG);
         if (bm == null) {
-            bm = new BeatManager();
+            bm = new Player();
             FragmentTransaction fragmentTransaction = getFragmentManager()
                     .beginTransaction();
-            fragmentTransaction.add(bm, BeatManager.TAG);
+            fragmentTransaction.add(bm, Player.TAG);
             fragmentTransaction.commit();
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);

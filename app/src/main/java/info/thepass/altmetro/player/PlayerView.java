@@ -1,4 +1,4 @@
-package info.thepass.altmetro.Sound;
+package info.thepass.altmetro.player;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import android.view.SurfaceView;
 public class PlayerView extends SurfaceView
         implements SurfaceHolder.Callback {
     public final static String TAG = "trak:PlayerView";
-    public BeatManager bm;
+    public Player bm;
 
 
     public PlayerView(Context context, AttributeSet attrs) {

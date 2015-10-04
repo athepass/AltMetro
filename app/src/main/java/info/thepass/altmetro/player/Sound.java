@@ -1,4 +1,4 @@
-package info.thepass.altmetro.Sound;
+package info.thepass.altmetro.player;
 
 public class Sound implements Comparable<Sound> {
     public int frameBegin;
