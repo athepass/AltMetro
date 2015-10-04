@@ -59,10 +59,12 @@ public class Player extends Fragment {
 
             playerAudio = new PlayerAudio(h, this);
             audioThread = new Thread(playerAudio);
+            audioThread.setPriority(Thread.MIN_PRIORITY);
             audioThread.start();
 
             playerVideo = new PlayerVideo(h, this);
             videoThread = new Thread(playerVideo);
+            videoThread.setPriority(Thread.NORM_PRIORITY - 2);
             videoThread.start();
         }
     }
@@ -81,14 +83,16 @@ public class Player extends Fragment {
     public void startPlayer() {
         Log.d(TAG, "startPlayer");
         pd.timeStart1 = h.getNanoTime();
-        pd.mPlaying = true;
+        pd.playing = Keys.PLAYGO;
         playerAudio.onResume();
+        playerVideo.onResume();
     }
 
     public void stopPlayer() {
         Log.d(TAG, "stopPlayer");
         pd.timeStop1 = h.getNanoTime();
-        pd.mPlaying = false;
+        pd.playing = Keys.PLAYPAUSED;
+        playerVideo.onPause();
         playerAudio.onPause();
     }
 
@@ -96,6 +100,10 @@ public class Player extends Fragment {
         layoutUpdater = new LayoutUpdater();
         stopper = new Stopper();
         soundBuilder = new SoundBuilder();
+    }
+
+    public boolean isPlaying() {
+        return (pd.playing == Keys.PLAYGO);
     }
 
     public class LayoutUpdater implements Runnable {

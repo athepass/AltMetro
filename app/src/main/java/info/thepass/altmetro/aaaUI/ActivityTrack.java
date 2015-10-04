@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.tools.HelperMetro;
 
 public class ActivityTrack extends Activity {
     public final static String TAG = "ActivityTrak";
-    public TrackData trackData;
+    public MetronomeData metronomeData;
     private HelperMetro h = null;
 
     @Override
@@ -36,7 +36,7 @@ public class ActivityTrack extends Activity {
     }
 
     private void initMetroData() {
-        trackData = new TrackData(h);
+        metronomeData = new MetronomeData(h);
         h.logD(TAG, "InitMetroData start");
     }
 

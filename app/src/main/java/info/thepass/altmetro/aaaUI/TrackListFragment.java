@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.adapter.TrackListAdapter;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.abDialog.DialogEditTrackInfo;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -36,7 +36,7 @@ public class TrackListFragment extends ListFragment {
     private LinearLayout llList;
     private LinearLayout llAddItem;
     private TrackListAdapter trackListAdapter = null;
-    private TrackData trackData;
+    private MetronomeData metronomeData;
     private View mainView;
     private int indexDel;
 
@@ -78,7 +78,7 @@ public class TrackListFragment extends ListFragment {
     @Override
     public void onDetach() {
         this.updateTrackFragment();
-        trackData.saveData("tracklist detach", false);
+        metronomeData.saveData("tracklist detach", false);
         super.onDetach();
     }
 
@@ -121,13 +121,13 @@ public class TrackListFragment extends ListFragment {
     /********************************************************************/
     private void initData() {
         ActivityTrack act = (ActivityTrack) getActivity();
-        this.trackData = act.trackData;
+        this.metronomeData = act.metronomeData;
         trackListAdapter = new TrackListAdapter(getActivity(),
-                R.layout.fragment_tracklist_row, trackData, h);
+                R.layout.fragment_tracklist_row, metronomeData, h);
         trackListAdapter.frag = this;
         trackListAdapter.lv = getListView();
         setListAdapter(this.trackListAdapter);
-        setPosition(trackData.trackSelected, false);
+        setPosition(metronomeData.trackSelected, false);
     }
 
     private void initButtons() {
@@ -136,7 +136,7 @@ public class TrackListFragment extends ListFragment {
 
             @Override
             public void onClick(View v) {
-                editTrackList(trackData.tracks.size(), true);
+                editTrackList(metronomeData.tracks.size(), true);
             }
         });
     }
@@ -162,13 +162,13 @@ public class TrackListFragment extends ListFragment {
         getListView().setItemChecked(position, true);
         trackListAdapter.notifyDataSetChanged();
         if (updateData) {
-            trackData.trackSelected = position;
+            metronomeData.trackSelected = position;
             updateTrackFragment();
         }
     }
 
     private void updateTrackFragment() {
-        trackData.saveData(TAG, false);
+        metronomeData.saveData(TAG, false);
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETTRACKFRAGMENT, Activity.RESULT_OK, intent);
     }
@@ -199,15 +199,15 @@ public class TrackListFragment extends ListFragment {
         Bundle b = new Bundle();
         b.putBoolean(Keys.EDITACTION, add);
         b.putInt(Keys.EDITINDEX, position);
-        b.putInt(Keys.EDITSIZE, trackData.tracks.size());
+        b.putInt(Keys.EDITSIZE, metronomeData.tracks.size());
         Track track;
         if (add) {
-            track = new Track(h, trackData);
+            track = new Track(h, metronomeData);
         } else {
-            track = trackData.tracks.get(position);
+            track = metronomeData.tracks.get(position);
         }
         String sTrack = track.toJson().toString();
-        b.putString(TrackData.KEYTRACKS, sTrack);
+        b.putString(MetronomeData.KEYTRACKS, sTrack);
 
         dlgEdit.setArguments(b);
         dlgEdit.show(getFragmentManager(), DialogEditTrackInfo.TAG);
@@ -216,32 +216,32 @@ public class TrackListFragment extends ListFragment {
     private void updateTrackList(Intent intent) {
         boolean actionAdd = intent.getBooleanExtra(Keys.EDITACTION, false);
         int index = intent.getIntExtra(Keys.EDITINDEX, -1);
-        String sTrack = intent.getStringExtra(TrackData.KEYTRACKS);
-        Track track = new Track(h, trackData);
+        String sTrack = intent.getStringExtra(MetronomeData.KEYTRACKS);
+        Track track = new Track(h, metronomeData);
 
         try {
             if (actionAdd) {
-                trackData.tracks.add(track);
-                setPosition(trackData.tracks.size() - 1, true);
+                metronomeData.tracks.add(track);
+                setPosition(metronomeData.tracks.size() - 1, true);
             } else {
                 track.fromJson(new JSONObject(sTrack), h);
-                trackData.tracks.set(index, track);
+                metronomeData.tracks.set(index, track);
                 setPosition(index, true);
             }
         } catch (Exception e) {
             throw new RuntimeException("updateTrackList json exception");
         }
 
-        trackData.clean();
+        metronomeData.clean();
         getListView().setItemChecked(trackListAdapter.selectedItem, true);
         trackListAdapter.notifyDataSetChanged();
 
-        trackData.saveData("updateTrackList", false);
+        metronomeData.saveData("updateTrackList", false);
     }
 
     /***************************************************************************************/
     public void confirmDeleteItem(int index) {
-        if (trackData.tracks.size() == 1) {
+        if (metronomeData.tracks.size() == 1) {
             return;
         }
         indexDel = index;
@@ -249,7 +249,7 @@ public class TrackListFragment extends ListFragment {
         getListView().setItemChecked(trackListAdapter.selectedItem, true);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Track track = trackData.tracks.get(indexDel);
+        Track track = metronomeData.tracks.get(indexDel);
         String pInfo = track.display(h, indexDel);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
@@ -269,11 +269,11 @@ public class TrackListFragment extends ListFragment {
     }
 
     private void deleteItem() {
-        trackData.tracks.remove(indexDel);
-        if (indexDel >= trackData.tracks.size() - 1) {
-            setPosition(trackData.tracks.size() - 1, true);
+        metronomeData.tracks.remove(indexDel);
+        if (indexDel >= metronomeData.tracks.size() - 1) {
+            setPosition(metronomeData.tracks.size() - 1, true);
         }
-        trackData.saveData("deleteRow", false);
+        metronomeData.saveData("deleteRow", false);
         updateTrackFragment();
         trackListAdapter.notifyDataSetChanged();
     }

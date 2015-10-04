@@ -309,11 +309,11 @@ public class Pat {
         }
     }
 
-    public boolean checkInUse(TrackData trackData, HelperMetro h) {
+    public boolean checkInUse(MetronomeData metronomeData, HelperMetro h) {
         int counter = 0;
         String s= "";
-        for (int iT=0; iT<trackData.tracks.size();iT++) {
-            Track track = trackData.tracks.get(iT);
+        for (int iT=0; iT< metronomeData.tracks.size();iT++) {
+            Track track = metronomeData.tracks.get(iT);
             for (int iR=0; iR<track.repeats.size();iR++) {
                 Repeat repeat = track.repeats.get(iR);
                 if (repeat.hashPattern==this.patHash) {

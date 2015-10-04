@@ -13,10 +13,10 @@ import android.widget.TextView;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.TrackFragment;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.EmphasisViewManager;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -33,19 +33,19 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     private HelperMetro h;
     private ListView lv;
     private Track track;
-    private TrackData trackData;
+    private MetronomeData metronomeData;
     private TrackFragment frag;
     private int positionToolbar = -1;
     private int lvSelColor;
 
     public TrackItemsAdapter(Context cont, int layout, ListView lv2,
-                             Track track2, TrackData trackData2,
+                             Track track2, MetronomeData metronomeData2,
                              HelperMetro hConstructor, TrackFragment frag2) {
         super(cont, layout, track2.items);
         h = hConstructor;
         context = cont;
         this.track = track2;
-        this.trackData = trackData2;
+        this.metronomeData = metronomeData2;
         lv = lv2;
         frag = frag2;
         lvSelColor = h.getColor(R.color.color_listitem_selected_background);

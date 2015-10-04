@@ -40,10 +40,10 @@ public class Track {
     public ArrayList<String> items;
     public int patSelected;
     public ArrayList<Pat> pats;
-    private TrackData trackData;
+    private MetronomeData metronomeData;
 
-    public Track(HelperMetro h, TrackData data) {
-        trackData = data;
+    public Track(HelperMetro h, MetronomeData data) {
+        metronomeData = data;
 
         nummer = 0;
         hashTrack = h.getHash();
@@ -149,8 +149,8 @@ public class Track {
         return s;
     }
 
-    public String getTitle(TrackData trackData, int sel) {
-        if ((trackData.tracks.size() == 1)
+    public String getTitle(MetronomeData metronomeData, int sel) {
+        if ((metronomeData.tracks.size() == 1)
                 && (repeats.size() == 1)
                 && (titel.equals(""))
                 && (nummer == 0)
@@ -247,7 +247,7 @@ public class Track {
     }
 
     public void buildBeat(Player bm, HelperMetro h) {
-        bm.pd.barCounter = 0;
+        bm.pd.repeatBarcounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
             repeats.get(iRep).buildSound(bm);
@@ -263,7 +263,7 @@ public class Track {
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
         String s = "\n======== repeats ======== build:"
-                + bm.buildCounter + " bars:" + bm.pd.barCounter;
+                + bm.buildCounter + " bars:" + bm.pd.repeatBarcounter;
         for (int irep = 0; irep < repeats.size(); irep++) {
             Repeat tRepeat = repeats.get(irep);
             String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);

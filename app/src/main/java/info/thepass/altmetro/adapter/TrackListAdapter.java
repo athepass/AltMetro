@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.TrackListFragment;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.tools.HelperMetro;
 
 public class TrackListAdapter extends ArrayAdapter<Track> {
@@ -27,17 +27,17 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
     private Context context;
     private ArrayList<Track> listTrack;
     private HelperMetro h;
-    private TrackData trackData;
+    private MetronomeData metronomeData;
 
 
     public TrackListAdapter(Context cont, int layout,
-                            TrackData trackData2, HelperMetro hConstructor) {
-        super(cont, layout, trackData2.tracks);
+                            MetronomeData metronomeData2, HelperMetro hConstructor) {
+        super(cont, layout, metronomeData2.tracks);
         h = hConstructor;
         h.logD(TAG, "constructor");
-        trackData = trackData2;
+        metronomeData = metronomeData2;
         context = cont;
-        listTrack = trackData.tracks;
+        listTrack = metronomeData.tracks;
     }
 
     public int getCount() {
@@ -100,10 +100,10 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
                     positionToolbar--;
                     lv.setItemChecked(positionToolbar,true);
                     lv.setSelection(positionToolbar);
-                    Track track0 = trackData.tracks.get(position - 1);
-                    Track track1 = trackData.tracks.get(position);
-                    trackData.tracks.set(position - 1, track1);
-                    trackData.tracks.set(position, track0);
+                    Track track0 = metronomeData.tracks.get(position - 1);
+                    Track track1 = metronomeData.tracks.get(position);
+                    metronomeData.tracks.set(position - 1, track1);
+                    metronomeData.tracks.set(position, track0);
                 }
                 notifyDataSetChanged();
             }
@@ -115,14 +115,14 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
             @Override
             public void onClick(View v) {
                 int position = lv.getPositionForView(v);
-                if (position < trackData.tracks.size() - 1) {
+                if (position < metronomeData.tracks.size() - 1) {
                     positionToolbar++;
                     lv.setItemChecked(positionToolbar,true);
                     lv.setSelection(positionToolbar);
-                    Track track0 = trackData.tracks.get(position);
-                    Track track1 = trackData.tracks.get(position + 1);
-                    trackData.tracks.set(position, track1);
-                    trackData.tracks.set(position + 1, track0);
+                    Track track0 = metronomeData.tracks.get(position);
+                    Track track1 = metronomeData.tracks.get(position + 1);
+                    metronomeData.tracks.set(position, track1);
+                    metronomeData.tracks.set(position + 1, track0);
                 }
                 notifyDataSetChanged();
             }

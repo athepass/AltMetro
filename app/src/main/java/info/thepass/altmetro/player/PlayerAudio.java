@@ -16,11 +16,12 @@ public class PlayerAudio implements Runnable {
     public PlayerData pd;
     // runnable management
     public Object mPauseLock;
-    public boolean mFinished;
     // sound management
     public int soundLength;
     public SoundCollection sc;
     public AudioTrack audioTrack;
+    private boolean mFinished;
+    private boolean mPaused;
 
     public PlayerAudio(HelperMetro hh, Player bm) {
         h = hh;
@@ -28,8 +29,7 @@ public class PlayerAudio implements Runnable {
         this.pd = bm.pd;
         Log.d(TAG, "constructor");
         mPauseLock = new Object();
-        pd.mPaused = true;
-        pd.mPlaying = false;
+        mPaused = true;
         mFinished = false;
 
         initAudio();
@@ -39,7 +39,7 @@ public class PlayerAudio implements Runnable {
         initRun();
 
         while (!mFinished) {
-            if (pd.mPlaying) {
+            if (!mPaused) {
                 doStep();
             }
             doWait();
@@ -48,19 +48,19 @@ public class PlayerAudio implements Runnable {
     }
 
     private void doStep() {
-        initRun();
+        initPlay();
         for (int irep = 0; irep < pd.bmTrack.repeats.size(); irep++) {
             pd.bmRepeat = pd.bmTrack.repeats.get(irep);
             pd.bmPat = pd.bmTrack.pats.get(pd.bmTrack.patSelected);
             playRepeat();
+
         }
-        finishRun();
+        finishPlay();
     }
 
     private void doWait() {
         synchronized (mPauseLock) {
-            while (pd.mPaused) {
-                Log.d(TAG, "pauselock");
+            while (mPaused) {
                 try {
                     mPauseLock.wait();
                 } catch (InterruptedException e) {
@@ -72,14 +72,14 @@ public class PlayerAudio implements Runnable {
     public void onPause() {
         Log.d(TAG, "onPause");
         synchronized (mPauseLock) {
-            pd.mPaused = true;
+            mPaused = true;
         }
     }
 
     public void onResume() {
         Log.d(TAG, "onResume");
         synchronized (mPauseLock) {
-            pd.mPaused = false;
+            mPaused = false;
             mPauseLock.notify();
         }
     }
@@ -92,47 +92,35 @@ public class PlayerAudio implements Runnable {
         h.logD(TAG, "start t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
                 + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
     }
-    
+
     private void finishPlay() {
         Log.d(TAG, "finish");
         pd.timeStop1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.stopper);
     }
-    
+
     private void playRepeat() {
         int iRepeat = 0;
         int step = 0;
-        int barCounter = 0;
-        while (pd.mPlaying && iRepeat < pd.bmRepeat.barCount) {
+        while (!mPaused && iRepeat < pd.bmRepeat.barCount) {
             pd.iBeatList = 0;
-            while (pd.mPlaying && pd.iBeatList < pd.bmRepeat.beatList.size()) {
-                Beat beat = pd.bmRepeat.beatList.get(pd.iBeatList);
-                pd.bmBeat = beat.beatIndex + 1;
-                Log.d(TAG, "beat[Sound] " + pd.iBeatList + " info:" + pd.bmRepeat.beatList.get(pd.iBeatList).display(pd.iBeatList, pd.subs));
+            while (!mPaused && pd.iBeatList < pd.bmRepeat.beatList.size()) {
+                pd.bmBeat = pd.bmRepeat.beatList.get(pd.iBeatList);
+                pd.currentBeat = pd.bmBeat.beatIndex + 1;
+                Log.d(TAG, "beat[Sound] " + pd.iBeatList + " info:"
+                        + pd.bmRepeat.beatList.get(pd.iBeatList).display(pd.iBeatList, pd.subs));
                 pd.timeBeat1 = h.getNanoTime();
-                if (pd.iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
-                    step = 1;
-                } else {    // laatste beat
-                    if (pd.bmRepeat.noEnd) {   // noend: altijd naar 1
-                        step = 1 - beat.beats;
-                    } else {
-                        if (barCounter == pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
-                            step = 1;
-                        } else { // naar 1 voor afspelen volgende bar
-                            step = 1 - beat.beats;
-                        }
-                    }
-                }
-                playSoundList(beat);
+                step = getNextStep();
 
-                if (pd.iBeatList == beat.beats - 1) { // bar counter ophogen
-                    barCounter++;
+                playSoundList(pd.bmBeat);
+
+                if (pd.iBeatList == pd.bmBeat.beats - 1) { // bar counter ophogen
+                    pd.repeatBarcounter++;
                 }
 
                 pd.iBeatList += step;
                 if (pd.iBeatList >= pd.bmRepeat.beatList.size()) {
                     Log.d(TAG, "beatSound ready");
-                    pd.mPlaying = false;
                 }
             }
 
@@ -140,6 +128,24 @@ public class PlayerAudio implements Runnable {
                 iRepeat++;
             }
         }
+    }
+
+    private int getNextStep() {
+        int step = 0;
+        if (pd.iBeatList < pd.bmBeat.beats - 1) { // niet op de laatste beat: volgend beat
+            step = 1;
+        } else {    // laatste beat
+            if (pd.bmRepeat.noEnd) {   // noend: altijd naar 1
+                step = 1 - pd.bmBeat.beats;
+            } else {
+                if (pd.repeatBarcounter == pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
+                    step = 1;
+                } else { // naar 1 voor afspelen volgende bar
+                    step = 1 - pd.bmBeat.beats;
+                }
+            }
+        }
+        return step;
     }
 
     private void playSoundList(Beat beat) {
@@ -150,7 +156,6 @@ public class PlayerAudio implements Runnable {
 //                if (sound.playBeat) {
 //                    getActivity().runOnUiThread(beatUpdater);
 //                }
-
             switch (sound.soundType) {
                 case Keys.SOUNDFIRST:
                     writeSound(sc.soundFirst, sound.duration);
@@ -178,7 +183,7 @@ public class PlayerAudio implements Runnable {
 
     private void writeSound(byte[] soundBytes, int duration) {
         int playDuration = duration * 2;
-        while (pd.mPlaying && playDuration > 0) {
+        while (!mPaused && playDuration > 0) {
             if (playDuration > SoundCollection.SOUNDLENGTH) {
                 soundLength = SoundCollection.SOUNDLENGTH;
                 playDuration -= SoundCollection.SOUNDLENGTH;
@@ -200,12 +205,10 @@ public class PlayerAudio implements Runnable {
     }
 
     private void initRun() {
-        Log.d(TAG, "start Runnable");
+        Log.d(TAG, "start Runnable " + bm.audioThread.getPriority());
     }
 
     private void finishRun() {
         Log.i(TAG, "finish Runnable");
     }
-
-
 }

@@ -10,11 +10,8 @@ import info.thepass.altmetro.tools.HelperMetro;
  * Created by nl03192 on 4-10-2015.
  */
 public class PlayerData {
-    public boolean mPaused;
-    public boolean mPlaying;
-
+    public int playing;
     public boolean building;
-
     // klok performance
     public long timeStart1;
     public long timeStart2;
@@ -29,15 +26,17 @@ public class PlayerData {
     public long timeBuild3;
     public long timeBuild4;
 
-    //
     public Track bmTrack;
     public Repeat bmRepeat;
+    public Beat bmBeat;
     public Pat bmPat;
-    public int bmBeat;
 
-    public int barCounter;
-    public String[] subs;
+    public int currentBeat;
+    public int repeatBarcounter;
+    public int trackBarcounter;
     public int iBeatList;
+
+    public String[] subs;
 
     public PlayerData(HelperMetro h) {
         subs = h.getStringArray(R.array.sub_pattern);

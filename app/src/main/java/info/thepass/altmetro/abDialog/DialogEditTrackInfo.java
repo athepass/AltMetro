@@ -16,8 +16,8 @@ import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.aaaUI.ActivityTrack;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -75,9 +75,9 @@ public class DialogEditTrackInfo extends DialogFragment {
         editSize = b.getInt(Keys.EDITSIZE);
         try {
             ActivityTrack act = (ActivityTrack) getActivity();
-            TrackData trackData = act.trackData;
-            trak = new Track(h, trackData);
-            String sTrack = b.getString(TrackData.KEYTRACKS);
+            MetronomeData metronomeData = act.metronomeData;
+            trak = new Track(h, metronomeData);
+            String sTrack = b.getString(MetronomeData.KEYTRACKS);
             trak.fromJson(new JSONObject(sTrack), h);
             etNummer.setText(String.valueOf(trak.nummer));
             etTitel.setText(trak.titel);
@@ -103,7 +103,7 @@ public class DialogEditTrackInfo extends DialogFragment {
         intent.putExtra(Keys.EDITACTION, actionAdd);
         intent.putExtra(Keys.EDITINDEX, index);
         String sTrack = trak.toJson().toString();
-        intent.putExtra(TrackData.KEYTRACKS, sTrack);
+        intent.putExtra(MetronomeData.KEYTRACKS, sTrack);
         getTargetFragment().onActivityResult(Keys.TARGETEDITTRACK, Activity.RESULT_OK, intent);
     }
 

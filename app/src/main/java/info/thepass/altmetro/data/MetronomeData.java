@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import info.thepass.altmetro.tools.HelperMetro;
 
-public class TrackData {
+public class MetronomeData {
     public final static String TAG = "TrakData";
     public final static String KEYTRACKS = "TDtrack";
     public final static String KEYTRACKSELECTED = "TDseltrk";
@@ -29,7 +29,7 @@ public class TrackData {
     private String filenaam;
     private File dataFile;
 
-    public TrackData(HelperMetro hh) {
+    public MetronomeData(HelperMetro hh) {
         h = hh;
         trackSelected = 0;
         tracks = new ArrayList<Track>();
@@ -45,7 +45,7 @@ public class TrackData {
     private void initDataFile() {
         pad = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/AltMetro/";
-        filenaam = pad + "trackData.txt";
+        filenaam = pad + "metronomeData.txt";
         File p = new File(pad);
         p.mkdirs();
         dataFile = new File(filenaam);
@@ -88,7 +88,7 @@ public class TrackData {
     }
 
     public void saveData(String tag, boolean doDump) {
-        // van TrackData naar JSONobject
+        // van MetronomeData naar JSONobject
         JSONObject jsonRoot = null;
         try {
             jsonRoot = toJson();

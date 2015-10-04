@@ -10,9 +10,9 @@ public class Beat {
     public int repeatCount;     // repeat.barCount
     public int repeatIndex;     // 1..repeat.barCount
     public int repeatBar;
-    public int barIndex;        // bm.barCounter
+    public int barIndex;        // bm.repeatBarcounter
     public int beats;
-    public int beatIndex;
+    public int beatIndex = 0;
     public int beatState;
     public int beatNext;
     public int beatStateNext;

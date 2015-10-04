@@ -22,6 +22,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.player.Player;
 import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
@@ -29,13 +30,12 @@ import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
 public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
-    public TrackData trackData;
+    public MetronomeData metronomeData;
     public Track track;
     public boolean starting = true;
     // Listview
@@ -119,16 +119,16 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
-        menuItemStart.setVisible(!bm.pd.mPlaying);
-        menuItemStop.setVisible(bm.pd.mPlaying);
-        if (bm.pd.mPlaying) {
-            menuItemSettings.setIcon(R.mipmap.ic_none);
-            menuItemTrackList.setIcon(R.mipmap.ic_none);
-        } else {
-            menuItemSettings.setIcon(R.mipmap.ic_action_settings);
-            menuItemTrackList.setIcon(R.mipmap.icon_list);
-        }
+        Log.d(TAG, "onPrepareOptions " + bm.isPlaying());
+        menuItemStart.setVisible(!bm.isPlaying());
+        menuItemStop.setVisible(bm.isPlaying());
+//        if (bm.isPlaying()) {
+//            menuItemSettings.setIcon(R.mipmap.ic_none);
+//            menuItemTrackList.setIcon(R.mipmap.ic_none);
+//        } else {
+//            menuItemSettings.setIcon(R.mipmap.ic_action_settings);
+//            menuItemTrackList.setIcon(R.mipmap.icon_list);
+//        }
     }
 
     @Override
@@ -141,12 +141,12 @@ public class TrackFragment extends Fragment {
                 doStopPlayer();
                 return true;
             case R.id.action_track_settings:
-                if (!bm.pd.mPlaying) {
+                if (!bm.isPlaying()) {
                     doPrefs();
                 }
                 return true;
             case R.id.action_track_tracklist:
-                if (!bm.pd.mPlaying) {
+                if (!bm.isPlaying()) {
                     doTrackList();
                 }
                 return true;
@@ -202,17 +202,16 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        if (!bm.pd.mPlaying) {
-            Log.d(TAG, "doStartPlayer " + bm.pd.mPlaying);
-            bm.pd.mPlaying = true;
+        Log.d(TAG, "doStartPlayer " + bm.isPlaying());
+//        dumpThread();
+        if (!bm.isPlaying()) {
             bm.startPlayer();
         }
     }
 
     public void doStopPlayer() {
-        Log.d(TAG, "doStopPlayer " + bm.pd.mPlaying);
-        if (bm.pd.mPlaying) {
-            bm.pd.mPlaying = false;
+        Log.d(TAG, "doStopPlayer " + bm.isPlaying());
+        if (bm.isPlaying()) {
             bm.stopPlayer();
         }
         updateLayout();
@@ -222,15 +221,15 @@ public class TrackFragment extends Fragment {
         maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO, Keys.MAXTEMPODEFAULT));
 
         ActivityTrack act = (ActivityTrack) getActivity();
-        this.trackData = act.trackData;
-        track = trackData.tracks.get(trackData.trackSelected);
+        this.metronomeData = act.metronomeData;
+        track = metronomeData.tracks.get(metronomeData.trackSelected);
     }
 
     private void initItemsListViewManager() {
         lvManager = new ItemsListViewManager();
         lvManager.frag = this;
         lvManager.h = this.h;
-        lvManager.trackData = this.trackData;
+        lvManager.metronomeData = this.metronomeData;
         lvManager.track = this.track;
     }
 
@@ -349,7 +348,7 @@ public class TrackFragment extends Fragment {
                         throw new RuntimeException("invalid checkedid" + checkedId);
                 }
                 track.study.practice = newPractice;
-                trackData.saveData("Practice changed", false);
+                metronomeData.saveData("Practice changed", false);
                 setData();
             }
         });
@@ -419,7 +418,7 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        track = trackData.tracks.get(trackData.trackSelected);
+        track = metronomeData.tracks.get(metronomeData.trackSelected);
         setTitle();
 
         lvManager.itemsAdapter.notifyDataSetChanged();
@@ -457,14 +456,14 @@ public class TrackFragment extends Fragment {
 
 //        bm.evmPlayer.setEmphasisVisible(bm.pd.mPlaying);
 
-        if (bm.pd.mPlaying) {
+        if (bm.isPlaying()) {
             tvStudy.setVisibility(View.GONE);
         } else {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
-        tvTap.setVisibility((bm.pd.mPlaying) ? View.INVISIBLE : View.VISIBLE);
-        lvManager.itemsListView.setVisibility((bm.pd.mPlaying) ? View.GONE : View.VISIBLE);
+        tvTap.setVisibility((bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
+        lvManager.itemsListView.setVisibility((bm.isPlaying()) ? View.GONE : View.VISIBLE);
         if (track.trackPlayable(h)) {
             bm.buildBeat(track);
         }
@@ -482,7 +481,7 @@ public class TrackFragment extends Fragment {
             } catch (Exception e) {
                 throw new RuntimeException("setStudy json exception");
             }
-            trackData.saveData("setStudy", false);
+            metronomeData.saveData("setStudy", false);
             setData();
         }
         // study textview onzichtbaar i.g.v. multi. Gebruik anders preference
@@ -534,8 +533,8 @@ public class TrackFragment extends Fragment {
 
     private void setTitle() {
         String sPlay = "";
-        sPlay = (bm.pd.mPlaying) ? " (P)" : "";
-        String sTrack = track.getTitle(trackData, trackData.trackSelected);
+        sPlay = (bm.isPlaying()) ? " (P)" : "";
+        String sTrack = track.getTitle(metronomeData, metronomeData.trackSelected);
         getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }
 
@@ -549,7 +548,7 @@ public class TrackFragment extends Fragment {
 
     private void doPref() {
         Log.d(TAG, "doPref");
-        trackData.saveData("pref", false);
+        metronomeData.saveData("pref", false);
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();
     }

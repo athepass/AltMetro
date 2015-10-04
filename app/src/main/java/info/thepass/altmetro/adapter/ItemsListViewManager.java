@@ -19,7 +19,7 @@ import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
-import info.thepass.altmetro.data.TrackData;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.abDialog.DialogEditTrackPattern;
 import info.thepass.altmetro.abDialog.DialogEditTrackRepeat;
 import info.thepass.altmetro.abDialog.DialogEditTrackStudy;
@@ -37,7 +37,7 @@ public class ItemsListViewManager {
     public TrackFragment frag;
     public HelperMetro h;
     public Track track;
-    public TrackData trackData;
+    public MetronomeData metronomeData;
     public LinearLayout llRoot;
 
     private int indexDelRepeat;
@@ -48,7 +48,7 @@ public class ItemsListViewManager {
 
         itemsListView = (ListView) h.getActivity().findViewById(R.id.track_listView);
         itemsAdapter = new TrackItemsAdapter(h.getActivity(), R.layout.fragment_tracklist_row, itemsListView,
-                track, trackData, h, frag);
+                track, metronomeData, h, frag);
         itemsListView.setAdapter(itemsAdapter);
         itemsListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
@@ -131,7 +131,7 @@ public class ItemsListViewManager {
         track.multi = intent.getBooleanExtra(Track.KEYMULTI,false);
         itemsAdapter.selectedRepeat = index;
         track.clean();
-        trackData.saveData("updateRepeat "+ track.multi + " S:"+track.items.size(), false);
+        metronomeData.saveData("updateRepeat "+ track.multi + " S:"+track.items.size(), false);
         itemsAdapter.notifyDataSetChanged();
         frag.setData();
     }
@@ -173,7 +173,7 @@ public class ItemsListViewManager {
 
         track.clean();
         itemsAdapter.notifyDataSetChanged();
-        trackData.saveData("deleteRepeat", false);
+        metronomeData.saveData("deleteRepeat", false);
         frag.setData();
     }
 
@@ -220,7 +220,7 @@ public class ItemsListViewManager {
 
         track.clean();
         itemsAdapter.notifyDataSetChanged();
-        trackData.saveData("updatePattern", false);
+        metronomeData.saveData("updatePattern", false);
         frag.setData();
     }
 
@@ -233,7 +233,7 @@ public class ItemsListViewManager {
         itemsAdapter.selectedPat = indexDelPattern;
         Pat pat = track.pats.get(indexDelPattern);
         // verwijderen niet mogelijk indien nog in gebruik.!!
-        if (pat.checkInUse(trackData, h)) {
+        if (pat.checkInUse(metronomeData, h)) {
             return;
         }
 
@@ -264,7 +264,7 @@ public class ItemsListViewManager {
 
         track.clean();
         itemsAdapter.notifyDataSetChanged();
-        trackData.saveData("deletePattern", false);
+        metronomeData.saveData("deletePattern", false);
         frag.setData();
     }
 

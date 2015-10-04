@@ -13,14 +13,13 @@ public class PlayerVideo implements Runnable {
     private final Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+    private boolean mPaused;
+    private int testCounter;
+    private boolean testLoop = true;
     // algemene data
     private HelperMetro h;
     private Player bm;
     private PlayerData pd;
-    // video data
-    private Canvas canvas;
-    public boolean shConstructed = false;
     // thread management
     private Object mPauseLock;
     private boolean mFinished;
@@ -28,21 +27,92 @@ public class PlayerVideo implements Runnable {
     public PlayerVideo(HelperMetro hh, Player bm) {
         h = hh;
         this.bm = bm;
-        pd = bm.pd;
+        this.pd = bm.pd;
+        mPauseLock = new Object();
+        mFinished = false;
+        mPaused = true;
         Log.d(TAG, "constructor");
         initPaint();
-        shConstructed = false;
     }
 
     public void run() {
         initRun();
+//        while (!mFinished) {
+//            Log.d(TAG, "loop run");
+////            if (!mPaused) {
+//            doStep();
+////                doWait(500, 0);
+////            } else {
+//                doWait(0, 0);
+////            }
+//        }
         while (!mFinished) {
-            doDraw();
-            try {
-                wait(500);
-            } catch (Exception e) {}
+            if (mPaused) {
+                doWait(0, 0);
+            } else {
+                for (testCounter = 1; testCounter <= 8; testCounter++) {
+                    Canvas canvas = bm.sh.lockCanvas();
+                    canvas.drawColor(Color.BLACK);
+                    canvas.drawText("" + testCounter, 10, 10, paintText);
+                    canvas.drawCircle(30 + 20 * testCounter, 30, 20, paintHigh);
+                    bm.sh.unlockCanvasAndPost(canvas);
+                    doWait(1000, 0);
+                }
+                finishRun();
+            }
         }
-        finishRun();
+    }
+
+    public void onPause() {
+        Log.d(TAG, "onPause");
+        synchronized (mPauseLock) {
+            mPaused = true;
+        }
+    }
+
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        synchronized (mPauseLock) {
+            mPaused = false;
+            mPauseLock.notify();
+        }
+    }
+
+
+    private void doStep() {
+        if (pd.bmBeat == null) {
+            Log.d(TAG, "doStep: pd.bmBeat null");
+            return;
+        }
+        Log.d(TAG, "doStep:" + pd.bmBeat.beatIndex);
+        Canvas c = null;
+        try {
+            c = bm.sh.lockCanvas();
+            doDraw(c);
+        } finally {
+            if (c != null) {
+                bm.sh.unlockCanvasAndPost(c);
+            }
+        }
+        mPaused = true;
+    }
+
+    private void doWait(long pauzeM, int pauzeN) {
+        synchronized (mPauseLock) {
+            while (mPaused) {
+                try {
+                    if (pauzeM > 0) {
+                        Log.d(TAG, "pauze " + pauzeM);
+                        mPauseLock.wait(pauzeM, pauzeN);
+                    } else {
+                        Log.d(TAG, "slaap");
+                        mPauseLock.wait();
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+
     }
 
     private void initPaint() {
@@ -57,44 +127,35 @@ public class PlayerVideo implements Runnable {
 
         paintText.setColor(Color.GREEN);
         paintText.setStyle(Paint.Style.FILL);
-        paintText.setTextSize(20);
+        paintText.setTextSize(30);
     }
 
     private void bootCanvas() {
-        canvas = bm.sh.lockCanvas();
+        Canvas canvas = bm.sh.lockCanvas();
         canvas.drawColor(Color.BLACK);
         bm.sh.unlockCanvasAndPost(canvas);
     }
 
-    private boolean initCanvas() {
-        if (bm.sh != null & !shConstructed) {
-            Log.d(TAG, "initCanvas");
-            shConstructed = true;
-            try {
-                wait(200);
-            } catch (Exception e) {
-            }
-            canvas = bm.sh.lockCanvas();
-            Log.d(TAG, "canvas==null");
-            canvas.drawColor(Color.BLACK);
-            canvas.drawCircle(20 + 10, 20, 10, paintHigh);
-            bm.sh.unlockCanvasAndPost(canvas);
+    private void doDraw(Canvas canvas) {
+        int beat = pd.currentBeat;
+        Log.d(TAG, "doDraw " + beat);
+        Paint paintNu;
+        switch (pd.bmBeat.beatState) {
+            case 0:
+                paintNu = paintHigh;
+                break;
+            default:
+                paintNu = paintLow;
+                break;
         }
-        return shConstructed;
-    }
-
-    private void doDraw() {
-        Log.d(TAG, "doDraw");
-        canvas = bm.sh.lockCanvas();
         canvas.drawColor(Color.BLACK);
-        canvas.drawCircle(20 + pd.bmBeat * 10, 20, 20, paintHigh);
-        canvas.drawText("#" + pd.bmBeat , 22 + pd.bmBeat * 10, 20, paintText);
-        bm.sh.unlockCanvasAndPost(canvas);
-        Log.d(TAG, "doDraw");
+        canvas.drawCircle(20 + beat * 30, 20, 20, paintNu);
+//        canvas.drawText("#" + beat, 22 + beat * 30, 20, paintText);
     }
 
     private void initRun() {
-        Log.d(TAG, "start Runnable");
+        Log.d(TAG, "start Runnable " + bm.videoThread.getPriority());
+        bootCanvas();
     }
 
     private void finishRun() {

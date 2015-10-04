@@ -10,6 +10,9 @@ public class Keys {
     public final static int BEATTYPEBEAT = 101;
     public final static int BEATTYPESUB = 102;
 
+    public final static int PLAYPAUSED = 0;
+    public final static int PLAYGO = 1;
+
     public final static int SUBDEFAULT = 0;
     public final static int MINTEMPO = 30;
     public final static int MAXTEMPOMAX = 400;
