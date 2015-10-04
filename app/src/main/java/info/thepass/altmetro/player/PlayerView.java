@@ -9,7 +9,7 @@ import android.view.SurfaceView;
 public class PlayerView extends SurfaceView
         implements SurfaceHolder.Callback {
     public final static String TAG = "trak:PlayerView";
-    public Player bm;
+    public BarManager bm;
 
 
     public PlayerView(Context context, AttributeSet attrs) {
@@ -24,7 +24,12 @@ public class PlayerView extends SurfaceView
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
-        Log.d(TAG, "surfaceChanged");
+        bm.pd.svwWidth = width;
+        bm.pd.svwHeight = height;
+        bm.pd.svwFormat = format;
+        bm.pd.berekenPatternDisplay();
+        Log.d(TAG, "surfaceChanged w h f r"
+                + width + " " + height + " " + format + " " + bm.pd.svwRadius);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {

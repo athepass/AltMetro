@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.player.BarManager;
 import info.thepass.altmetro.player.Beat;
-import info.thepass.altmetro.player.Player;
 import info.thepass.altmetro.player.Sound;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -246,7 +246,7 @@ public class Track {
         return true;
     }
 
-    public void buildBeat(Player bm, HelperMetro h) {
+    public void buildBeat(BarManager bm, HelperMetro h) {
         bm.pd.repeatBarcounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
@@ -254,7 +254,7 @@ public class Track {
         }
     }
 
-    public void soundDump(Player bm) {
+    public void soundDump(BarManager bm) {
         String[] subs = bm.h.getStringArray(R.array.sub_pattern);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.hhmm", Locale.getDefault());
         String pad = bm.h.getLogFilePath();

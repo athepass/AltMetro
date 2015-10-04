@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.MetronomeData;
-import info.thepass.altmetro.player.Player;
+import info.thepass.altmetro.player.BarManager;
 import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
 import info.thepass.altmetro.data.Pat;
@@ -71,7 +71,7 @@ public class TrackFragment extends Fragment {
     private Button buttonP1;
     private Button buttonP5;
     private Button buttonP20;
-    private Player bm;
+    private BarManager bm;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -394,13 +394,13 @@ public class TrackFragment extends Fragment {
     }
 
     private void initBeatManager() {
-        bm = (Player) getFragmentManager()
-                .findFragmentByTag(Player.TAG);
+        bm = (BarManager) getFragmentManager()
+                .findFragmentByTag(BarManager.TAG);
         if (bm == null) {
-            bm = new Player();
+            bm = new BarManager();
             FragmentTransaction fragmentTransaction = getFragmentManager()
                     .beginTransaction();
-            fragmentTransaction.add(bm, Player.TAG);
+            fragmentTransaction.add(bm, BarManager.TAG);
             fragmentTransaction.commit();
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
@@ -462,6 +462,7 @@ public class TrackFragment extends Fragment {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
+        tvStudy.setVisibility(View.GONE);
         tvTap.setVisibility((bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((bm.isPlaying()) ? View.GONE : View.VISIBLE);
         if (track.trackPlayable(h)) {

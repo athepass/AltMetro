@@ -12,23 +12,21 @@ import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class Player extends Fragment {
-    public final static String TAG = "trak:Player";
+public class BarManager extends Fragment {
+    public final static String TAG = "trak:BarManager";
 
     public TrackFragment trackFragment;
     public HelperMetro h;
     public PlayerData pd;
 
-    public Player thisFrag;
+    public BarManager thisFrag;
     public PlayerView playerView;
 
     public SoundBuilder soundBuilder;
     public int buildCounter;
 
     public Thread audioThread = null;
-    public PlayerAudio playerAudio = null;
-    public Thread videoThread = null;
-    public PlayerVideo playerVideo = null;
+    public PlayerRunnable playerAudio = null;
     public SurfaceHolder sh = null;
 
     public LayoutUpdater layoutUpdater;
@@ -56,24 +54,10 @@ public class Player extends Fragment {
     }
 
     public void bootAudio() {
-        playerAudio = new PlayerAudio(h, this);
+        playerAudio = new PlayerRunnable(h, this);
         audioThread = new Thread(playerAudio);
         audioThread.setPriority(Thread.MIN_PRIORITY);
         audioThread.start();
-    }
-
-    public void bootVideo() {
-        if (!pd.videoStarted) {
-            pd.videoStarted = true;
-
-//            audioThread.setPriority(Thread.MIN_PRIORITY);
-
-////            playerVideo = new PlayerVideo(h, this);
-//            videoThread = new Thread(playerVideo);
-//            Log.d(TAG,"bootVideo start thread");
-//            videoThread.setPriority(Thread.MIN_PRIORITY + 1);
-//            videoThread.start();
-        }
     }
 
     public void buildBeat(Track newTrack) {
@@ -92,7 +76,6 @@ public class Player extends Fragment {
         pd.timeStart1 = h.getNanoTime();
         pd.playing = Keys.PLAYGO;
         playerAudio.onResume();
-//        playerVideo.onResume();
     }
 
     public void stopPlayer() {
@@ -100,7 +83,6 @@ public class Player extends Fragment {
         pd.timeStop1 = h.getNanoTime();
         pd.playing = Keys.PLAYPAUSED;
         playerAudio.onPause();
-//        playerVideo.onPause();
     }
 
     private void initRunnables() {

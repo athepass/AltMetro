@@ -2,6 +2,7 @@ package info.thepass.altmetro.player;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -10,11 +11,11 @@ import android.util.Log;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
-public class PlayerAudio implements Runnable {
-    public final static String TAG = "trak:PlayerAudio";
+public class PlayerRunnable implements Runnable {
+    public final static String TAG = "trak:PlayerRunnable";
     // parent
     public HelperMetro h;
-    public Player bm;
+    public BarManager bm;
     public PlayerData pd;
     // runnable management
     public Object mPauseLock;
@@ -25,7 +26,7 @@ public class PlayerAudio implements Runnable {
     private boolean mFinished;
     private boolean mPaused;
 
-    public PlayerAudio(HelperMetro hh, Player bm) {
+    public PlayerRunnable(HelperMetro hh, BarManager bm) {
         h = hh;
         this.bm = bm;
         this.pd = bm.pd;
@@ -87,15 +88,16 @@ public class PlayerAudio implements Runnable {
     }
 
     private void initPlay() {
+        pd.berekenPatternDisplay();
         pd.timeStart2 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.layoutUpdater);
-        pd.timeLayout1 = h.getNanoTime();
         pd.timeStart3 = h.getNanoTime();
         h.logD(TAG, "initPlay t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
                 + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
     }
 
     private void finishPlay() {
+        doDrawBeatClean();
         Log.d(TAG, "finish Play");
         pd.timeStop1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.stopper);
@@ -109,13 +111,15 @@ public class PlayerAudio implements Runnable {
             while (!mPaused && pd.iBeatList < pd.bmRepeat.beatList.size()) {
                 pd.bmBeat = pd.bmRepeat.beatList.get(pd.iBeatList);
                 pd.currentBeat = pd.bmBeat.beatIndex + 1;
-                Log.d(TAG, "beat[Sound] " + pd.iBeatList + " info:"
-                        + pd.bmRepeat.beatList.get(pd.iBeatList).display(pd.iBeatList, pd.subs));
+                String logInfo = "beat[Sound] " + pd.iBeatList + " info:"
+                        + pd.bmRepeat.beatList.get(pd.iBeatList).display(pd.iBeatList, pd.subs);
                 pd.timeBeat1 = h.getNanoTime();
                 step = getNextStep();
 
-                doDraw();
                 playSoundList(pd.bmBeat);
+
+                logInfo += " draw:" + h.deltaTime(pd.timeLayout1, pd.timeLayout2);
+                Log.d(TAG, logInfo);
 
                 if (pd.iBeatList == pd.bmBeat.beats - 1) { // bar counter ophogen
                     pd.repeatBarcounter++;
@@ -133,14 +137,65 @@ public class PlayerAudio implements Runnable {
         }
     }
 
-    private void doDraw() {
-        if (pd.videoStarted) {
-            Canvas canvas = bm.sh.lockCanvas();
-            canvas.drawColor(Color.BLACK);
-            canvas.drawText("" + pd.currentBeat, 10, 10, pd.paintText);
-            canvas.drawCircle(30 + 20 * pd.currentBeat, 30, 20, pd.paintHigh);
-            bm.sh.unlockCanvasAndPost(canvas);
+    private void doDrawBeat() {
+        pd.timeLayout1 = h.getNanoTime();
+        if (pd.videoStarted && pd.svwReady) {
+            Canvas canvas = null;
+            try {
+                canvas = bm.sh.lockCanvas();
+                if (canvas != null) {
+                    canvas.drawColor(Color.BLACK);
+                    for (int i = 0; i < pd.bmPat.patBeats; i++) {
+                        Paint paint;
+                        switch (pd.bmPat.patBeatState[i]) {
+                            case Keys.SOUNDHIGH:
+                                paint = pd.paintHigh;
+                                break;
+                            case Keys.SOUNDLOW:
+                                paint = pd.paintLow;
+                                break;
+                            case Keys.SOUNDNONE:
+                                paint = pd.paintNone;
+                                break;
+                            default:
+                                throw new RuntimeException("invalid beatstate " + pd.bmPat.patBeatState[i]);
+                        }
+                        int cx = pd.svwAfstandH + +pd.svwRadius + (pd.svwAfstandH + 2 * pd.svwRadius) * i;
+                        int cy = pd.svwAfstandV + pd.svwRadius;
+                        int radiusB = (int) Math.round(pd.svwRadius * 0.75);
+                        int cxi = -1;
+                        canvas.drawCircle(cx, cy, pd.svwRadius, paint);
+                        if (pd.bmBeat.beatIndex == i) {
+                            cxi = pd.svwAfstandH + +pd.svwRadius + (pd.svwAfstandH + 2 * pd.svwRadius) * i;
+                            canvas.drawCircle(cxi, cy, radiusB, pd.paintBeat);
+                            canvas.drawText("" + (i + 1), cxi - radiusB / 3, cy + radiusB / 3, pd.paintText);
+                        }
+                    }
+                }
+            } finally {
+                if (canvas != null) {
+                    bm.sh.unlockCanvasAndPost(canvas);
+                }
+            }
         }
+        pd.timeLayout2 = h.getNanoTime();
+    }
+
+    private void doDrawBeatClean() {
+        if (pd.videoStarted && pd.svwReady) {
+            Canvas canvas = null;
+            try {
+                canvas = bm.sh.lockCanvas();
+                if (canvas != null) {
+                    canvas.drawColor(Color.BLACK);
+                }
+            } finally {
+                if (canvas != null) {
+                    bm.sh.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+        pd.timeLayout2 = h.getNanoTime();
     }
 
     private int getNextStep() {
@@ -190,6 +245,9 @@ public class PlayerAudio implements Runnable {
                     break;
                 default:
                     throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
+            }
+            if (iSound == 0) {
+                doDrawBeat();
             }
         }
     }

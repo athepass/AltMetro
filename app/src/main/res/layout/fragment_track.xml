@@ -9,7 +9,7 @@
     <info.thepass.altmetro.player.PlayerView
         android:id="@+id/playerview"
         android:layout_width="match_parent"
-        android:layout_height="40dp"/>
+        android:layout_height="60dp"/>
 
     <RelativeLayout
         android:id="@+id/ll_editor_tempo"

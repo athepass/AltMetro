@@ -6,8 +6,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.thepass.altmetro.R;
+import info.thepass.altmetro.player.BarManager;
 import info.thepass.altmetro.player.Beat;
-import info.thepass.altmetro.player.Player;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -77,13 +77,13 @@ public class Repeat {
         return s;
     }
 
-    public void buildBeatList(Player bm, int indexRepeat, HelperMetro h) {
+    public void buildBeatList(BarManager bm, int indexRepeat, HelperMetro h) {
         repeatCounter = 0;
         beatList.clear();
         buildBeatBar(bm, indexRepeat, h);
     }
 
-    private void buildBeatBar(Player bm, int idxRepeat, HelperMetro h) {
+    private void buildBeatBar(BarManager bm, int idxRepeat, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
         Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
@@ -108,7 +108,7 @@ public class Repeat {
         }
     }
 
-    public void buildSound(Player bm) {
+    public void buildSound(BarManager bm) {
         for (int i = 0; i < beatList.size(); i++) {
             Beat beat = beatList.get(i);
             beat.buildSound();
