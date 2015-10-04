@@ -1,8 +1,5 @@
 package info.thepass.altmetro.player;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -13,10 +10,6 @@ import info.thepass.altmetro.tools.Keys;
 
 public class PlayerAudio implements Runnable {
     public final static String TAG = "trak:PlayerAudio";
-    private final Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
     // parent
     public HelperMetro h;
     public Player bm;
@@ -29,9 +22,6 @@ public class PlayerAudio implements Runnable {
     public SoundCollection sc;
     public AudioTrack audioTrack;
 
-    public Canvas canvas;
-    public int currentBeat;
-
     public PlayerAudio(HelperMetro hh, Player bm) {
         h = hh;
         this.bm = bm;
@@ -43,57 +33,28 @@ public class PlayerAudio implements Runnable {
         mFinished = false;
 
         initAudio();
-        initPaint();
-        pd.shConstructed = false;
     }
 
     public void run() {
+        initRun();
 
         while (!mFinished) {
-            if (initCanvas()) {
-                if (pd.mPlaying) {
-                    doStep();
-                }
-                doWait();
-
-            } else {
-                try {
-                    wait(2000);
-                } catch (Exception e) {
-                }
+            if (pd.mPlaying) {
+                doStep();
             }
+            doWait();
         }
-    }
-
-    private boolean initCanvas() {
-        if (pd.sh != null & !pd.shConstructed) {
-            Log.d(TAG, "initCanvas");
-            pd.shConstructed = true;
-            try {
-                wait(200);
-            } catch (Exception e) {
-            }
-            canvas = pd.sh.lockCanvas();
-            Log.d(TAG, "canvas==null");
-            canvas.drawColor(Color.BLACK);
-            canvas.drawCircle(20 + 10, 20, 10, paintHigh);
-            pd.sh.unlockCanvasAndPost(canvas);
-        }
-        return pd.shConstructed;
+        finishRun();
     }
 
     private void doStep() {
-        runInit();
-        h.logD(TAG, "Run metronome t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
-                + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
+        initRun();
         for (int irep = 0; irep < pd.bmTrack.repeats.size(); irep++) {
             pd.bmRepeat = pd.bmTrack.repeats.get(irep);
             pd.bmPat = pd.bmTrack.pats.get(pd.bmTrack.patSelected);
             playRepeat();
         }
-        Log.d(TAG, "Run metronome finished");
-        pd.timeStop1 = h.getNanoTime();
-        bm.getActivity().runOnUiThread(bm.stopper);
+        finishRun();
     }
 
     private void doWait() {
@@ -123,17 +84,21 @@ public class PlayerAudio implements Runnable {
         }
     }
 
-    private void runInit() {
-        Log.d(TAG, "runInit");
+    private void initPlay() {
         pd.timeStart2 = h.getNanoTime();
-        pd.timeLayout1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.layoutUpdater);
-        canvas = pd.sh.lockCanvas();
-        canvas.drawColor(Color.BLACK);
-        pd.sh.unlockCanvasAndPost(canvas);
+        pd.timeLayout1 = h.getNanoTime();
         pd.timeStart3 = h.getNanoTime();
+        h.logD(TAG, "start t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
+                + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
     }
-
+    
+    private void finishPlay() {
+        Log.d(TAG, "finish");
+        pd.timeStop1 = h.getNanoTime();
+        bm.getActivity().runOnUiThread(bm.stopper);
+    }
+    
     private void playRepeat() {
         int iRepeat = 0;
         int step = 0;
@@ -142,7 +107,7 @@ public class PlayerAudio implements Runnable {
             pd.iBeatList = 0;
             while (pd.mPlaying && pd.iBeatList < pd.bmRepeat.beatList.size()) {
                 Beat beat = pd.bmRepeat.beatList.get(pd.iBeatList);
-                currentBeat = beat.beatIndex + 1;
+                pd.bmBeat = beat.beatIndex + 1;
                 Log.d(TAG, "beat[Sound] " + pd.iBeatList + " info:" + pd.bmRepeat.beatList.get(pd.iBeatList).display(pd.iBeatList, pd.subs));
                 pd.timeBeat1 = h.getNanoTime();
                 if (pd.iBeatList < beat.beats - 1) { // niet op de laatste beat: volgend beat
@@ -182,7 +147,6 @@ public class PlayerAudio implements Runnable {
 //                long nu = h.getNanoTime();
 //                Log.d(TAG,"sound"+iSound + " time:"+deltaTime(timeBeat1,nu));
             Sound sound = beat.soundList.get(iSound);
-            doDraw();
 //                if (sound.playBeat) {
 //                    getActivity().runOnUiThread(beatUpdater);
 //                }
@@ -226,31 +190,6 @@ public class PlayerAudio implements Runnable {
         }
     }
 
-    private void doDraw() {
-        Log.d(TAG,"doDraw");
-        canvas = pd.sh.lockCanvas();
-        canvas.drawColor(Color.BLACK);
-        canvas.drawCircle(20 + currentBeat * 10, 20, 20, paintHigh);
-        canvas.drawText("#" + currentBeat, 22 + currentBeat * 10, 20, paintText);
-        pd.sh.unlockCanvasAndPost(canvas);
-        Log.d(TAG, "doDraw");
-    }
-
-    private void initPaint() {
-        paintHigh.setColor(Color.RED);
-        paintHigh.setStyle(Paint.Style.FILL);
-
-        paintLow.setColor(Color.YELLOW);
-        paintLow.setStyle(Paint.Style.FILL);
-
-        paintNone.setColor(Color.BLUE);
-        paintNone.setStyle(Paint.Style.FILL);
-
-        paintText.setColor(Color.GREEN);
-        paintText.setStyle(Paint.Style.FILL);
-        paintText.setTextSize(20);
-    }
-
     private void initAudio() {
         sc = new SoundCollection(h, TAG);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
@@ -259,4 +198,14 @@ public class PlayerAudio implements Runnable {
                 AudioTrack.MODE_STREAM);
         audioTrack.play();
     }
+
+    private void initRun() {
+        Log.d(TAG, "start Runnable");
+    }
+
+    private void finishRun() {
+        Log.i(TAG, "finish Runnable");
+    }
+
+
 }

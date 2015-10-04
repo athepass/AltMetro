@@ -1,7 +1,5 @@
 package info.thepass.altmetro.player;
 
-import android.view.SurfaceHolder;
-
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
@@ -14,9 +12,6 @@ import info.thepass.altmetro.tools.HelperMetro;
 public class PlayerData {
     public boolean mPaused;
     public boolean mPlaying;
-
-    public SurfaceHolder sh = null;
-    public boolean shConstructed = false;
 
     public boolean building;
 
@@ -38,6 +33,8 @@ public class PlayerData {
     public Track bmTrack;
     public Repeat bmRepeat;
     public Pat bmPat;
+    public int bmBeat;
+
     public int barCounter;
     public String[] subs;
     public int iBeatList;

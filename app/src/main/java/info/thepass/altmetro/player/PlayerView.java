@@ -19,7 +19,7 @@ public class PlayerView extends SurfaceView
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated");
-        bm.startMetro();
+        bm.bootPlayer();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width,

@@ -247,7 +247,7 @@ public class Track {
     }
 
     public void buildBeat(Player bm, HelperMetro h) {
-        bm.metronome.barCounter = 0;
+        bm.pd.barCounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
             repeats.get(iRep).buildSound(bm);
@@ -263,7 +263,7 @@ public class Track {
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
         String s = "\n======== repeats ======== build:"
-                + bm.buildCounter + " bars:" + bm.metronome.barCounter;
+                + bm.buildCounter + " bars:" + bm.pd.barCounter;
         for (int irep = 0; irep < repeats.size(); irep++) {
             Repeat tRepeat = repeats.get(irep);
             String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);

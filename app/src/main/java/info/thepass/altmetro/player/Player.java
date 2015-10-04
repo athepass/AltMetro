@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import info.thepass.altmetro.aaaUI.TrackFragment;
 import info.thepass.altmetro.data.Track;
@@ -27,7 +28,8 @@ public class Player extends Fragment {
     public Thread audioThread = null;
     public PlayerAudio playerAudio = null;
     public Thread videoThread = null;
-    public PlayerAudio playerVideo = null;
+    public PlayerVideo playerVideo = null;
+    public SurfaceHolder sh = null;
 
     public LayoutUpdater layoutUpdater;
     public Stopper stopper;
@@ -46,16 +48,22 @@ public class Player extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         h = new HelperMetro(getActivity());
+        pd = new PlayerData(h);
         initRunnables();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
     }
 
-    public void startMetro() {
+    public void bootPlayer() {
         if (playerAudio == null) {
+
             playerAudio = new PlayerAudio(h, this);
             audioThread = new Thread(playerAudio);
             audioThread.start();
+
+            playerVideo = new PlayerVideo(h, this);
+            videoThread = new Thread(playerVideo);
+            videoThread.start();
         }
     }
 

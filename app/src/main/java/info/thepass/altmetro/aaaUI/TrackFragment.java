@@ -119,11 +119,10 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (bm.metronome==null) return;
 
-        menuItemStart.setVisible(!bm.metronome.mPlaying);
-        menuItemStop.setVisible(bm.metronome.mPlaying);
-        if (bm.metronome.mPlaying) {
+        menuItemStart.setVisible(!bm.pd.mPlaying);
+        menuItemStop.setVisible(bm.pd.mPlaying);
+        if (bm.pd.mPlaying) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemTrackList.setIcon(R.mipmap.ic_none);
         } else {
@@ -142,12 +141,12 @@ public class TrackFragment extends Fragment {
                 doStopPlayer();
                 return true;
             case R.id.action_track_settings:
-                if (!bm.metronome.mPlaying) {
+                if (!bm.pd.mPlaying) {
                     doPrefs();
                 }
                 return true;
             case R.id.action_track_tracklist:
-                if (!bm.metronome.mPlaying) {
+                if (!bm.pd.mPlaying) {
                     doTrackList();
                 }
                 return true;
@@ -196,24 +195,24 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        if (bm.building) {
+        if (bm.pd.building) {
             String msg = h.getString(R.string.error_building);
             Log.d(TAG, msg);
             h.showToast(msg);
             return;
         }
 
-        if (!bm.metronome.mPlaying) {
-            Log.d(TAG, "doStartPlayer " + bm.metronome.mPlaying);
-            bm.metronome.mPlaying = true;
+        if (!bm.pd.mPlaying) {
+            Log.d(TAG, "doStartPlayer " + bm.pd.mPlaying);
+            bm.pd.mPlaying = true;
             bm.startPlayer();
         }
     }
 
     public void doStopPlayer() {
-        Log.d(TAG, "doStopPlayer " + bm.metronome.mPlaying);
-        if (bm.metronome.mPlaying) {
-            bm.metronome.mPlaying = false;
+        Log.d(TAG, "doStopPlayer " + bm.pd.mPlaying);
+        if (bm.pd.mPlaying) {
+            bm.pd.mPlaying = false;
             bm.stopPlayer();
         }
         updateLayout();
@@ -455,18 +454,17 @@ public class TrackFragment extends Fragment {
 
     public void updateLayout() {
         setTitle();
-        if (bm.metronome == null) return;
 
-//        bm.evmPlayer.setEmphasisVisible(bm.metronome.mPlaying);
+//        bm.evmPlayer.setEmphasisVisible(bm.pd.mPlaying);
 
-        if (bm.metronome.mPlaying) {
+        if (bm.pd.mPlaying) {
             tvStudy.setVisibility(View.GONE);
         } else {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
-        tvTap.setVisibility((bm.metronome.mPlaying) ? View.INVISIBLE : View.VISIBLE);
-        lvManager.itemsListView.setVisibility((bm.metronome.mPlaying) ? View.GONE : View.VISIBLE);
+        tvTap.setVisibility((bm.pd.mPlaying) ? View.INVISIBLE : View.VISIBLE);
+        lvManager.itemsListView.setVisibility((bm.pd.mPlaying) ? View.GONE : View.VISIBLE);
         if (track.trackPlayable(h)) {
             bm.buildBeat(track);
         }
@@ -536,9 +534,7 @@ public class TrackFragment extends Fragment {
 
     private void setTitle() {
         String sPlay = "";
-        if (bm.metronome != null) {
-            sPlay = (bm.metronome.mPlaying) ? " (P)" : "";
-        }
+        sPlay = (bm.pd.mPlaying) ? " (P)" : "";
         String sTrack = track.getTitle(trackData, trackData.trackSelected);
         getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }

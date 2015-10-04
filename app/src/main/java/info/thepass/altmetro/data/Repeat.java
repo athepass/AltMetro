@@ -90,7 +90,7 @@ public class Repeat {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : barCount;
-            beat.barIndex = bm.metronome.barCounter;
+            beat.barIndex = bm.pd.barCounter;
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat;
             beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 1 : 0;
