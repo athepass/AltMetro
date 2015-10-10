@@ -209,7 +209,7 @@ public class EmphasisViewManager {
 
     public void updateEmphasisView(int currentBeat) {
         if (isPlayer) {
-            Log.d(TAG,"beat="+ currentBeat);
+            h.logD(TAG,"beat="+ currentBeat);
             checkLlVisibility();
 //            ivLast = currentBeat - 1;
             animArray[ivIndexArray[currentBeat]].stop();

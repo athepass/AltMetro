@@ -348,10 +348,10 @@ public class HelperMetro {
         File p = new File(pad);
         @SuppressWarnings("unused")
         boolean res = p.mkdirs();
-        // Log.d(TAG, "openLog " + res);
+        // h.logD(TAG, "openLog " + res);
         logFileName = getLogFileName();
         logFile = new File(logFileName);
-        // Log.i(TAG, "logfile="+ logFileName);
+        // h.logI(TAG, "logfile="+ logFileName);
     }
 
     public void logD(String TAG, String msg) {

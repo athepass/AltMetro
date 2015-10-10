@@ -90,7 +90,7 @@ public class Repeat {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);
             beat.repeatCount = (noEnd) ? 0 : barCount;
-            beat.barIndex = bm.pd.repeatBarcounter;
+            beat.barIndex = bm.pd.repeatBarCounter;
             beat.beats = pat.patBeats;
             beat.beatIndex = iBeat;
             beat.beatNext = (iBeat < pat.patBeats - 1) ? iBeat + 1 : 0;
@@ -111,7 +111,7 @@ public class Repeat {
     public void buildSound(BarManager bm) {
         for (int i = 0; i < beatList.size(); i++) {
             Beat beat = beatList.get(i);
-            beat.buildSound();
+            beat.buildSound(bm.pd);
         }
         bm.trackFragment.track.soundDump(bm);
     }

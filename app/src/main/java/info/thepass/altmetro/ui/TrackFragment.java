@@ -1,11 +1,10 @@
-package info.thepass.altmetro.aaaUI;
+package info.thepass.altmetro.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,14 +21,14 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.data.MetronomeData;
-import info.thepass.altmetro.player.BarManager;
-import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.adapter.ItemsListViewManager;
+import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
+import info.thepass.altmetro.player.BarManager;
+import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -106,7 +105,6 @@ public class TrackFragment extends Fragment {
 
         initViews();
         initBeatManager();
-        initEmphasis();
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -119,7 +117,7 @@ public class TrackFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Log.d(TAG, "onPrepareOptions " + bm.isPlaying());
+        h.logD(TAG, "onPrepareOptions " + bm.isPlaying());
         menuItemStart.setVisible(!bm.isPlaying());
         menuItemStop.setVisible(bm.isPlaying());
         if (bm.isPlaying()) {
@@ -197,12 +195,12 @@ public class TrackFragment extends Fragment {
 
         if (bm.pd.building) {
             String msg = h.getString(R.string.error_building);
-            Log.d(TAG, msg);
+            h.logD(TAG, msg);
             h.showToast(msg);
             return;
         }
 
-        Log.d(TAG, "doStartPlayer " + bm.isPlaying());
+        h.logD(TAG, "doStartPlayer " + bm.isPlaying());
 //        dumpThread();
         if (!bm.isPlaying()) {
             bm.startPlayer();
@@ -210,7 +208,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStopPlayer() {
-        Log.d(TAG, "doStopPlayer " + bm.isPlaying());
+        h.logD(TAG, "doStopPlayer " + bm.isPlaying());
         if (bm.isPlaying()) {
             bm.stopPlayer();
         }
@@ -387,12 +385,6 @@ public class TrackFragment extends Fragment {
         tvInfo = (TextView) getActivity().findViewById(R.id.tv_track_info);
     }
 
-    private void initEmphasis() {
-//        bm.evmPlayer = new EmphasisViewManager("ed_player",
-//                Keys.EVMPLAYER, layout, h);
-//        bm.evmPlayer.useLow = true;
-    }
-
     private void initBeatManager() {
         bm = (BarManager) getFragmentManager()
                 .findFragmentByTag(BarManager.TAG);
@@ -406,8 +398,9 @@ public class TrackFragment extends Fragment {
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
 
-        Log.d(TAG, "init playerview");
+        h.logD(TAG, "init playerview");
         bm.playerView = (PlayerView) getActivity().findViewById(R.id.playerview);
+        bm.playerView.h = h;
         bm.playerView.bm = bm;
         bm.sh = bm.playerView.getHolder();
         bm.sh.addCallback(bm.playerView);
@@ -451,6 +444,10 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
+    public void setInfo(String info) {
+        tvInfo.setText(info);
+    }
+
     public void updateLayout() {
         setTitle();
 
@@ -462,6 +459,7 @@ public class TrackFragment extends Fragment {
             boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
+        tvInfo.setVisibility((!bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
         tvStudy.setVisibility(View.GONE);
         tvTap.setVisibility((bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((bm.isPlaying()) ? View.GONE : View.VISIBLE);
@@ -548,7 +546,7 @@ public class TrackFragment extends Fragment {
     }
 
     private void doPref() {
-        Log.d(TAG, "doPref");
+        h.logD(TAG, "doPref");
         metronomeData.saveData("pref", false);
         ActivityTrack act = (ActivityTrack) getActivity();
         act.doRestart();

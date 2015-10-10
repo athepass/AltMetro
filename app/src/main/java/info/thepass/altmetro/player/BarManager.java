@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
-import info.thepass.altmetro.aaaUI.TrackFragment;
+import info.thepass.altmetro.ui.TrackFragment;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -26,10 +25,11 @@ public class BarManager extends Fragment {
     public int buildCounter;
 
     public Thread audioThread = null;
-    public PlayerRunnable playerAudio = null;
+    public PlayerAudio playerAudio = null;
     public SurfaceHolder sh = null;
 
     public LayoutUpdater layoutUpdater;
+    public InfoUpdater infoUpdater;
     public Stopper stopper;
 
     /*****************************************************************/
@@ -48,15 +48,15 @@ public class BarManager extends Fragment {
         h = new HelperMetro(getActivity());
         pd = new PlayerData(h);
         initRunnables();
-        bootAudio();
+        bootPlayer();
         Intent intent = new Intent();
         getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
     }
 
-    public void bootAudio() {
-        playerAudio = new PlayerRunnable(h, this);
+    public void bootPlayer() {
+        playerAudio = new PlayerAudio(h, this);
         audioThread = new Thread(playerAudio);
-        audioThread.setPriority(Thread.MIN_PRIORITY);
+        audioThread.setPriority((Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2);
         audioThread.start();
     }
 
@@ -67,19 +67,20 @@ public class BarManager extends Fragment {
         buildCounter++;
         if (!pd.building) {
             Thread t = new Thread(soundBuilder);
+            t.setPriority(Thread.NORM_PRIORITY - 1);
             t.start();
         }
     }
 
     public void startPlayer() {
-        Log.d(TAG, "startPlayer");
+        h.logD(TAG, "startPlayer");
         pd.timeStart1 = h.getNanoTime();
         pd.playing = Keys.PLAYGO;
         playerAudio.onResume();
     }
 
     public void stopPlayer() {
-        Log.d(TAG, "stopPlayer");
+        h.logD(TAG, "stopPlayer");
         pd.timeStop1 = h.getNanoTime();
         pd.playing = Keys.PLAYPAUSED;
         playerAudio.onPause();
@@ -87,6 +88,7 @@ public class BarManager extends Fragment {
 
     private void initRunnables() {
         layoutUpdater = new LayoutUpdater();
+        infoUpdater = new InfoUpdater();
         stopper = new Stopper();
         soundBuilder = new SoundBuilder();
     }
@@ -97,10 +99,18 @@ public class BarManager extends Fragment {
 
     public class LayoutUpdater implements Runnable {
         public void run() {
+
             long timeLayout2 = h.getNanoTime();
-            Log.d(TAG, "LayoutUpdater " + h.deltaTime(pd.timeLayout1, timeLayout2)
+            h.logD(TAG, "LayoutUpdater " + h.deltaTime(pd.timeLayout1, timeLayout2)
                     + "/" + h.deltaTime(pd.timeStart1, timeLayout2));
             trackFragment.updateLayout();
+        }
+    }
+
+    public class InfoUpdater implements Runnable {
+        public void run() {
+
+            trackFragment.setInfo(pd.playerInfo);
         }
     }
 
@@ -109,7 +119,7 @@ public class BarManager extends Fragment {
             pd.timeStop2 = h.getNanoTime();
             trackFragment.doStopPlayer();
             pd.timeStop3 = h.getNanoTime();
-            Log.d(TAG, "Stopper time:" + h.deltaTime(pd.timeStop1, pd.timeStop2) + "|" + h.deltaTime(pd.timeStop2, pd.timeStop3));
+            h.logD(TAG, "Stopper time:" + h.deltaTime(pd.timeStop1, pd.timeStop2) + "|" + h.deltaTime(pd.timeStop2, pd.timeStop3));
         }
     }
 
@@ -128,7 +138,7 @@ public class BarManager extends Fragment {
 
             pd.building = false;
             pd.timeBuild4 = h.getNanoTime();
-            Log.d(TAG, "SoundBuilder: finished building beat and sound: " + buildCounter
+            h.logD(TAG, "SoundBuilder: finished building beat and sound: " + buildCounter
                     + " time:" + h.deltaTime(pd.timeBuild1, pd.timeBuild2)
                     + "|" + h.deltaTime(pd.timeBuild2, pd.timeBuild3)
                     + "|" + h.deltaTime(pd.timeBuild3, pd.timeBuild4));

@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import info.thepass.altmetro.R;
-import info.thepass.altmetro.aaaUI.TrackFragment;
+import info.thepass.altmetro.ui.TrackFragment;
 import info.thepass.altmetro.data.MetronomeData;
 import info.thepass.altmetro.data.Pat;
 import info.thepass.altmetro.data.Repeat;

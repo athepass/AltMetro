@@ -1,7 +1,5 @@
 package info.thepass.altmetro.data;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +19,7 @@ import info.thepass.altmetro.tools.Keys;
 
 public class Track {
     public final static String TAG = "TrakTrack";
+    private HelperMetro h;
     public final static String KEYNR = "TRnr";
     public final static String KEYHASHTRACK = "TRhtrk";
     public final static String KEYTITEL = "TRtitel";
@@ -43,6 +42,7 @@ public class Track {
     private MetronomeData metronomeData;
 
     public Track(HelperMetro h, MetronomeData data) {
+        this.h = h;
         metronomeData = data;
 
         nummer = 0;
@@ -238,7 +238,7 @@ public class Track {
             Repeat repeat = repeats.get(i);
             if (repeat.noEnd && i < repeats.size() - 1) {
                 String msg = h.getString1(R.string.error_unreachable, "" + (i + 1));
-                Log.d(TAG, msg);
+                h.logD(TAG, msg);
                 h.showToastAlert(msg);
                 return false;
             }
@@ -247,7 +247,7 @@ public class Track {
     }
 
     public void buildBeat(BarManager bm, HelperMetro h) {
-        bm.pd.repeatBarcounter = 0;
+        bm.pd.repeatBarCounter = 0;
         for (int iRep = 0; iRep < repeats.size(); iRep++) {
             repeats.get(iRep).buildBeatList(bm, iRep, h);
             repeats.get(iRep).buildSound(bm);
@@ -263,7 +263,7 @@ public class Track {
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
         String s = "\n======== repeats ======== build:"
-                + bm.buildCounter + " bars:" + bm.pd.repeatBarcounter;
+                + bm.buildCounter + " bars:" + bm.pd.repeatBarCounter;
         for (int irep = 0; irep < repeats.size(); irep++) {
             Repeat tRepeat = repeats.get(irep);
             String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);
@@ -277,6 +277,6 @@ public class Track {
                 }
             }
         }
-        Log.d(TAG,s);
+        h.logD(TAG,s);
     }
 }

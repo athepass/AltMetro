@@ -1,7 +1,6 @@
 package info.thepass.altmetro.data;
 
 import android.os.Environment;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -109,7 +108,7 @@ public class MetronomeData {
             bufferedWriter.close();
             String s = "saveData, data written " + tag + saveInfo();
         } catch (Exception e) {
-            Log.e(TAG, "write " + filenaam + ": " + e.getMessage());
+            throw new RuntimeException("save file exception "+ e.getLocalizedMessage() + "\nfile="+ filenaam );
         }
     }
 

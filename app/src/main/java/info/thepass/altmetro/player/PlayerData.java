@@ -2,7 +2,6 @@ package info.thepass.altmetro.player;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import info.thepass.altmetro.R;
 import info.thepass.altmetro.data.Pat;
@@ -15,6 +14,8 @@ import info.thepass.altmetro.tools.HelperMetro;
  */
 public class PlayerData {
     private final static String TAG = "Trak:PlayerData";
+    private HelperMetro h;
+
     public int playing;
     public boolean building;
     // klok performance
@@ -40,10 +41,15 @@ public class PlayerData {
     public Pat bmPat = null;
 
     public int currentBeat;
-    public int repeatBarcounter;
-    public int trackBarcounter;
-    public int iBeatList;
+    public int nextBeat;
+    public int repeatCounter;
+    public int repeatBarCounter;
+    public int trackBarCounter;
+    public int beatListCounter;
 
+    public String playerInfo;
+
+    public int beatDelay = 200 * 8;
     public boolean svwReady = false;
     public boolean svwEersteKeer;
     public int svwWidth;
@@ -52,6 +58,7 @@ public class PlayerData {
     public int svwAfstandV = 10;
     public int svwAfstandH = 10;
     public int svwRadius = -1;
+    public int svwPatHash = -1;
 
     public String[] subs;
     public Paint paintBeat = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -62,7 +69,8 @@ public class PlayerData {
 
 
     public PlayerData(HelperMetro h) {
-        Log.d(TAG, "constructor");
+        this.h = h;
+        h.logD(TAG, "constructor");
         subs = h.getStringArray(R.array.sub_pattern);
         initPaint();
     }
@@ -103,6 +111,6 @@ public class PlayerData {
         svwRadius = (maxH < maxW) ? maxH : maxW;
         svwReady = true;
         svwEersteKeer = true;
-        Log.d(TAG, "berekenPattern r v h " + svwRadius + " " + svwAfstandH + "." + svwAfstandV);
+        h.logD(TAG, "berekenPattern r v h " + svwRadius + " " + svwAfstandH + "." + svwAfstandV);
     }
 }

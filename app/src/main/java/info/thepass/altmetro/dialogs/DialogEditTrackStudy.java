@@ -1,4 +1,4 @@
-package info.thepass.altmetro.abDialog;
+package info.thepass.altmetro.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
@@ -102,7 +101,7 @@ public class DialogEditTrackStudy extends DialogFragment {
     private void updateData() {
         study.percentageFrom = waardes[npFrom.getValue()];
         study.percentageTo = waardes[npTo.getValue()];
-        Log.d(TAG, "study update" + study.percentageFrom + ".." + study.percentageTo);
+        h.logD(TAG, "study update" + study.percentageFrom + ".." + study.percentageTo);
         study.percentageIncr = npIncrement.getValue();
         study.times = npRounds.getValue();
         study.used = tbUsed.isChecked();
@@ -155,7 +154,7 @@ public class DialogEditTrackStudy extends DialogFragment {
         for (int i = 0; i < waardes.length; i++) {
             if (percent >= waardes[i]) {
                 idx = i;
-                Log.d(TAG, "getPerc" + i + ":" + idx + "/" + percent + "/" + waardes[idx]);
+                h.logD(TAG, "getPerc" + i + ":" + idx + "/" + percent + "/" + waardes[idx]);
             }
         }
         return idx;

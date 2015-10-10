@@ -6,9 +6,12 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import info.thepass.altmetro.tools.HelperMetro;
+
 public class PlayerView extends SurfaceView
         implements SurfaceHolder.Callback {
     public final static String TAG = "trak:PlayerView";
+    public HelperMetro h;
     public BarManager bm;
 
 
@@ -18,7 +21,7 @@ public class PlayerView extends SurfaceView
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(TAG, "surfaceCreated");
+        h.logD(TAG, "surfaceCreated");
         bm.pd.videoStarted = true;
     }
 
@@ -28,12 +31,12 @@ public class PlayerView extends SurfaceView
         bm.pd.svwHeight = height;
         bm.pd.svwFormat = format;
         bm.pd.berekenPatternDisplay();
-        Log.d(TAG, "surfaceChanged w h f r"
+        h.logD(TAG, "surfaceChanged w h f r"
                 + width + " " + height + " " + format + " " + bm.pd.svwRadius);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         bm.pd.videoStarted = false;
-        Log.d(TAG, "surfaceDestroyed");
+        h.logD(TAG, "surfaceDestroyed");
     }
 }

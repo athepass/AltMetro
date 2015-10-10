@@ -10,7 +10,7 @@ public class Beat {
     public int repeatCount;     // repeat.barCount
     public int repeatIndex;     // 1..repeat.barCount
     public int repeatBar;
-    public int barIndex;        // bm.repeatBarcounter
+    public int barIndex;        // bm.repeatBarCounter
     public int beats;
     public int beatIndex = 0;
     public int beatState;
@@ -30,7 +30,7 @@ public class Beat {
         soundFirst = soundFirstP;
     }
 
-    public void buildSound() {
+    public void buildSound(PlayerData pd) {
         soundList.clear();
         totFrames = Math.round(60f * SoundCollection.SAMPLERATE / tempoCalc);
         addBeat();
@@ -38,7 +38,7 @@ public class Beat {
         removeOverlap();
         fillGaps();
         fillEndGap();
-        addNextBeat();
+//        addNextBeat(pd);
     }
 
     private void addBeat() {
@@ -122,27 +122,28 @@ public class Beat {
         }
     }
 
-    private void addNextBeat() {
-        int factor = totFrames - 18 * 8;
-        for (int i=0;i<soundList.size();i++) {
-            Sound sound = soundList.get(i);
-            if (sound.frameBegin<=factor && sound.frameEnd>=factor) {
-//                Log.d("Trak:beat",i + "addNextBeat "+ factor + " - "+ sound.display());
-                Sound sNew = sound.kloon();
-                soundList.add(i, sNew);
-                sound.frameBeginBase = factor;
-                sNew.frameEndBase = factor;
-                sNew.copyBase();
-                sNew.calcDuration();
-                sound.copyBase();
-                sound.calcDuration();
-                sound.playBeat = true;
-                sNew.tag = sound.tag;
-                i = soundList.size();
-            }
-        }
-    }
-
+//    private void addNextBeat(PlayerData pd) {
+//        int delay = pd.beatDelay;
+//        for (int i=0;i<soundList.size();i++) {
+//            Sound sound = soundList.get(i);
+//            if (sound.frameBegin<=delay && sound.frameEnd>=delay) {
+//                h.Log("Trak:beat",i + "addNextBeat "+ delay + " - "+ sound.display());
+//                Sound sNew = sound.kloon();
+//                soundList.add(i, sNew);
+//                sound.frameBeginBase = delay;
+//                sNew.frameEndBase = delay;
+//                sNew.copyBase();
+//                sNew.calcDuration();
+//                sNew.soundType = Keys.SOUNDBEAT;
+//                sNew.tag = sound.tag;
+//                sound.copyBase();
+//                sound.calcDuration();
+//                sound.playBeat = true;
+//                i = soundList.size();
+//            }
+//        }
+//    }
+//
     private void addSilence(int frameFrom, int frameTo, int position) {
         Sound sNew = new Sound();
         soundList.add(position, sNew);

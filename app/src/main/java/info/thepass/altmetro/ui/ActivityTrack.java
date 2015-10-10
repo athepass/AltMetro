@@ -1,4 +1,4 @@
-package info.thepass.altmetro.aaaUI;
+package info.thepass.altmetro.ui;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -7,8 +7,6 @@ public class Keys {
     public final static int SOUNDSUB = 3;
     public final static int SOUNDFIRST = 4;
     public final static int SOUNDSILENCE = 5;
-    public final static int BEATTYPEBEAT = 101;
-    public final static int BEATTYPESUB = 102;
 
     public final static int PLAYPAUSED = 0;
     public final static int PLAYGO = 1;
