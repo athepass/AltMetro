@@ -1,5 +1,7 @@
 package info.thepass.altmetro.data;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -212,6 +214,7 @@ public class Track {
     }
 
     public void syncItems() {
+        Log.d(TAG,"syncItems " + metronomeData.trackSelected);
         int aantal = -1;
         if (multi) {
             aantal = repeatList.size() + 1 + patList.size() + 1;

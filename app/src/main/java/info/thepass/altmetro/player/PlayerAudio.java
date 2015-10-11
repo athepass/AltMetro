@@ -3,7 +3,6 @@ package info.thepass.altmetro.player;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -141,7 +140,6 @@ public class PlayerAudio implements Runnable {
                 pd.beatListCounter = 0;
                 pd.repeatBarCounter++;
                 pd.trackBarCounter++;
-                Log.d(TAG, "STEP Play: inc repeatbarcounter " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
                 if (!pd.bmRepeat.noEnd && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
                     // einde repeat, ga naar next repeat
                     pd.repeatListCounter++;
@@ -205,11 +203,10 @@ public class PlayerAudio implements Runnable {
     }
 
     private void showRepeatInfo() {
-        String msg = "REP: " + (pd.repeatListCounter + 1)
-                + "/" + pd.bmTrack.repeatList.size();
         String patInfo = pd.bmPat.display(h, pd.bmRepeat.patSelected, true);
-        msg += " " + pd.bmRepeat.display(h, pd.repeatListCounter, patInfo, true);
-        h.logD(TAG, msg);
+        pd.playerInfo = pd.bmRepeat.display(h, pd.repeatListCounter, patInfo, true);
+        h.logD(TAG, "REP: "+ pd.playerInfo);
+        bm.getActivity().runOnUiThread(bm.infoUpdater);
     }
 
     private void showBeatInfo() {

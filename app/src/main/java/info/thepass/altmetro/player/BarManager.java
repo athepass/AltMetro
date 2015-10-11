@@ -46,7 +46,6 @@ public class BarManager extends Fragment {
         super.onActivityCreated(savedInstanceState);
         h = new HelperMetro(getActivity());
         h.logD(TAG,"onActivityCreated");
-//        pd = new PlayerData(h);
         initRunnables();
         bootPlayer();
         Intent intent = new Intent();
@@ -96,11 +95,9 @@ public class BarManager extends Fragment {
         switch (pd.playStatus) {
             case Keys.PLAYSTOP:
             case Keys.PLAYEND:
-//                Log.d(TAG, "isPlaying false " + pd.playStatus);
                 return false;
             case Keys.PLAYSTART:
             case Keys.PLAYPLAY:
-//                Log.d(TAG, "isPlaying true " + pd.playStatus);
                 return true;
             default:
                 throw new RuntimeException("isPlaying status ongeldig " + pd.playStatus);
@@ -119,7 +116,6 @@ public class BarManager extends Fragment {
 
     public class InfoUpdater implements Runnable {
         public void run() {
-
             trackFragment.setInfo(pd.playerInfo);
         }
     }
