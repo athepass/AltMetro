@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,8 +119,8 @@ public class TrackFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         h.logD(TAG, "onPrepareOptions " + bm.isPlaying());
-//        menuItemStart.setVisible(!bm.isPlaying());
-//        menuItemStop.setVisible(bm.isPlaying());
+        menuItemStart.setVisible(!bm.isPlaying());
+        menuItemStop.setVisible(bm.isPlaying());
         if (bm.isPlaying()) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemTrackList.setIcon(R.mipmap.ic_none);
@@ -162,13 +163,16 @@ public class TrackFragment extends Fragment {
                     return;
                 case Keys.TARGETEDITPATTERN:
                     lvManager.updatePattern(intent);
+                    doBuild();
                     return;
                 case Keys.TARGETEDITREPEAT:
                 case Keys.TARGETEDITTAP:
                     lvManager.updateRepeat(intent);
+                    doBuild();
                     return;
                 case Keys.TARGETEDITSTUDY:
                     setStudy(intent);
+                    doBuild();
                     return;
                 case Keys.TARGETPREF:
                     doPref();
@@ -220,6 +224,7 @@ public class TrackFragment extends Fragment {
 
         ActivityTrack act = (ActivityTrack) getActivity();
         this.metronomeData = act.metronomeData;
+        Log.d(TAG,"TRACK:"+metronomeData.trackSelected);
         track = metronomeData.tracks.get(metronomeData.trackSelected);
     }
 
@@ -420,6 +425,8 @@ public class TrackFragment extends Fragment {
         setRepeat(track.repeatSelected);
         setStudy(null);
 
+        doBuild();
+
         updateLayout();
     }
 
@@ -444,11 +451,18 @@ public class TrackFragment extends Fragment {
         transaction.commit();
     }
 
+    private void doBuild() {
+        if (track.trackPlayable(h)) {
+            bm.buildBeat(track);
+        }
+    }
+
     public void setInfo(String info) {
         tvInfo.setText(info);
     }
 
     public void updateLayout() {
+        Log.d(TAG,"updateLayout");
         setTitle();
 
 //        bm.evmPlayer.setEmphasisVisible(bm.pd.mPlaying);
@@ -463,9 +477,6 @@ public class TrackFragment extends Fragment {
         tvStudy.setVisibility(View.GONE);
         tvTap.setVisibility((bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
         lvManager.itemsListView.setVisibility((bm.isPlaying()) ? View.GONE : View.VISIBLE);
-        if (track.trackPlayable(h)) {
-            bm.buildBeat(track);
-        }
 
         getActivity().invalidateOptionsMenu();
     }

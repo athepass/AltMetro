@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 
-import info.thepass.altmetro.ui.TrackFragment;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
+import info.thepass.altmetro.ui.TrackFragment;
 
 public class BarManager extends Fragment {
     public final static String TAG = "trak:BarManager";
@@ -66,9 +66,9 @@ public class BarManager extends Fragment {
         trackFragment.track = newTrack;
         buildCounter++;
         if (!pd.building) {
-            Thread t = new Thread(soundBuilder);
-            t.setPriority(Thread.NORM_PRIORITY - 1);
-            t.start();
+            Thread soundBuilderThread = new Thread(soundBuilder);
+            soundBuilderThread.setPriority(Thread.NORM_PRIORITY - 1);
+            soundBuilderThread.start();
         }
     }
 
@@ -76,6 +76,7 @@ public class BarManager extends Fragment {
         h.logD(TAG, "startPlayer");
         pd.timeStartPlay = h.getNanoTime();
         playerAudio.onResume();
+        getActivity().runOnUiThread(this.layoutUpdater);
     }
 
     public void stopPlayer() {
@@ -93,7 +94,18 @@ public class BarManager extends Fragment {
     }
 
     public boolean isPlaying() {
-        return ((pd.playStatus == Keys.PLAYSTART) || (pd.playStatus == Keys.PLAYPLAY));
+        switch (pd.playStatus) {
+            case Keys.PLAYSTOP:
+            case Keys.PLAYEND:
+//                Log.d(TAG, "isPlaying false " + pd.playStatus);
+                return false;
+            case Keys.PLAYSTART:
+            case Keys.PLAYPLAY:
+//                Log.d(TAG, "isPlaying true " + pd.playStatus);
+                return true;
+            default:
+                throw new RuntimeException("isPlaying status ongeldig " + pd.playStatus);
+        }
     }
 
     public class LayoutUpdater implements Runnable {

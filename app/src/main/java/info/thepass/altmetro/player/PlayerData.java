@@ -76,13 +76,13 @@ public class PlayerData {
 
     public String display() {
         String s = "";
-        s += "cBt" + currentBeat + "|" + nextBeat;
-        s += ",pStt" + playStatus;
-        s += ",stdC" + studyCounter;
-        s += ",rptLC" + repeatListCounter + "|" + bmTrack.repeatList.size();
-        s += ",rptBC" + repeatBarCounter + "|" + bmRepeat.barCount;
-        s += ",btLC" + beatListCounter + "|" + bmRepeat.beatList.size();
-        s += ",sndLC" + soundListCounter + "|" + bmBeat.soundList.size();
+        s += "cBt" + currentBeat + "[nxt" + nextBeat + "]";
+        s += "|stat:" + playStatus;
+        s += "|stdC[" + studyCount + "]" + studyCounter;
+        s += "|rptLC[" + bmTrack.repeatList.size() + "]" + repeatListCounter;
+        s += "|rptBC[" + bmRepeat.barCount + "]" + repeatBarCounter;
+        s += "|btLC[" + bmRepeat.beatList.size() + "]" + beatListCounter;
+        s += "|sndLC[" + bmBeat.soundList.size() + "]" + soundListCounter;
         return s;
     }
 

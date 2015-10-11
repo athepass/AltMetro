@@ -3,6 +3,7 @@ package info.thepass.altmetro.player;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -21,6 +22,7 @@ public class PlayerAudio implements Runnable {
     public AudioTrack audioTrack;
     private boolean mFinished;
     private boolean mPaused;
+    private boolean showBeat;
 
     public PlayerAudio(HelperMetro hh, BarManager bm) {
         h = hh;
@@ -47,6 +49,8 @@ public class PlayerAudio implements Runnable {
                         stepPlay();
                         break;
                     case Keys.PLAYSTOP:
+                        break;
+                    case Keys.PLAYEND:
                         finishPlay();
                         break;
                     default:
@@ -124,19 +128,20 @@ public class PlayerAudio implements Runnable {
     private void stepPlay() {
         playSoundList();
         pd.soundListCounter++;          // next sound
+        showBeat = false;
 
         if (pd.soundListCounter >= pd.bmBeat.soundList.size()) {
+            showBeat = true;
             // einde soundlist, volgende beat
-            showBeatInfo();
             pd.soundListCounter = 0;
             pd.beatListCounter += pd.nextBeat;
 //            Log.d(TAG,"inc beatlistCounter'"+pd.beatListCounter +  " === "+ pd.nextBeat);
-            if (pd.beatListCounter >= pd.bmRepeat.beatList.size() - 1) {
+            if (pd.beatListCounter >= pd.bmRepeat.beatList.size()) {
                 // einde beat, ga naar next bar in repeat
                 pd.beatListCounter = 0;
                 pd.repeatBarCounter++;
                 pd.trackBarCounter++;
-//                Log.d(TAG,"inc repeatbarcounter'"+pd.repeatBarCounter);
+                Log.d(TAG, "STEP Play: inc repeatbarcounter " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
                 if (!pd.bmRepeat.noEnd && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
                     // einde repeat, ga naar next repeat
                     pd.repeatListCounter++;
@@ -165,11 +170,13 @@ public class PlayerAudio implements Runnable {
             pd.lastCurrentBeat = pd.currentBeat;
             pd.nextBeat = getNextBeat();
         }
+        if (showBeat)
+            showBeatInfo();
     }
 
     private int getNextBeat() {
         int nextBeat = 0;
-        if (pd.beatListCounter < pd.bmBeat.beats - 1) {
+        if (pd.beatListCounter < pd.bmBeat.beats) {
             // niet op de laatste beat: volgend beat in zelfde bar
             nextBeat = 1;
 //            Log.d(TAG, "NEXT1: niet op laatste beat " + pd.beatListCounter + ":" + pd.bmBeat.beats);
@@ -209,6 +216,10 @@ public class PlayerAudio implements Runnable {
 //        String msg = pd.bmBeat.display(pd.beatListCounter, pd.subs) + " " + pd.display();
         String msg = "BEAT: " + pd.display();
         h.logD(TAG, msg);
+    }
+
+    private void showSoundInfo() {
+
     }
 
     private void playSoundList() {
