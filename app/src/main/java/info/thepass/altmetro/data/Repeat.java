@@ -85,7 +85,7 @@ public class Repeat {
 
     private void buildBeatBar(BarManager bm, int idxRepeat, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
-        Pat pat = bm.trackFragment.track.patList.get(this.patSelected);
+        Pat pat = bm.pd.bmTrack.patList.get(this.patSelected);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);
@@ -98,7 +98,7 @@ public class Repeat {
             beat.beatStateNext = (iBeat < pat.patBeats - 1) ? pat.patBeatState[iBeat + 1] : pat.patBeatState[0];
             beat.sub = pat.patSubs;
             beat.tempo = this.tempo;
-            beat.percentage = bm.trackFragment.track.study.practice;
+            beat.percentage = bm.pd.bmTrack.study.practice;
             beat.tempoCalc = Math.round((beat.tempo * beat.percentage) / 100f);
             beat.info = "r" + (beat.repeatIndex + 1)
                     + " bar " + (beat.repeatBar + 1)
@@ -113,6 +113,6 @@ public class Repeat {
             Beat beat = beatList.get(i);
             beat.buildSound(bm.pd);
         }
-        bm.trackFragment.track.soundDump(bm);
+        bm.pd.bmTrack.soundDump(bm);
     }
 }

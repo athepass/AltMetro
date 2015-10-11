@@ -44,9 +44,9 @@ public class BarManager extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         h = new HelperMetro(getActivity());
-        pd = new PlayerData(h);
+        h.logD(TAG,"onActivityCreated");
+//        pd = new PlayerData(h);
         initRunnables();
         bootPlayer();
         Intent intent = new Intent();
@@ -63,7 +63,6 @@ public class BarManager extends Fragment {
     public void buildBeat(Track newTrack) {
         pd.timeBuild1 = h.getNanoTime();
         pd.bmTrack = newTrack;
-        trackFragment.track = newTrack;
         buildCounter++;
         if (!pd.building) {
             Thread soundBuilderThread = new Thread(soundBuilder);

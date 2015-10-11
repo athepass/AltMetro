@@ -29,6 +29,7 @@ import info.thepass.altmetro.data.Repeat;
 import info.thepass.altmetro.data.Study;
 import info.thepass.altmetro.data.Track;
 import info.thepass.altmetro.player.BarManager;
+import info.thepass.altmetro.player.PlayerData;
 import info.thepass.altmetro.player.PlayerView;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -36,7 +37,6 @@ import info.thepass.altmetro.tools.Keys;
 public class TrackFragment extends Fragment {
     public final static String TAG = "TrakFragment";
     public MetronomeData metronomeData;
-    public Track track;
     public boolean starting = true;
     // Listview
     public ItemsListViewManager lvManager;
@@ -95,6 +95,8 @@ public class TrackFragment extends Fragment {
 
         initData();
 
+        initBeatManager();
+
         initItemsListViewManager();
         lvManager.initListView();
 
@@ -105,7 +107,6 @@ public class TrackFragment extends Fragment {
         initStudy();
 
         initViews();
-        initBeatManager();
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -193,7 +194,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStartPlayer() {
-        if (!track.trackPlayable(h)) {
+        if (!bm.pd.bmTrack.trackPlayable(h)) {
             return;
         }
 
@@ -225,7 +226,7 @@ public class TrackFragment extends Fragment {
         ActivityTrack act = (ActivityTrack) getActivity();
         this.metronomeData = act.metronomeData;
         Log.d(TAG,"TRACK:"+metronomeData.trackSelected);
-        track = metronomeData.tracks.get(metronomeData.trackSelected);
+//        bm.pd.bmTrack = metronomeData.tracks.get(metronomeData.trackSelected);
     }
 
     private void initItemsListViewManager() {
@@ -233,7 +234,7 @@ public class TrackFragment extends Fragment {
         lvManager.frag = this;
         lvManager.h = this.h;
         lvManager.metronomeData = this.metronomeData;
-        lvManager.track = this.track;
+        lvManager.track = bm.pd.bmTrack;
     }
 
     private void initListeners() {
@@ -350,13 +351,13 @@ public class TrackFragment extends Fragment {
                     default:
                         throw new RuntimeException("invalid checkedid" + checkedId);
                 }
-                track.study.practice = newPractice;
+                bm.pd.bmTrack.study.practice = newPractice;
                 metronomeData.saveData("Practice changed", false);
                 setData();
             }
         });
 
-        switch (track.study.practice) {
+        switch (bm.pd.bmTrack.study.practice) {
             case 50:
                 rb_prac50 = (RadioButton) getActivity().findViewById(R.id.rb_track_prac50);
                 rb_prac50.setChecked(true);
@@ -382,7 +383,7 @@ public class TrackFragment extends Fragment {
                 rb_prac100.setChecked(true);
                 break;
             default:
-                throw new RuntimeException("invalid percentage" + track.study.practice);
+                throw new RuntimeException("invalid percentage" + bm.pd.bmTrack.study.practice);
         }
     }
 
@@ -402,6 +403,8 @@ public class TrackFragment extends Fragment {
         }
         bm.setTargetFragment(this, Keys.TARGETBEATMANAGERSTOP);
         bm.trackFragment = this;
+        bm.pd = new PlayerData(h);
+        bm.pd.bmTrack = metronomeData.tracks.get(metronomeData.trackSelected);
 
         h.logD(TAG, "init playerview");
         bm.playerView = (PlayerView) getActivity().findViewById(R.id.playerview);
@@ -416,18 +419,19 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        track = metronomeData.tracks.get(metronomeData.trackSelected);
+        bm.pd.playStatus = Keys.PLAYSTOP;
+
+        bm.pd.bmTrack = metronomeData.tracks.get(metronomeData.trackSelected);
         setTitle();
 
         lvManager.itemsAdapter.notifyDataSetChanged();
-        tvTempo.setText(String.valueOf(track.repeatList.get(track.repeatSelected).tempo));
+        tvTempo.setText(String.valueOf(bm.pd.bmTrack.repeatList.get(bm.pd.bmTrack.repeatSelected).tempo));
 
-        setRepeat(track.repeatSelected);
+        setRepeat(bm.pd.bmTrack.repeatSelected);
         setStudy(null);
 
-        doBuild();
-
         updateLayout();
+        doBuild();
     }
 
     private void doPrefs() {
@@ -452,8 +456,8 @@ public class TrackFragment extends Fragment {
     }
 
     private void doBuild() {
-        if (track.trackPlayable(h)) {
-            bm.buildBeat(track);
+        if (bm.pd.bmTrack.trackPlayable(h)) {
+            bm.buildBeat(bm.pd.bmTrack);
         }
     }
 
@@ -470,7 +474,7 @@ public class TrackFragment extends Fragment {
         if (bm.isPlaying()) {
             tvStudy.setVisibility(View.GONE);
         } else {
-            boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+            boolean showStudy = (bm.pd.bmTrack.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
         tvInfo.setVisibility((!bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
@@ -487,7 +491,7 @@ public class TrackFragment extends Fragment {
             try {
                 Study newStudy = new Study();
                 newStudy.fromJson(new JSONObject(sStudy));
-                track.study = newStudy;
+                bm.pd.bmTrack.study = newStudy;
             } catch (Exception e) {
                 throw new RuntimeException("setStudy json exception");
             }
@@ -495,17 +499,17 @@ public class TrackFragment extends Fragment {
             setData();
         }
         // study textview onzichtbaar i.g.v. multi. Gebruik anders preference
-        boolean showStudy = (track.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+        boolean showStudy = (bm.pd.bmTrack.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
         tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
-        tvStudy.setText(track.study.display(h));
+        tvStudy.setText(bm.pd.bmTrack.study.display(h));
 
         boolean showPractice = h.prefs.getBoolean(Keys.PREFSHOWPRACTICE, true);
         if (!showPractice) {
-            track.study.practice = 100;
+            bm.pd.bmTrack.study.practice = 100;
             rg_practice.setVisibility(View.GONE);
         } else {
-            if (track.study.used) {
-                track.study.practice = 100;
+            if (bm.pd.bmTrack.study.used) {
+                bm.pd.bmTrack.study.practice = 100;
                 rg_practice.setVisibility(View.INVISIBLE);
             } else {
                 rg_practice.setVisibility(View.VISIBLE);
@@ -514,15 +518,15 @@ public class TrackFragment extends Fragment {
     }
 
     public void setRepeat(int index) {
-        Repeat repeat = track.repeatList.get(index);
+        Repeat repeat = bm.pd.bmTrack.repeatList.get(index);
         tempoTV = repeat.tempo;
         changeTempo(0);
-        Pat pat = track.patList.get(repeat.patSelected);
+        Pat pat = bm.pd.bmTrack.patList.get(repeat.patSelected);
     }
 
     private void setTempo(int newTempo) {
         tempoTV = h.validatedTempo(newTempo);
-        track.setTempo(tempoTV);
+        bm.pd.bmTrack.setTempo(tempoTV);
         displayTempo();
     }
 
@@ -532,7 +536,7 @@ public class TrackFragment extends Fragment {
 
     private void displayTempo() {
         tvTempo.setText("" + tempoTV);
-        int tempoPractice = h.validatedTempo(Math.round(tempoTV * track.study.practice / 100f));
+        int tempoPractice = h.validatedTempo(Math.round(tempoTV * bm.pd.bmTrack.study.practice / 100f));
         tvTempoPractice.setText("" + tempoPractice);
 
         int indexSB = getProgressIndex(tempoTV);
@@ -544,7 +548,7 @@ public class TrackFragment extends Fragment {
     private void setTitle() {
         String sPlay = "";
         sPlay = (bm.isPlaying()) ? " (P)" : "";
-        String sTrack = track.getTitle(metronomeData, metronomeData.trackSelected);
+        String sTrack = bm.pd.bmTrack.getTitle(metronomeData, metronomeData.trackSelected);
         getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }
 
