@@ -118,8 +118,8 @@ public class TrackFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         h.logD(TAG, "onPrepareOptions " + bm.isPlaying());
-        menuItemStart.setVisible(!bm.isPlaying());
-        menuItemStop.setVisible(bm.isPlaying());
+//        menuItemStart.setVisible(!bm.isPlaying());
+//        menuItemStop.setVisible(bm.isPlaying());
         if (bm.isPlaying()) {
             menuItemSettings.setIcon(R.mipmap.ic_none);
             menuItemTrackList.setIcon(R.mipmap.ic_none);
@@ -415,7 +415,7 @@ public class TrackFragment extends Fragment {
         setTitle();
 
         lvManager.itemsAdapter.notifyDataSetChanged();
-        tvTempo.setText(String.valueOf(track.repeats.get(track.repeatSelected).tempo));
+        tvTempo.setText(String.valueOf(track.repeatList.get(track.repeatSelected).tempo));
 
         setRepeat(track.repeatSelected);
         setStudy(null);
@@ -503,10 +503,10 @@ public class TrackFragment extends Fragment {
     }
 
     public void setRepeat(int index) {
-        Repeat repeat = track.repeats.get(index);
+        Repeat repeat = track.repeatList.get(index);
         tempoTV = repeat.tempo;
         changeTempo(0);
-        Pat pat = track.pats.get(repeat.indexPattern);
+        Pat pat = track.patList.get(repeat.patSelected);
     }
 
     private void setTempo(int newTempo) {

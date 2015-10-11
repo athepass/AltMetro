@@ -171,7 +171,7 @@ public class DialogEditTrackRepeat extends DialogFragment {
         spPat = (Spinner) dialogView.findViewById(R.id.spinnerPat);
         spPat.setAdapter(patSelAdapter);
         spPat.setOnItemSelectedListener(patSelListener);
-        updatePat(repeat.indexPattern);
+        updatePat(repeat.patSelected);
     }
 
     private void initTempo(View dialogView) {
@@ -271,8 +271,8 @@ public class DialogEditTrackRepeat extends DialogFragment {
     }
 
     private void saveData() {
-        repeat.indexPattern = spPat.getSelectedItemPosition();
-        repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
+        repeat.patSelected = spPat.getSelectedItemPosition();
+        repeat.patSelectedHash = pats.get(repeat.patSelected).patHash;
         repeat.tempo = Integer.parseInt(tvTempo.getText().toString());
         repeat.barCount = Integer.parseInt(tvCount.getText().toString());
         repeat.noEnd = cbNoEnd.isChecked();

@@ -19,8 +19,8 @@ public class Repeat {
     public final static String KEYTEMPO = "RPtmp";
     public final static String KEYCOUNT = "RPcnt";
     public final static String KEYNOEND = "RPnen";
-    public int indexPattern;
-    public int hashPattern;
+    public int patSelected;
+    public int patSelectedHash;
     public int tempo;
     public int barCount;
     public boolean noEnd;
@@ -32,8 +32,8 @@ public class Repeat {
     public int repeatCounter;
 
     public Repeat() {
-        indexPattern = 0;
-        hashPattern = NOHASH;
+        patSelected = 0;
+        patSelectedHash = NOHASH;
         tempo = 90;
         barCount = 1;
         noEnd = true;
@@ -44,8 +44,8 @@ public class Repeat {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-            json.put(KEYINDEX, indexPattern);
-            json.put(KEYHASH, hashPattern);
+            json.put(KEYINDEX, patSelected);
+            json.put(KEYHASH, patSelectedHash);
             json.put(KEYTEMPO, tempo);
             json.put(KEYCOUNT, barCount);
             json.put(KEYNOEND, noEnd);
@@ -58,8 +58,8 @@ public class Repeat {
 
     public void fromJson(JSONObject json) {
         try {
-            indexPattern = json.getInt(KEYINDEX);
-            hashPattern = json.getInt(KEYHASH);
+            patSelected = json.getInt(KEYINDEX);
+            patSelectedHash = json.getInt(KEYHASH);
             tempo = json.getInt(KEYTEMPO);
             barCount = json.getInt(KEYCOUNT);
             noEnd = json.getBoolean(KEYNOEND);
@@ -85,7 +85,7 @@ public class Repeat {
 
     private void buildBeatBar(BarManager bm, int idxRepeat, HelperMetro h) {
         boolean soundFirstBeat = h.prefs.getBoolean(Keys.PREFFIRSTBEAT, false);
-        Pat pat = bm.trackFragment.track.pats.get(this.indexPattern);
+        Pat pat = bm.trackFragment.track.patList.get(this.patSelected);
         for (iBeat = 0; iBeat < pat.patBeats; iBeat++) {
             Beat beat = new Beat(soundFirstBeat);
             beatList.add(beat);

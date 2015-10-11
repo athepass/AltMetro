@@ -3,8 +3,8 @@ package info.thepass.altmetro.player;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
-import info.thepass.altmetro.R;
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
@@ -40,7 +40,19 @@ public class PlayerAudio implements Runnable {
 
         while (!mFinished) {
             if (!mPaused) {
-                doStep();
+                switch (pd.playStatus) {
+                    case Keys.PLAYSTART:
+                        initPlay();
+                        break;
+                    case Keys.PLAYPLAY:
+                        stepPlay();
+                        break;
+                    case Keys.PLAYSTOP:
+                        finishPlay();
+                        break;
+                    default:
+                        throw new RuntimeException("ongeldige playStatus " + pd.playStatus);
+                }
             }
             doWait();
         }
@@ -61,6 +73,7 @@ public class PlayerAudio implements Runnable {
     public void onPause() {
         h.logD(TAG, "onPause");
         synchronized (mPauseLock) {
+            pd.playStatus = Keys.PLAYEND;
             mPaused = true;
         }
     }
@@ -68,92 +81,111 @@ public class PlayerAudio implements Runnable {
     public void onResume() {
         h.logD(TAG, "onResume");
         synchronized (mPauseLock) {
+            pd.playStatus = Keys.PLAYSTART;
+            pd.timeNextStop = -1;
             mPaused = false;
             mPauseLock.notify();
         }
     }
 
     private void initPlay() {
+        // init track
         pd.trackBarCounter = 0;
-        pd.timeStart2 = h.getNanoTime();
-        bm.getActivity().runOnUiThread(bm.layoutUpdater);
-        pd.timeStart3 = h.getNanoTime();
-        h.logD(TAG, "initPlay t=" + h.deltaTime(pd.timeStart1, pd.timeStart2)
-                + ".." + h.deltaTime(pd.timeStart1, pd.timeStart3));
+        // init study
+        pd.studyCounter = 0;
+        // init repeat
+        pd.repeatListCounter = 0;
+        pd.repeatBarCounter = 0;
+        pd.bmRepeat = pd.bmTrack.repeatList.get(pd.repeatListCounter);
+        pd.bmPat = pd.bmTrack.patList.get(pd.bmRepeat.patSelected);
+        // init beat
+        pd.beatListCounter = 0;
+        pd.bmBeat = pd.bmRepeat.beatList.get(pd.beatListCounter);
+        pd.nextBeat = pd.beatListCounter + 1;
+        // init sound
+        pd.soundListCounter = 0;
+        pd.bmSound = pd.bmBeat.soundList.get(pd.soundListCounter);
+
+        pd.playStatus = Keys.PLAYPLAY;
+        pd.timeInitPlay = h.getNanoTime();
+        h.logD(TAG, "initPlay t=" + h.deltaTime(pd.timeStartPlay, pd.timeInitPlay));
+        showStudyInfo();
+        showRepeatInfo();
+        showBeatInfo();
     }
 
     private void finishPlay() {
         h.logD(TAG, "finish Play");
         pd.timeStop1 = h.getNanoTime();
         bm.getActivity().runOnUiThread(bm.stopper);
+        pd.playStatus = Keys.PLAYSTOP;
     }
 
-    private void doStep() {
-        initPlay();
-        pd.repeatCounter = 0;
-        while (pd.repeatCounter < pd.bmTrack.repeats.size()) {
-            pd.bmRepeat = pd.bmTrack.repeats.get(pd.repeatCounter);
-            pd.bmPat = pd.bmTrack.pats.get(pd.bmTrack.patSelected);
-            playRepeat();
-            pd.repeatCounter++;
-        }
-        finishPlay();
-    }
+    private void stepPlay() {
+        playSoundList();
+        pd.soundListCounter++;          // next sound
 
-    private void playRepeat() {
-        pd.repeatBarCounter = 0;
-        updateInfo();
-        while (!mPaused && pd.repeatBarCounter < pd.bmRepeat.barCount) {
-            pd.beatListCounter = 0;
-            while (!mPaused && pd.beatListCounter < pd.bmRepeat.beatList.size()) {
-                pd.bmBeat = pd.bmRepeat.beatList.get(pd.beatListCounter);
-                pd.currentBeat = pd.bmBeat.beatIndex + 1;
-                String logInfo = "beat[Sound] " + pd.beatListCounter + " info:"
-                        + pd.bmRepeat.beatList.get(pd.beatListCounter).display(pd.beatListCounter, pd.subs);
-                pd.timeBeat1 = h.getNanoTime();
-                pd.nextBeat = getNextBeat();
-
-                playSoundList(pd.bmBeat);
-
-                logInfo += " draw:" + h.deltaTime(pd.timeLayout1, pd.timeLayout2);
-                h.logD(TAG, logInfo);
-
-                if (pd.beatListCounter == pd.bmBeat.beats - 1) { // bar counter ophogen
-                    pd.repeatBarCounter++;
-                    pd.trackBarCounter++;
-                    updateInfo();
-                }
-
-                pd.beatListCounter += pd.nextBeat;
-                if (pd.beatListCounter >= pd.bmRepeat.beatList.size()) {
-                    h.logD(TAG, "beatSound ready");
+        if (pd.soundListCounter >= pd.bmBeat.soundList.size()) {
+            // einde soundlist, volgende beat
+            showBeatInfo();
+            pd.soundListCounter = 0;
+            pd.beatListCounter += pd.nextBeat;
+            if (pd.beatListCounter >= pd.bmRepeat.beatList.size()) {
+                // einde beat, ga naar next bar in repeat
+                pd.beatListCounter = 0;
+                pd.repeatBarCounter++;
+                pd.trackBarCounter++;
+                if (!pd.bmRepeat.noEnd && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
+                    // einde repeat
+                    pd.repeatListCounter++;
+                    pd.bmRepeat = pd.bmTrack.repeatList.get(pd.repeatListCounter);
+                    pd.bmPat = pd.bmTrack.patList.get(pd.bmRepeat.patSelected);
+                    showRepeatInfo();
                 }
             }
-
-            if (!pd.bmRepeat.noEnd) {
-                pd.repeatCounter++;
-            }
         }
+        pd.bmBeat = pd.bmRepeat.beatList.get(pd.beatListCounter);
+        pd.currentBeat = pd.bmBeat.beatIndex + 1;
+        pd.nextBeat = getNextBeat();
+        pd.bmSound = pd.bmBeat.soundList.get(pd.soundListCounter);
     }
 
-    private void updateInfo() {
-        pd.playerInfo = "r" + (pd.repeatCounter + 1) + "/" + pd.bmTrack.repeats.size();
-        pd.playerInfo += " "+ ((pd.bmRepeat.noEnd) ? h.getString(R.string.label_noend) : "");
-        pd.playerInfo += " " + (pd.trackBarCounter + 1);
-        bm.getActivity().runOnUiThread(bm.infoUpdater);
+    private void showStudyInfo() {
+
+    }
+
+    private void showRepeatInfo() {
+        String msg = "REP: " + (pd.repeatListCounter + 1)
+                + "/" + pd.bmTrack.repeatList.size();
+        String patInfo = pd.bmPat.display(h, pd.bmRepeat.patSelected, true);
+        msg += " " + pd.bmRepeat.display(h, pd.repeatListCounter, patInfo, true);
+        h.logD(TAG, msg);
+    }
+
+    private void showBeatInfo() {
+        String msg = "rep=" + pd.repeatListCounter;
+        msg += " repBar=" + (pd.repeatBarCounter + 1)
+                + ((pd.bmRepeat.noEnd) ? "" : "/" + pd.bmRepeat.barCount);
+        msg += " beat[S] " + pd.beatListCounter + " info:"
+                + pd.bmBeat.display(pd.beatListCounter, pd.subs);
+        h.logD(TAG, msg);
     }
 
     private int getNextBeat() {
         int nextBeat = 0;
         if (pd.beatListCounter < pd.bmBeat.beats - 1) { // niet op de laatste beat: volgend beat
             nextBeat = 1;
+            Log.d(TAG,"niet op laatste beat " + pd.beatListCounter +":" + pd.bmBeat.beats );
         } else {    // laatste beat
             if (pd.bmRepeat.noEnd) {   // noend: altijd naar 1
+                Log.d(TAG,"noEnd " + pd.beatListCounter +":" + pd.bmBeat.beats );
                 nextBeat = 1 - pd.bmBeat.beats;
             } else {
                 if (pd.repeatBarCounter == pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
+                    Log.d(TAG,"laatste bar binnen repeat " + pd.repeatBarCounter +":" + pd.bmRepeat.barCount);
                     nextBeat = 1;
                 } else { // naar 1 voor afspelen volgende bar
+                    Log.d(TAG,"naar beat 1 voor volgende bar in repeat " + pd.repeatBarCounter +":" + pd.bmRepeat.barCount);
                     nextBeat = 1 - pd.bmBeat.beats;
                 }
             }
@@ -161,31 +193,28 @@ public class PlayerAudio implements Runnable {
         return nextBeat;
     }
 
-    private void playSoundList(Beat beat) {
-        for (int iSound = 0; iSound < beat.soundList.size(); iSound++) {
-            Sound sound = beat.soundList.get(iSound);
-            switch (sound.soundType) {
-                case Keys.SOUNDFIRST:
-                    writeSound(sc.soundFirst, sound.duration);
-                    break;
-                case Keys.SOUNDHIGH:
-                    writeSound(sc.soundHigh, sound.duration);
-                    break;
-                case Keys.SOUNDLOW:
-                    writeSound(sc.soundLow, sound.duration);
-                    break;
-                case Keys.SOUNDNONE:
-                    writeSound(sc.soundSilence, sound.duration);
-                    break;
-                case Keys.SOUNDSUB:
-                    writeSound(sc.soundSub, sound.duration);
-                    break;
-                case Keys.SOUNDSILENCE:
-                    writeSound(sc.soundSilence, sound.duration);
-                    break;
-                default:
-                    throw new RuntimeException("playBeat invalid soundtype " + sound.soundType);
-            }
+    private void playSoundList() {
+        switch (pd.bmSound.soundType) {
+            case Keys.SOUNDFIRST:
+                writeSound(sc.soundFirst, pd.bmSound.duration);
+                break;
+            case Keys.SOUNDHIGH:
+                writeSound(sc.soundHigh, pd.bmSound.duration);
+                break;
+            case Keys.SOUNDLOW:
+                writeSound(sc.soundLow, pd.bmSound.duration);
+                break;
+            case Keys.SOUNDNONE:
+                writeSound(sc.soundSilence, pd.bmSound.duration);
+                break;
+            case Keys.SOUNDSUB:
+                writeSound(sc.soundSub, pd.bmSound.duration);
+                break;
+            case Keys.SOUNDSILENCE:
+                writeSound(sc.soundSilence, pd.bmSound.duration);
+                break;
+            default:
+                throw new RuntimeException("playBeat invalid soundtype " + pd.bmSound.soundType);
         }
     }
 

@@ -34,11 +34,11 @@ public class Track {
     public String titel;
     public boolean multi;
     public Study study;
-    public ArrayList<Repeat> repeats;
+    public ArrayList<Repeat> repeatList;
     public int repeatSelected;
     public ArrayList<String> items;
     public int patSelected;
-    public ArrayList<Pat> pats;
+    public ArrayList<Pat> patList;
     private MetronomeData metronomeData;
 
     public Track(HelperMetro h, MetronomeData data) {
@@ -53,17 +53,17 @@ public class Track {
         study = new Study();
 
         repeatSelected = 0;
-        repeats = new ArrayList<Repeat>();
+        repeatList = new ArrayList<Repeat>();
         Repeat repeat = new Repeat();
-        repeats.add(repeat);
+        repeatList.add(repeat);
 
         //Laat de repeat meteen verwijzen naar de 0e pattern
-        repeat.indexPattern = 0;
+        repeat.patSelected = 0;
 
-        pats = new ArrayList<Pat>();
+        patList = new ArrayList<Pat>();
         patSelected = 0;
         Pat pat = new Pat(h);
-        pats.add(pat);
+        patList.add(pat);
 
         items = new ArrayList<String>();
     }
@@ -80,15 +80,15 @@ public class Track {
 
             json.put(KEYREPEATSELECTED, repeatSelected);
             JSONArray repeatsArray = new JSONArray();
-            for (int i = 0; i < repeats.size(); i++) {
-                repeatsArray.put(repeats.get(i).toJson());
+            for (int i = 0; i < repeatList.size(); i++) {
+                repeatsArray.put(repeatList.get(i).toJson());
             }
             json.put(KEYREPEATS, repeatsArray);
 
             json.put(KEYPATSELECTED, patSelected);
             JSONArray patsArray = new JSONArray();
-            for (int i = 0; i < pats.size(); i++) {
-                patsArray.put(pats.get(i).toJson());
+            for (int i = 0; i < patList.size(); i++) {
+                patsArray.put(patList.get(i).toJson());
             }
             json.put(KEYPATS, patsArray);
 
@@ -108,21 +108,21 @@ public class Track {
             study.fromJson(json.getJSONObject(KEYSTUDY));
 
             repeatSelected = json.getInt(KEYREPEATSELECTED);
-            repeats.clear();
+            repeatList.clear();
             JSONArray repeatsArray = json.getJSONArray(KEYREPEATS);
             for (int i = 0; i < repeatsArray.length(); i++) {
                 Repeat rep = new Repeat();
                 rep.fromJson(repeatsArray.getJSONObject(i));
-                repeats.add(rep);
+                repeatList.add(rep);
             }
 
             patSelected = json.getInt(KEYPATSELECTED);
-            pats.clear();
+            patList.clear();
             JSONArray patsArray = json.getJSONArray(KEYPATS);
             for (int i = 0; i < patsArray.length(); i++) {
                 Pat pat = new Pat(h);
                 pat.fromJson(patsArray.getJSONObject(i));
-                pats.add(pat);
+                patList.add(pat);
             }
 
         } catch (JSONException e) {
@@ -133,8 +133,8 @@ public class Track {
     public String toStringH(HelperMetro h) {
         String s = "n:" + nummer + ",h:" + hashTrack + ",m:" + ((multi) ? "*" : "-") + ",t:" + titel;
         s += "\nStudy:" + study.toString();
-        for (int i = 0; i < repeats.size(); i++) {
-            s += "\nRepeat " + i + ": " + ((i == repeatSelected) ? "*" : "") + repeats.get(i).toString();
+        for (int i = 0; i < repeatList.size(); i++) {
+            s += "\nRepeat " + i + ": " + ((i == repeatSelected) ? "*" : "") + repeatList.get(i).toString();
         }
         return s;
     }
@@ -145,13 +145,13 @@ public class Track {
         s += (multi) ? "[*]" : "[-]";
         s += (nummer != 0) ? " nr " + nummer : "";
         s += (titel.length() > 0) ? " titel:" + titel : "";
-        s += (repeats.size() > 1) ? " #repeats:" + repeats.size() : "";
+        s += (repeatList.size() > 1) ? " #repeatList:" + repeatList.size() : "";
         return s;
     }
 
     public String getTitle(MetronomeData metronomeData, int sel) {
         if ((metronomeData.tracks.size() == 1)
-                && (repeats.size() == 1)
+                && (repeatList.size() == 1)
                 && (titel.equals(""))
                 && (nummer == 0)
                 ) {
@@ -160,7 +160,7 @@ public class Track {
             return (sel + 1) + ((multi) ? "[*]:" : ":")
                     + ((nummer != 0) ? " " + nummer : "")
                     + " " + titel
-                    + ((multi) ? "[" + repeats.size() + "]" : "");
+                    + ((multi) ? "[" + repeatList.size() + "]" : "");
         }
     }
 
@@ -175,7 +175,7 @@ public class Track {
 
     public int getItemPatPosition(int position) {
         if (multi) {
-            return position - repeats.size() - 1;
+            return position - repeatList.size() - 1;
         } else {   // single
             return 0;
         }
@@ -184,26 +184,26 @@ public class Track {
     public void clean() {
         // singleTempo: 1 pat, 1 repeat, repeat verwijst naar pat.
         if (!multi) {
-            while (repeats.size() > 1)
-                repeats.remove(1);
-            while (pats.size() > 1)
-                pats.remove(1);
-            repeats.get(0).indexPattern = 0;
-            repeats.get(0).hashPattern = pats.get(0).patHash;
+            while (repeatList.size() > 1)
+                repeatList.remove(1);
+            while (patList.size() > 1)
+                patList.remove(1);
+            repeatList.get(0).patSelected = 0;
+            repeatList.get(0).patSelectedHash = patList.get(0).patHash;
         }
         // controleer consistentie pat hash in repeat
-        for (int i = 0; i < repeats.size(); i++) {
-            Repeat repeat = repeats.get(i);
-            if (repeat.hashPattern == Repeat.NOHASH) {
+        for (int i = 0; i < repeatList.size(); i++) {
+            Repeat repeat = repeatList.get(i);
+            if (repeat.patSelectedHash == Repeat.NOHASH) {
                 // hash default: vul hash obv repeat.indexpattern
-                repeat.hashPattern = pats.get(repeat.indexPattern).patHash;
+                repeat.patSelectedHash = patList.get(repeat.patSelected).patHash;
             } else {
                 // hash ingevuld. Zet index goed.
-                for (int j = 0; j < pats.size(); j++) {
-                    Pat pat = pats.get(j);
-                    if (repeat.hashPattern == pat.patHash) {
-                        repeat.indexPattern = j;
-                        j = pats.size();
+                for (int j = 0; j < patList.size(); j++) {
+                    Pat pat = patList.get(j);
+                    if (repeat.patSelectedHash == pat.patHash) {
+                        repeat.patSelected = j;
+                        j = patList.size();
                     }
                 }
             }
@@ -214,9 +214,9 @@ public class Track {
     public void syncItems() {
         int aantal = -1;
         if (multi) {
-            aantal = repeats.size() + 1 + pats.size() + 1;
+            aantal = repeatList.size() + 1 + patList.size() + 1;
         } else {  // Single repeat
-            aantal = 1 + 1;  // vaste aantal voor single items: repeat + pats + add pattern
+            aantal = 1 + 1;  // vaste aantal voor single items: repeat + patList + add pattern
         }
         // maak aantal regels
         while (items.size() < aantal)
@@ -226,17 +226,17 @@ public class Track {
     }
 
     public void setTempo(int newTempo) {
-        repeats.get(repeatSelected).tempo = newTempo;
+        repeatList.get(repeatSelected).tempo = newTempo;
     }
 
     public boolean trackPlayable(HelperMetro h) {
-        if (repeats.size() == 1) {
+        if (repeatList.size() == 1) {
             return true;
         }
 
-        for (int i = 0; i < repeats.size(); i++) {
-            Repeat repeat = repeats.get(i);
-            if (repeat.noEnd && i < repeats.size() - 1) {
+        for (int i = 0; i < repeatList.size(); i++) {
+            Repeat repeat = repeatList.get(i);
+            if (repeat.noEnd && i < repeatList.size() - 1) {
                 String msg = h.getString1(R.string.error_unreachable, "" + (i + 1));
                 h.logD(TAG, msg);
                 h.showToastAlert(msg);
@@ -248,9 +248,9 @@ public class Track {
 
     public void buildBeat(BarManager bm, HelperMetro h) {
         bm.pd.repeatBarCounter = 0;
-        for (int iRep = 0; iRep < repeats.size(); iRep++) {
-            repeats.get(iRep).buildBeatList(bm, iRep, h);
-            repeats.get(iRep).buildSound(bm);
+        for (int iRep = 0; iRep < repeatList.size(); iRep++) {
+            repeatList.get(iRep).buildBeatList(bm, iRep, h);
+            repeatList.get(iRep).buildSound(bm);
         }
     }
 
@@ -262,12 +262,12 @@ public class Track {
         File padFile = new File(pad);
         boolean res = padFile.mkdirs();
         File dumpFile = new File(filename);
-        String s = "\n======== repeats ======== build:"
+        String s = "\n======== repeatList ======== build:"
                 + bm.buildCounter + " bars:" + bm.pd.repeatBarCounter;
-        for (int irep = 0; irep < repeats.size(); irep++) {
-            Repeat tRepeat = repeats.get(irep);
-            String dispPat = pats.get(tRepeat.indexPattern).display(bm.h, tRepeat.indexPattern, true);
-            s += "\n ======== [rep " + irep + "] " + repeats.get(irep).display(bm.h, irep, dispPat, true);
+        for (int irep = 0; irep < repeatList.size(); irep++) {
+            Repeat tRepeat = repeatList.get(irep);
+            String dispPat = patList.get(tRepeat.patSelected).display(bm.h, tRepeat.patSelected, true);
+            s += "\n ======== [rep " + irep + "] " + repeatList.get(irep).display(bm.h, irep, dispPat, true);
             for (int ibeat = 0; ibeat < tRepeat.beatList.size(); ibeat++) {
                 Beat beat = tRepeat.beatList.get(ibeat);
                 s += "\n=== beat " + ibeat + ": " + beat.display(ibeat, subs) + "\n";

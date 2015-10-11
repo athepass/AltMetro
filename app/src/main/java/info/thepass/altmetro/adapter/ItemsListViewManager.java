@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -63,14 +62,14 @@ public class ItemsListViewManager {
                         itemsAdapter.notifyDataSetChanged();
                         break;
                     case TrackItemsAdapter.ROWTYPEREPEATADD:
-                        editRepeat(track.repeats.size(), true);
+                        editRepeat(track.repeatList.size(), true);
                         break;
                     case TrackItemsAdapter.ROWTYPEPAT:
                         itemsAdapter.selectedPat = track.getItemPatPosition(position);
                         itemsAdapter.notifyDataSetChanged();
                         break;
                     case TrackItemsAdapter.ROWTYPEPATADD:
-                        frag.lvManager.editPattern(track.pats.size(), true);
+                        frag.lvManager.editPattern(track.patList.size(), true);
                         break;
                     default:
                         throw new RuntimeException("listview click at position " + position);
@@ -91,12 +90,12 @@ public class ItemsListViewManager {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemRepeatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
-        b.putInt(Keys.EDITSIZE, track.repeats.size());
+        b.putInt(Keys.EDITSIZE, track.repeatList.size());
         b.putBoolean(Track.KEYMULTI, track.multi);
 
         JSONArray patsArray = new JSONArray();
-        for (int i = 0; i < track.pats.size(); i++) {
-            patsArray.put(track.pats.get(i).toJson());
+        for (int i = 0; i < track.patList.size(); i++) {
+            patsArray.put(track.patList.get(i).toJson());
         }
         b.putString(Track.KEYPATS, patsArray.toString());
 
@@ -104,7 +103,7 @@ public class ItemsListViewManager {
         if (add) {
             repeat = new Repeat();
         } else {
-            repeat = track.repeats.get(index);
+            repeat = track.repeatList.get(index);
         }
         b.putString(Track.KEYREPEATS, repeat.toJson().toString());
 
@@ -120,9 +119,9 @@ public class ItemsListViewManager {
             Repeat repeat = new Repeat();
             repeat.fromJson(new JSONObject(sRepeat));
             if (actionAdd) {
-                track.repeats.add(index, repeat);
+                track.repeatList.add(index, repeat);
             } else {
-                track.repeats.set(index, repeat);
+                track.repeatList.set(index, repeat);
             }
         } catch (Exception e) {
             throw new RuntimeException("updateRepeat json exception");
@@ -137,7 +136,7 @@ public class ItemsListViewManager {
     }
 
     public void confirmDeleteRepeat(int position) {
-        if (track.repeats.size() == 1) {
+        if (track.repeatList.size() == 1) {
             return;
         }
         int index = track.getItemRepeatPosition(position);
@@ -145,8 +144,8 @@ public class ItemsListViewManager {
         itemsAdapter.selectedRepeat = indexDelRepeat;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(frag.getActivity());
-        Repeat repeat = track.repeats.get(indexDelRepeat);
-        String sPat = track.pats.get(repeat.indexPattern).display(h, repeat.indexPattern, true);
+        Repeat repeat = track.repeatList.get(indexDelRepeat);
+        String sPat = track.patList.get(repeat.patSelected).display(h, repeat.patSelected, true);
         String pInfo = repeat.display(h, index, sPat, true);
         builder.setMessage(h.getString(R.string.list_confirm_delete_item) + " " + pInfo)
                 .setCancelable(false)
@@ -166,9 +165,9 @@ public class ItemsListViewManager {
     }
 
     private void deleteItemRepeat() {
-        track.repeats.remove(indexDelRepeat);
-        if (indexDelRepeat >= track.repeats.size() - 1) {
-            itemsAdapter.selectedRepeat = track.repeats.size() - 1;
+        track.repeatList.remove(indexDelRepeat);
+        if (indexDelRepeat >= track.repeatList.size() - 1) {
+            itemsAdapter.selectedRepeat = track.repeatList.size() - 1;
         }
 
         track.clean();
@@ -187,13 +186,13 @@ public class ItemsListViewManager {
         b.putBoolean(Keys.EDITACTION, add);
         int index = track.getItemPatPosition(position);
         b.putInt(Keys.EDITINDEX, index);
-        b.putInt(Keys.EDITSIZE, track.pats.size());
+        b.putInt(Keys.EDITSIZE, track.patList.size());
 
         Pat pat;
         if (add) {
             pat = new Pat(h);
         } else {
-            pat = track.pats.get(index);
+            pat = track.patList.get(index);
         }
         b.putString(Track.KEYPATS, pat.toJson().toString());
 
@@ -209,9 +208,9 @@ public class ItemsListViewManager {
             Pat pat = new Pat(h);
             pat.fromJson(new JSONObject(sPat));
             if (actionAdd) {
-                track.pats.add(index, pat);
+                track.patList.add(index, pat);
             } else {
-                track.pats.set(index, pat);
+                track.patList.set(index, pat);
             }
         } catch (Exception e) {
             throw new RuntimeException("updatePattern json exception");
@@ -225,13 +224,13 @@ public class ItemsListViewManager {
     }
 
     public void confirmDeletePattern(int position) {
-        if (track.pats.size() == 1) {
+        if (track.patList.size() == 1) {
             return;
         }
         int index = track.getItemPatPosition(position);
         indexDelPattern = index;
         itemsAdapter.selectedPat = indexDelPattern;
-        Pat pat = track.pats.get(indexDelPattern);
+        Pat pat = track.patList.get(indexDelPattern);
         // verwijderen niet mogelijk indien nog in gebruik.!!
         if (pat.checkInUse(metronomeData, h)) {
             return;
@@ -257,9 +256,9 @@ public class ItemsListViewManager {
     }
 
     private void deleteItemPattern() {
-        track.pats.remove(indexDelPattern);
-        if (indexDelPattern >= track.pats.size() - 1) {
-            itemsAdapter.selectedPat = track.pats.size() - 1;
+        track.patList.remove(indexDelPattern);
+        if (indexDelPattern >= track.patList.size() - 1) {
+            itemsAdapter.selectedPat = track.patList.size() - 1;
         }
 
         track.clean();
@@ -276,7 +275,7 @@ public class ItemsListViewManager {
         Bundle b = new Bundle();
         int index = itemsAdapter.selectedRepeat;
         b.putInt(Keys.EDITINDEX, index);
-        Repeat repeat = track.repeats.get(index);
+        Repeat repeat = track.repeatList.get(index);
         b.putString(Track.KEYREPEATS, repeat.toJson().toString());
 
         dlgEdit.setArguments(b);
@@ -291,7 +290,7 @@ public class ItemsListViewManager {
         Bundle b = new Bundle();
         Study study = track.study;
         b.putString(Track.KEYSTUDY, study.toJson().toString());
-        b.putInt(Repeat.KEYTEMPO, track.repeats.get(track.repeatSelected).tempo);
+        b.putInt(Repeat.KEYTEMPO, track.repeatList.get(track.repeatSelected).tempo);
 
         dlgEdit.setArguments(b);
         dlgEdit.show(frag.getFragmentManager(), DialogEditTrackStudy.TAG);

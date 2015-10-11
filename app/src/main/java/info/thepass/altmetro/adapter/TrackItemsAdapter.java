@@ -65,18 +65,18 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
     public int getItemViewType(int position) {
         int vType;
         if (track.multi) {
-            if (position < (track.repeats.size())) {
+            if (position < (track.repeatList.size())) {
                 vType = ROWTYPEREPEAT;
-            } else if (position == (track.repeats.size())) {
+            } else if (position == (track.repeatList.size())) {
                 vType = ROWTYPEREPEATADD;
-            } else if (position < (track.repeats.size() + 1 + track.pats.size())) {
+            } else if (position < (track.repeatList.size() + 1 + track.patList.size())) {
                 vType = ROWTYPEPAT;
-            } else if (position == (track.repeats.size() + 1 + track.pats.size())) {
+            } else if (position == (track.repeatList.size() + 1 + track.patList.size())) {
                 vType = ROWTYPEPATADD;
             } else {
                 String msg = "invalid multi item type at position " + position;
-                msg += " rep:" + track.repeats.size();
-                msg += " pat:" + track.pats.size();
+                msg += " rep:" + track.repeatList.size();
+                msg += " pat:" + track.patList.size();
                 throw new RuntimeException(msg);
             }
             return vType;
@@ -87,9 +87,9 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                     vType = ROWTYPEREPEAT;
                     break;
                 default:
-                    if (position < (1 + track.pats.size())) {
+                    if (position < (1 + track.patList.size())) {
                         vType = ROWTYPEPAT;
-                    } else if (position == (1 + track.pats.size())) {
+                    } else if (position == (1 + track.patList.size())) {
                         vType = ROWTYPEPATADD;
                     } else {
                         throw new RuntimeException("invalid single item type at position " + position);
@@ -113,13 +113,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 selectedRepeat = track.getItemRepeatPosition(position);
                 break;
             case ROWTYPEREPEATADD:
-                selectedRepeat = track.repeats.size();
+                selectedRepeat = track.repeatList.size();
                 break;
             case ROWTYPEPAT:
                 selectedPat = track.getItemPatPosition(position);
                 break;
             case ROWTYPEPATADD:
-                selectedPat = track.pats.size();
+                selectedPat = track.patList.size();
                 break;
         }
         return position;
@@ -165,10 +165,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
         int index = track.getItemRepeatPosition(position);
 
-        Repeat repeat = track.repeats.get(index);
-        Pat pat = track.pats.get(repeat.indexPattern);
-        String patDisplay = (track.pats.size() > 1) ? pat.display(h, repeat.indexPattern, false) : "";
-        int indexDisplay = (track.pats.size() > 1) ? index : -1;
+        Repeat repeat = track.repeatList.get(index);
+        Pat pat = track.patList.get(repeat.patSelected);
+        String patDisplay = (track.patList.size() > 1) ? pat.display(h, repeat.patSelected, false) : "";
+        int indexDisplay = (track.patList.size() > 1) ? index : -1;
         String s = repeat.display(h, indexDisplay, patDisplay, index != selectedRepeat);
         holder.info.setText(s);
         holder.evRepeatList.setPattern(pat, false);
@@ -185,8 +185,8 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             holder.header.setVisibility(View.GONE);
         }
 
-        holder.rijEmphasis.setVisibility((track.pats.size() > 1) ? View.VISIBLE : View.INVISIBLE);
-        holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeats.size() > 1) ? lvSelColor : Color.TRANSPARENT);
+        holder.rijEmphasis.setVisibility((track.patList.size() > 1) ? View.VISIBLE : View.INVISIBLE);
+        holder.rijBody.setBackgroundColor((index == selectedRepeat && track.repeatList.size() > 1) ? lvSelColor : Color.TRANSPARENT);
         if (track.multi) {
             holder.rijToolbar.setVisibility((position == positionToolbar) ? View.VISIBLE : View.GONE);
         } else {
@@ -197,7 +197,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickRepeat(String info, View v) {
         int position = getViewPosition(v);
-        if (track.repeats.size() > 1) {
+        if (track.repeatList.size() > 1) {
             if (position >= 0) {
                 positionToolbar = (positionToolbar == position) ? -1 : position;
             } else {
@@ -309,10 +309,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 if (index >= 1) {
                     positionToolbar--;
                     selectedRepeat--;
-                    Repeat repeat0 = track.repeats.get(index - 1);
-                    Repeat repeat1 = track.repeats.get(index);
-                    track.repeats.set(index - 1, repeat1);
-                    track.repeats.set(index, repeat0);
+                    Repeat repeat0 = track.repeatList.get(index - 1);
+                    Repeat repeat1 = track.repeatList.get(index);
+                    track.repeatList.set(index - 1, repeat1);
+                    track.repeatList.set(index, repeat0);
                 }
                 notifyDataSetChanged();
 
@@ -327,13 +327,13 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 int position = getViewPosition(v);
                 int index = track.getItemRepeatPosition(position);
-                if (index < track.repeats.size() - 1) {
+                if (index < track.repeatList.size() - 1) {
                     positionToolbar++;
                     selectedRepeat++;
-                    Repeat repeat0 = track.repeats.get(index);
-                    Repeat repeat1 = track.repeats.get(index + 1);
-                    track.repeats.set(index, repeat1);
-                    track.repeats.set(index + 1, repeat0);
+                    Repeat repeat0 = track.repeatList.get(index);
+                    Repeat repeat1 = track.repeatList.get(index + 1);
+                    track.repeatList.set(index, repeat1);
+                    track.repeatList.set(index + 1, repeat0);
                 }
                 notifyDataSetChanged();
 
@@ -393,9 +393,9 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
         }
 
         int index = track.getItemPatPosition(position);
-        Pat pat = track.pats.get(index);
-        int indexDisplay = (track.pats.size() > 1) ? index : -1;
-        String s = (track.pats.size() > 0) ? pat.display(h, indexDisplay, false) : "";
+        Pat pat = track.patList.get(index);
+        int indexDisplay = (track.patList.size() > 1) ? index : -1;
+        String s = (track.patList.size() > 0) ? pat.display(h, indexDisplay, false) : "";
         holder.info.setText(s);
         holder.evPatList.setPattern(pat, false);
 
@@ -420,7 +420,7 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
 
     private void llClickPat(String info, View v) {
         int position = getViewPosition(v);
-        if (track.pats.size() > 1) {
+        if (track.patList.size() > 1) {
             if (position >= 0) {
                 positionToolbar = (positionToolbar == position) ? -1 : position;
             } else {
@@ -506,10 +506,10 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
                 int index = track.getItemPatPosition(position);
                 if (index >= 1) {
                     positionToolbar--;
-                    Pat pat0 = track.pats.get(index - 1);
-                    Pat pat1 = track.pats.get(index);
-                    track.pats.set(index - 1, pat1);
-                    track.pats.set(index, pat0);
+                    Pat pat0 = track.patList.get(index - 1);
+                    Pat pat1 = track.patList.get(index);
+                    track.patList.set(index - 1, pat1);
+                    track.patList.set(index, pat0);
                 }
                 notifyDataSetChanged();
             }
@@ -520,12 +520,12 @@ public class TrackItemsAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 int position = getViewPosition(v);
                 int index = track.getItemPatPosition(position);
-                if (index < track.pats.size() - 1) {
+                if (index < track.patList.size() - 1) {
                     positionToolbar++;
-                    Pat pat0 = track.pats.get(index);
-                    Pat pat1 = track.pats.get(index + 1);
-                    track.pats.set(index, pat1);
-                    track.pats.set(index + 1, pat0);
+                    Pat pat0 = track.patList.get(index);
+                    Pat pat1 = track.patList.get(index + 1);
+                    track.patList.set(index, pat1);
+                    track.patList.set(index + 1, pat0);
                 }
                 notifyDataSetChanged();
             }

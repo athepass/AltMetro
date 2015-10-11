@@ -8,8 +8,10 @@ public class Keys {
     public final static int SOUNDFIRST = 4;
     public final static int SOUNDSILENCE = 5;
 
-    public final static int PLAYPAUSED = 0;
-    public final static int PLAYGO = 1;
+    public final static int PLAYSTOP = 0;
+    public final static int PLAYSTART = 1;
+    public final static int PLAYPLAY = 2;
+    public final static int PLAYEND = 3;
 
     public final static int SUBDEFAULT = 0;
     public final static int MINTEMPO = 30;

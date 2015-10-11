@@ -16,11 +16,12 @@ public class PlayerData {
     private final static String TAG = "Trak:PlayerData";
     private HelperMetro h;
 
-    public int playing;
+//    public int playing;
     public boolean building;
     // klok performance
-    public long timeStart1;
-    public long timeStart2;
+    public long timeNextStop;
+    public long timeStartPlay;
+    public long timeInitPlay;
     public long timeStart3;
     public long timeBeat1;
     public long timeStop1;
@@ -39,13 +40,18 @@ public class PlayerData {
     public Repeat bmRepeat = null;
     public Beat bmBeat = null;
     public Pat bmPat = null;
+    public Sound bmSound = null;
 
     public int currentBeat;
     public int nextBeat;
-    public int repeatCounter;
+    public int playStatus;
+    public int studyCounter = 0;
+    public int studyCount = 0;
+    public int repeatListCounter;
     public int repeatBarCounter;
     public int trackBarCounter;
     public int beatListCounter;
+    public int soundListCounter;
 
     public String playerInfo;
 

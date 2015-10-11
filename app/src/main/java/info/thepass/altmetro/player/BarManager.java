@@ -74,15 +74,14 @@ public class BarManager extends Fragment {
 
     public void startPlayer() {
         h.logD(TAG, "startPlayer");
-        pd.timeStart1 = h.getNanoTime();
-        pd.playing = Keys.PLAYGO;
+        pd.timeStartPlay = h.getNanoTime();
         playerAudio.onResume();
     }
 
     public void stopPlayer() {
         h.logD(TAG, "stopPlayer");
         pd.timeStop1 = h.getNanoTime();
-        pd.playing = Keys.PLAYPAUSED;
+        pd.playStatus = Keys.PLAYEND;
         playerAudio.onPause();
     }
 
@@ -94,7 +93,7 @@ public class BarManager extends Fragment {
     }
 
     public boolean isPlaying() {
-        return (pd.playing == Keys.PLAYGO);
+        return ((pd.playStatus == Keys.PLAYSTART) || (pd.playStatus == Keys.PLAYPLAY));
     }
 
     public class LayoutUpdater implements Runnable {
@@ -102,7 +101,7 @@ public class BarManager extends Fragment {
 
             long timeLayout2 = h.getNanoTime();
             h.logD(TAG, "LayoutUpdater " + h.deltaTime(pd.timeLayout1, timeLayout2)
-                    + "/" + h.deltaTime(pd.timeStart1, timeLayout2));
+                    + "/" + h.deltaTime(pd.timeStartPlay, timeLayout2));
             trackFragment.updateLayout();
         }
     }

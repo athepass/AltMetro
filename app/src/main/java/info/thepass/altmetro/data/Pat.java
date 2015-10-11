@@ -314,9 +314,9 @@ public class Pat {
         String s= "";
         for (int iT=0; iT< metronomeData.tracks.size();iT++) {
             Track track = metronomeData.tracks.get(iT);
-            for (int iR=0; iR<track.repeats.size();iR++) {
-                Repeat repeat = track.repeats.get(iR);
-                if (repeat.hashPattern==this.patHash) {
+            for (int iR=0; iR<track.repeatList.size();iR++) {
+                Repeat repeat = track.repeatList.get(iR);
+                if (repeat.patSelectedHash ==this.patHash) {
                     counter++;
                     s += "\nTrack t" + (iT+1) + " Repeat r" + (iR+1);
                 }
