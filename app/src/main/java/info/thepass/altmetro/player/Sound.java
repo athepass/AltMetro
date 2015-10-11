@@ -1,11 +1,11 @@
 package info.thepass.altmetro.player;
 
 public class Sound implements Comparable<Sound> {
-    public int frameBegin;
-    public int frameEnd;
-    public int frameBeginBase;
-    public int frameEndBase;
-    public int duration;
+    public float frameBegin;
+    public float frameEnd;
+    public float frameBeginBase;
+    public float frameEndBase;
+    public float duration;
     public int soundType;
     public String tag;
     public boolean playBeat;

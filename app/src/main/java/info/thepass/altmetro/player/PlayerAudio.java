@@ -3,7 +3,6 @@ package info.thepass.altmetro.player;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.util.Log;
 
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
@@ -91,6 +90,7 @@ public class PlayerAudio implements Runnable {
     private void initPlay() {
         // init track
         pd.trackBarCounter = 0;
+        pd.lastCurrentBeat = -1;
         // init study
         pd.studyCounter = 0;
         // init repeat
@@ -130,24 +130,67 @@ public class PlayerAudio implements Runnable {
             showBeatInfo();
             pd.soundListCounter = 0;
             pd.beatListCounter += pd.nextBeat;
-            if (pd.beatListCounter >= pd.bmRepeat.beatList.size()) {
+//            Log.d(TAG,"inc beatlistCounter'"+pd.beatListCounter +  " === "+ pd.nextBeat);
+            if (pd.beatListCounter >= pd.bmRepeat.beatList.size() - 1) {
                 // einde beat, ga naar next bar in repeat
                 pd.beatListCounter = 0;
                 pd.repeatBarCounter++;
                 pd.trackBarCounter++;
+//                Log.d(TAG,"inc repeatbarcounter'"+pd.repeatBarCounter);
                 if (!pd.bmRepeat.noEnd && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
-                    // einde repeat
+                    // einde repeat, ga naar next repeat
                     pd.repeatListCounter++;
-                    pd.bmRepeat = pd.bmTrack.repeatList.get(pd.repeatListCounter);
-                    pd.bmPat = pd.bmTrack.patList.get(pd.bmRepeat.patSelected);
-                    showRepeatInfo();
+                    pd.repeatBarCounter = 0;
+                    if (pd.repeatListCounter < pd.bmTrack.repeatList.size()) {
+                        // alleen indien nog binnen geldige repeat: info tonen.
+                        pd.bmRepeat = pd.bmTrack.repeatList.get(pd.repeatListCounter);
+                        pd.bmPat = pd.bmTrack.patList.get(pd.bmRepeat.patSelected);
+                        showRepeatInfo();
+                    } else {
+                        // achter laatste repeat, increment Study
+                        pd.studyCounter++;
+                        pd.repeatListCounter = 0;
+                        if (pd.studyCounter >= pd.studyCount) {
+                            // voorbij laatste repeat
+                            pd.playStatus = Keys.PLAYEND;
+                        }
+                    }
                 }
             }
         }
         pd.bmBeat = pd.bmRepeat.beatList.get(pd.beatListCounter);
-        pd.currentBeat = pd.bmBeat.beatIndex + 1;
-        pd.nextBeat = getNextBeat();
         pd.bmSound = pd.bmBeat.soundList.get(pd.soundListCounter);
+        pd.currentBeat = pd.bmBeat.beatIndex + 1;
+        if (pd.lastCurrentBeat != pd.currentBeat) {
+            pd.lastCurrentBeat = pd.currentBeat;
+            pd.nextBeat = getNextBeat();
+        }
+    }
+
+    private int getNextBeat() {
+        int nextBeat = 0;
+        if (pd.beatListCounter < pd.bmBeat.beats - 1) {
+            // niet op de laatste beat: volgend beat in zelfde bar
+            nextBeat = 1;
+//            Log.d(TAG, "NEXT1: niet op laatste beat " + pd.beatListCounter + ":" + pd.bmBeat.beats);
+        } else {
+            // laatste beat
+            if (pd.bmRepeat.noEnd) {
+                // noend: altijd naar beat 1 in zelfde repeat
+//                Log.d(TAG, "NEXT2: NOEND " + pd.beatListCounter + ":" + pd.bmBeat.beats);
+                nextBeat = 1 - pd.bmBeat.beats;
+            } else {
+//                Log.d(TAG, "NEXTNEXT getNext repeatBar " + pd.repeatBarCounter + "- " + pd.bmRepeat.barCount);
+                if (pd.repeatBarCounter >= pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
+//                    Log.d(TAG, "NEXT3: laatste bar binnen repeat " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
+                    nextBeat = 1;
+                } else { // naar 1 voor afspelen volgende bar
+//                    Log.d(TAG, "NEXT4: naar beat 1 voor volgende bar in repeat " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
+                    nextBeat = 1 - pd.bmBeat.beats;
+                }
+            }
+        }
+        return nextBeat;
     }
 
     private void showStudyInfo() {
@@ -163,34 +206,9 @@ public class PlayerAudio implements Runnable {
     }
 
     private void showBeatInfo() {
-        String msg = "rep=" + pd.repeatListCounter;
-        msg += " repBar=" + (pd.repeatBarCounter + 1)
-                + ((pd.bmRepeat.noEnd) ? "" : "/" + pd.bmRepeat.barCount);
-        msg += " beat[S] " + pd.beatListCounter + " info:"
-                + pd.bmBeat.display(pd.beatListCounter, pd.subs);
+//        String msg = pd.bmBeat.display(pd.beatListCounter, pd.subs) + " " + pd.display();
+        String msg = "BEAT: " + pd.display();
         h.logD(TAG, msg);
-    }
-
-    private int getNextBeat() {
-        int nextBeat = 0;
-        if (pd.beatListCounter < pd.bmBeat.beats - 1) { // niet op de laatste beat: volgend beat
-            nextBeat = 1;
-            Log.d(TAG,"niet op laatste beat " + pd.beatListCounter +":" + pd.bmBeat.beats );
-        } else {    // laatste beat
-            if (pd.bmRepeat.noEnd) {   // noend: altijd naar 1
-                Log.d(TAG,"noEnd " + pd.beatListCounter +":" + pd.bmBeat.beats );
-                nextBeat = 1 - pd.bmBeat.beats;
-            } else {
-                if (pd.repeatBarCounter == pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
-                    Log.d(TAG,"laatste bar binnen repeat " + pd.repeatBarCounter +":" + pd.bmRepeat.barCount);
-                    nextBeat = 1;
-                } else { // naar 1 voor afspelen volgende bar
-                    Log.d(TAG,"naar beat 1 voor volgende bar in repeat " + pd.repeatBarCounter +":" + pd.bmRepeat.barCount);
-                    nextBeat = 1 - pd.bmBeat.beats;
-                }
-            }
-        }
-        return nextBeat;
     }
 
     private void playSoundList() {
@@ -218,8 +236,8 @@ public class PlayerAudio implements Runnable {
         }
     }
 
-    private void writeSound(byte[] soundBytes, int duration) {
-        int playDuration = duration * 2;
+    private void writeSound(byte[] soundBytes, float duration) {
+        int playDuration = Math.round(duration * 2);
         while (!mPaused && playDuration > 0) {
             if (playDuration > SoundCollection.SOUNDLENGTH) {
                 soundLength = SoundCollection.SOUNDLENGTH;

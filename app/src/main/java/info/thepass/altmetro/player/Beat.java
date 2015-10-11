@@ -144,7 +144,7 @@ public class Beat {
 //        }
 //    }
 //
-    private void addSilence(int frameFrom, int frameTo, int position) {
+    private void addSilence(float frameFrom, float frameTo, int position) {
         Sound sNew = new Sound();
         soundList.add(position, sNew);
         sNew.frameBeginBase = frameFrom;

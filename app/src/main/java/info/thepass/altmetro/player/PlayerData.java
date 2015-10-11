@@ -14,9 +14,7 @@ import info.thepass.altmetro.tools.HelperMetro;
  */
 public class PlayerData {
     private final static String TAG = "Trak:PlayerData";
-    private HelperMetro h;
-
-//    public int playing;
+    //    public int playing;
     public boolean building;
     // klok performance
     public long timeNextStop;
@@ -33,16 +31,14 @@ public class PlayerData {
     public long timeBuild2;
     public long timeBuild3;
     public long timeBuild4;
-
     public boolean videoStarted = false;
-
     public Track bmTrack = null;
     public Repeat bmRepeat = null;
     public Beat bmBeat = null;
     public Pat bmPat = null;
     public Sound bmSound = null;
-
     public int currentBeat;
+    public int lastCurrentBeat;
     public int nextBeat;
     public int playStatus;
     public int studyCounter = 0;
@@ -52,9 +48,7 @@ public class PlayerData {
     public int trackBarCounter;
     public int beatListCounter;
     public int soundListCounter;
-
     public String playerInfo;
-
     public int beatDelay = 200 * 8;
     public boolean svwReady = false;
     public boolean svwEersteKeer;
@@ -65,20 +59,31 @@ public class PlayerData {
     public int svwAfstandH = 10;
     public int svwRadius = -1;
     public int svwPatHash = -1;
-
     public String[] subs;
     public Paint paintBeat = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintNone = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+    private HelperMetro h;
 
     public PlayerData(HelperMetro h) {
         this.h = h;
         h.logD(TAG, "constructor");
         subs = h.getStringArray(R.array.sub_pattern);
         initPaint();
+    }
+
+    public String display() {
+        String s = "";
+        s += "cBt" + currentBeat + "|" + nextBeat;
+        s += ",pStt" + playStatus;
+        s += ",stdC" + studyCounter;
+        s += ",rptLC" + repeatListCounter + "|" + bmTrack.repeatList.size();
+        s += ",rptBC" + repeatBarCounter + "|" + bmRepeat.barCount;
+        s += ",btLC" + beatListCounter + "|" + bmRepeat.beatList.size();
+        s += ",sndLC" + soundListCounter + "|" + bmBeat.soundList.size();
+        return s;
     }
 
     private void initPaint() {
@@ -119,4 +124,5 @@ public class PlayerData {
         svwEersteKeer = true;
         h.logD(TAG, "berekenPattern r v h " + svwRadius + " " + svwAfstandH + "." + svwAfstandV);
     }
+
 }
