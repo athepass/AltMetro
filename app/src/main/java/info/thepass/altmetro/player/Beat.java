@@ -122,28 +122,6 @@ public class Beat {
         }
     }
 
-//    private void addNextBeat(PlayerData pd) {
-//        int delay = pd.beatDelay;
-//        for (int i=0;i<soundList.size();i++) {
-//            Sound sound = soundList.get(i);
-//            if (sound.frameBegin<=delay && sound.frameEnd>=delay) {
-//                h.Log("Trak:beat",i + "addNextBeat "+ delay + " - "+ sound.display());
-//                Sound sNew = sound.kloon();
-//                soundList.add(i, sNew);
-//                sound.frameBeginBase = delay;
-//                sNew.frameEndBase = delay;
-//                sNew.copyBase();
-//                sNew.calcDuration();
-//                sNew.soundType = Keys.SOUNDBEAT;
-//                sNew.tag = sound.tag;
-//                sound.copyBase();
-//                sound.calcDuration();
-//                sound.playBeat = true;
-//                i = soundList.size();
-//            }
-//        }
-//    }
-//
     private void addSilence(float frameFrom, float frameTo, int position) {
         Sound sNew = new Sound();
         soundList.add(position, sNew);

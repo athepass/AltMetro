@@ -3,12 +3,13 @@ package info.thepass.altmetro.player;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import info.thepass.altmetro.tools.HelperMetro;
 import info.thepass.altmetro.tools.Keys;
 
 public class PlayerVideo implements Runnable {
-    public final static String TAG = "trak:PlayerVdieo";
+    public final static String TAG = "trak:PlayerVideo";
     // parent
     public HelperMetro h;
     public BarManager bm;
@@ -40,6 +41,18 @@ public class PlayerVideo implements Runnable {
         finishRun();
     }
 
+    private void doWaitTime(long time) {
+        synchronized (mPauseLock) {
+            try {
+                int nano = (int) time % 1000000;
+                long ms = (long) (time - nano) / 1000000;
+                Log.d(TAG,"time " + ms + "." + nano);
+                mPauseLock.wait(ms, nano);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
     private void doWait() {
         synchronized (mPauseLock) {
             while (mPaused) {
@@ -63,14 +76,29 @@ public class PlayerVideo implements Runnable {
         synchronized (mPauseLock) {
             mPaused = false;
             mPauseLock.notify();
+            pd.timeVideoResume = h.getNanoTime();
         }
     }
 
     private void doStep() {
+        pd.timeVideoDoStep = h.getNanoTime();
+        String msg = "doStep:" + h.deltaTime(pd.timeVideoResume, pd.timeVideoDoStep);
+
+        long delay = pd.timeBeatVideo - pd.timeVideoDoStep;
+        h.logD(TAG,msg+ "\n"+delay + h.deltaTime(pd.timeStartPlay, pd.timeBeatVideo));
+        this.doWaitTime(delay);
+        pd.timeVideoDraw = h.getNanoTime();
+        doDrawBeat();
+        pd.timeVideoDrawed = h.getNanoTime();
+        msg = "timer:" + h.deltaTime(pd.timeVideoDoStep, pd.timeVideoDraw);
+        msg += " draw:" + h.deltaTime(pd.timeVideoDraw,pd.timeVideoDrawed);
+        h.logD(TAG,msg);
+        synchronized (mPauseLock) {
+            mPaused = true;
+        }
     }
 
     private void doDrawBeat() {
-        pd.timeLayout1 = h.getNanoTime();
         checkPat();
         if (pd.videoStarted && pd.svwReady) {
             Canvas canvas = null;
@@ -111,7 +139,6 @@ public class PlayerVideo implements Runnable {
                 }
             }
         }
-        pd.timeLayout2 = h.getNanoTime();
     }
 
     private void checkPat() {
@@ -121,42 +148,7 @@ public class PlayerVideo implements Runnable {
         }
     }
 
-    private void doDrawBeatClean() {
-        if (pd.videoStarted && pd.svwReady) {
-            Canvas canvas = null;
-            try {
-                canvas = bm.sh.lockCanvas();
-                if (canvas != null) {
-                    canvas.drawColor(Color.BLACK);
-                }
-            } finally {
-                if (canvas != null) {
-                    bm.sh.unlockCanvasAndPost(canvas);
-                }
-            }
-        }
-        pd.timeLayout2 = h.getNanoTime();
-    }
-
-    private int getNextBeat() {
-        int nextBeat = 0;
-        if (pd.beatListCounter < pd.bmBeat.beats - 1) { // niet op de laatste beat: volgend beat
-            nextBeat = 1;
-        } else {    // laatste beat
-            if (pd.bmRepeat.noEnd) {   // noend: altijd naar 1
-                nextBeat = 1 - pd.bmBeat.beats;
-            } else {
-                if (pd.repeatBarCounter == pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
-                    nextBeat = 1;
-                } else { // naar 1 voor afspelen volgende bar
-                    nextBeat = 1 - pd.bmBeat.beats;
-                }
-            }
-        }
-        return nextBeat;
-    }
-
-   private void initRun() {
+    private void initRun() {
         h.logD(TAG, "start Runnable " + bm.audioThread.getPriority());
     }
 

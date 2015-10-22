@@ -20,23 +20,30 @@ public class PlayerData {
     public long timeNextStop;
     public long timeStartPlay;
     public long timeInitPlay;
-    public long timeStart3;
-    public long timeBeat1;
+    public long timeBeatAudio;
+    public long timeBeatVideo;
+    public long timeVideoResume;
+    public long timeVideoDoStep;
+    public long timeVideoDraw;
+    public long timeVideoDrawed;
     public long timeStop1;
     public long timeStop2;
     public long timeStop3;
-    public long timeLayout1;
-    public long timeLayout2;
-    public long timeBuild1;
-    public long timeBuild2;
-    public long timeBuild3;
-    public long timeBuild4;
+    public long timeLayoutUpdating;
+    public long timeLayoutUpdated;
+    public long timeBuildStart;
+    public long timeBuildRun;
+    public long timeBuildReady;
     public boolean videoStarted = false;
+    public int videoDelay = 40;       // delay in MS
+    // objects
     public Track bmTrack = null;
     public Repeat bmRepeat = null;
     public Beat bmBeat = null;
     public Pat bmPat = null;
     public Sound bmSound = null;
+    public String[] subs;
+    // counters
     public int currentBeat;
     public int lastCurrentBeat;
     public int nextBeat;
@@ -50,6 +57,7 @@ public class PlayerData {
     public int soundListCounter;
     public String playerInfo;
     public int beatDelay = 200 * 8;
+    // surfaceview parameters
     public boolean svwReady = false;
     public boolean svwEersteKeer;
     public int svwWidth;
@@ -59,7 +67,7 @@ public class PlayerData {
     public int svwAfstandH = 10;
     public int svwRadius = -1;
     public int svwPatHash = -1;
-    public String[] subs;
+    // paint objects
     public Paint paintBeat = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintHigh = new Paint(Paint.ANTI_ALIAS_FLAG);
     public Paint paintLow = new Paint(Paint.ANTI_ALIAS_FLAG);

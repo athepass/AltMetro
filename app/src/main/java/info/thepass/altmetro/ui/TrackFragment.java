@@ -188,7 +188,8 @@ public class TrackFragment extends Fragment {
                     doStopPlayer();
                     return;
                 default:
-                    throw new RuntimeException("Requestcode unknown " + requestCode);
+                    throw new RuntimeException("Requestcode unknown "
+                            + requestCode);
             }
         }
     }
@@ -205,7 +206,7 @@ public class TrackFragment extends Fragment {
             return;
         }
 
-        h.logD(TAG, "doStartPlayer " + bm.isPlaying());
+        h.logD(TAG, "doStart " + bm.isPlaying());
 //        dumpThread();
         if (!bm.isPlaying()) {
             bm.startPlayer();
@@ -213,7 +214,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void doStopPlayer() {
-        h.logD(TAG, "doStopPlayer " + bm.isPlaying());
+        h.logD(TAG, "doStop " + bm.isPlaying());
         if (bm.isPlaying()) {
             bm.stopPlayer();
         }
@@ -221,11 +222,12 @@ public class TrackFragment extends Fragment {
     }
 
     private void initData() {
-        maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO, Keys.MAXTEMPODEFAULT));
+        maxTempo = Integer.parseInt(h.prefs.getString(Keys.PREFMAXTEMPO,
+                Keys.MAXTEMPODEFAULT));
 
         ActivityTrack act = (ActivityTrack) getActivity();
         this.metronomeData = act.metronomeData;
-        Log.d(TAG,"TRACK:"+metronomeData.trackSelected);
+        Log.d(TAG, "TRACK:" + metronomeData.trackSelected);
 //        bm.pd.bmTrack = metronomeData.tracks.get(metronomeData.trackSelected);
     }
 
@@ -349,7 +351,8 @@ public class TrackFragment extends Fragment {
                         newPractice = 100;
                         break;
                     default:
-                        throw new RuntimeException("invalid checkedid" + checkedId);
+                        throw new RuntimeException("invalid checkedid"
+                                + checkedId);
                 }
                 bm.pd.bmTrack.study.practice = newPractice;
                 metronomeData.saveData("Practice changed", false);
@@ -383,7 +386,8 @@ public class TrackFragment extends Fragment {
                 rb_prac100.setChecked(true);
                 break;
             default:
-                throw new RuntimeException("invalid percentage" + bm.pd.bmTrack.study.practice);
+                throw new RuntimeException("invalid percentage"
+                        + bm.pd.bmTrack.study.practice);
         }
     }
 
@@ -425,7 +429,8 @@ public class TrackFragment extends Fragment {
         setTitle();
 
         lvManager.itemsAdapter.notifyDataSetChanged();
-        tvTempo.setText(String.valueOf(bm.pd.bmTrack.repeatList.get(bm.pd.bmTrack.repeatSelected).tempo));
+        tvTempo.setText(String.valueOf(bm.pd.bmTrack.repeatList.get(
+                bm.pd.bmTrack.repeatSelected).tempo));
 
         setRepeat(bm.pd.bmTrack.repeatSelected);
         setStudy(null);
@@ -466,7 +471,7 @@ public class TrackFragment extends Fragment {
     }
 
     public void updateLayout() {
-        Log.d(TAG,"updateLayout");
+        Log.d(TAG, "updateLayout");
         setTitle();
 
 //        bm.evmPlayer.setEmphasisVisible(bm.pd.mPlaying);
@@ -474,13 +479,15 @@ public class TrackFragment extends Fragment {
         if (bm.isPlaying()) {
             tvStudy.setVisibility(View.GONE);
         } else {
-            boolean showStudy = (bm.pd.bmTrack.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+            boolean showStudy = (bm.pd.bmTrack.multi)
+                    ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
             tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         }
         tvInfo.setVisibility((!bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
         tvStudy.setVisibility(View.GONE);
         tvTap.setVisibility((bm.isPlaying()) ? View.INVISIBLE : View.VISIBLE);
-        lvManager.itemsListView.setVisibility((bm.isPlaying()) ? View.GONE : View.VISIBLE);
+        lvManager.itemsListView.setVisibility((bm.isPlaying())
+                ? View.GONE : View.VISIBLE);
 
         getActivity().invalidateOptionsMenu();
     }
@@ -499,7 +506,8 @@ public class TrackFragment extends Fragment {
             setData();
         }
         // study textview onzichtbaar i.g.v. multi. Gebruik anders preference
-        boolean showStudy = (bm.pd.bmTrack.multi) ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
+        boolean showStudy = (bm.pd.bmTrack.multi)
+                ? false : h.prefs.getBoolean(Keys.PREFSHOWSTUDY, true);
         tvStudy.setVisibility((showStudy) ? View.VISIBLE : View.GONE);
         tvStudy.setText(bm.pd.bmTrack.study.display(h));
 
@@ -536,7 +544,8 @@ public class TrackFragment extends Fragment {
 
     private void displayTempo() {
         tvTempo.setText("" + tempoTV);
-        int tempoPractice = h.validatedTempo(Math.round(tempoTV * bm.pd.bmTrack.study.practice / 100f));
+        int tempoPractice = h.validatedTempo(
+                Math.round(tempoTV * bm.pd.bmTrack.study.practice / 100f));
         tvTempoPractice.setText("" + tempoPractice);
 
         int indexSB = getProgressIndex(tempoTV);
@@ -548,8 +557,10 @@ public class TrackFragment extends Fragment {
     private void setTitle() {
         String sPlay = "";
         sPlay = (bm.isPlaying()) ? " (P)" : "";
-        String sTrack = bm.pd.bmTrack.getTitle(metronomeData, metronomeData.trackSelected);
-        getActivity().setTitle((sTrack.length() == 0 ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
+        String sTrack = bm.pd.bmTrack.getTitle(
+                metronomeData, metronomeData.trackSelected);
+        getActivity().setTitle((sTrack.length() == 0
+                ? h.getString(R.string.app_name) : h.getString(R.string.label_track) + sTrack) + sPlay);
     }
 
     private int getProgressTempo(int tempoIndex) {

@@ -13,6 +13,7 @@ public class PlayerAudio implements Runnable {
     public HelperMetro h;
     public BarManager bm;
     public PlayerData pd;
+    public PlayerVideo pv;
     // runnable management
     public Object mPauseLock;
     // sound management
@@ -31,7 +32,6 @@ public class PlayerAudio implements Runnable {
         mPauseLock = new Object();
         mPaused = true;
         mFinished = false;
-
         initAudio();
     }
 
@@ -134,13 +134,13 @@ public class PlayerAudio implements Runnable {
             // einde soundlist, volgende beat
             pd.soundListCounter = 0;
             pd.beatListCounter += pd.nextBeat;
-//            Log.d(TAG,"inc beatlistCounter'"+pd.beatListCounter +  " === "+ pd.nextBeat);
             if (pd.beatListCounter >= pd.bmRepeat.beatList.size()) {
                 // einde beat, ga naar next bar in repeat
                 pd.beatListCounter = 0;
                 pd.repeatBarCounter++;
                 pd.trackBarCounter++;
-                if (!pd.bmRepeat.noEnd && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
+                if (!pd.bmRepeat.noEnd
+                        && pd.repeatBarCounter >= pd.bmRepeat.barCount) {
                     // einde repeat, ga naar next repeat
                     pd.repeatListCounter++;
                     pd.repeatBarCounter = 0;
@@ -177,20 +177,17 @@ public class PlayerAudio implements Runnable {
         if (pd.beatListCounter < pd.bmBeat.beats) {
             // niet op de laatste beat: volgend beat in zelfde bar
             nextBeat = 1;
-//            Log.d(TAG, "NEXT1: niet op laatste beat " + pd.beatListCounter + ":" + pd.bmBeat.beats);
         } else {
             // laatste beat
             if (pd.bmRepeat.noEnd) {
                 // noend: altijd naar beat 1 in zelfde repeat
-//                Log.d(TAG, "NEXT2: NOEND " + pd.beatListCounter + ":" + pd.bmBeat.beats);
                 nextBeat = 1 - pd.bmBeat.beats;
             } else {
-//                Log.d(TAG, "NEXTNEXT getNext repeatBar " + pd.repeatBarCounter + "- " + pd.bmRepeat.barCount);
-                if (pd.repeatBarCounter >= pd.bmRepeat.barCount - 1) { // laatste bar binnen repeat
-//                    Log.d(TAG, "NEXT3: laatste bar binnen repeat " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
+                if (pd.repeatBarCounter >= pd.bmRepeat.barCount - 1) {
+                    // laatste bar binnen repeat
                     nextBeat = 1;
-                } else { // naar 1 voor afspelen volgende bar
-//                    Log.d(TAG, "NEXT4: naar beat 1 voor volgende bar in repeat " + pd.repeatBarCounter + ":" + pd.bmRepeat.barCount);
+                } else {
+                    // naar 1 voor afspelen volgende bar
                     nextBeat = 1 - pd.bmBeat.beats;
                 }
             }
@@ -199,24 +196,24 @@ public class PlayerAudio implements Runnable {
     }
 
     private void showStudyInfo() {
-
     }
 
     private void showRepeatInfo() {
         String patInfo = pd.bmPat.display(h, pd.bmRepeat.patSelected, true);
         pd.playerInfo = pd.bmRepeat.display(h, pd.repeatListCounter, patInfo, true);
-        h.logD(TAG, "REP: "+ pd.playerInfo);
+        h.logD(TAG, "REP: " + pd.playerInfo);
         bm.getActivity().runOnUiThread(bm.infoUpdater);
     }
 
     private void showBeatInfo() {
-//        String msg = pd.bmBeat.display(pd.beatListCounter, pd.subs) + " " + pd.display();
         String msg = "BEAT: " + pd.display();
         h.logD(TAG, msg);
+        pd.timeBeatAudio = h.getNanoTime();
+        pd.timeBeatVideo = pd.timeBeatAudio + (pd.videoDelay * 1000000);
+        pv.onResume();
     }
 
     private void showSoundInfo() {
-
     }
 
     private void playSoundList() {
@@ -240,7 +237,8 @@ public class PlayerAudio implements Runnable {
                 writeSound(sc.soundSilence, pd.bmSound.duration);
                 break;
             default:
-                throw new RuntimeException("playBeat invalid soundtype " + pd.bmSound.soundType);
+                throw new RuntimeException("playBeat invalid soundtype "
+                        + pd.bmSound.soundType);
         }
     }
 
@@ -268,7 +266,8 @@ public class PlayerAudio implements Runnable {
     }
 
     private void initRun() {
-        h.logD(TAG, "start Runnable " + bm.audioThread.getPriority());
+        h.logD(TAG, "start Runnable "
+                + bm.audioThread.getPriority());
     }
 
     private void finishRun() {

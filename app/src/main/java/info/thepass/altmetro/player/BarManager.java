@@ -25,7 +25,9 @@ public class BarManager extends Fragment {
     public int buildCounter;
 
     public Thread audioThread = null;
+    public Thread videoThread = null;
     public PlayerAudio playerAudio = null;
+    public PlayerVideo playerVideo = null;
     public SurfaceHolder sh = null;
 
     public LayoutUpdater layoutUpdater;
@@ -45,22 +47,29 @@ public class BarManager extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         h = new HelperMetro(getActivity());
-        h.logD(TAG,"onActivityCreated");
+        h.logD(TAG, "onActivityCreated");
         initRunnables();
         bootPlayer();
         Intent intent = new Intent();
-        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT, Activity.RESULT_OK, intent);
+        getTargetFragment().onActivityResult(Keys.TARGETBEATMANAGERINIT,
+                Activity.RESULT_OK, intent);
     }
 
     public void bootPlayer() {
         playerAudio = new PlayerAudio(h, this);
         audioThread = new Thread(playerAudio);
-        audioThread.setPriority((Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2);
+        audioThread.setPriority(Thread.NORM_PRIORITY - 2);
         audioThread.start();
+
+        playerVideo = new PlayerVideo(h, this);
+        playerAudio.pv = playerVideo;
+        videoThread = new Thread(playerVideo);
+        videoThread.setPriority(Thread.NORM_PRIORITY - 1);
+        videoThread.start();
     }
 
     public void buildBeat(Track newTrack) {
-        pd.timeBuild1 = h.getNanoTime();
+        pd.timeBuildStart = h.getNanoTime();
         pd.bmTrack = newTrack;
         buildCounter++;
         if (!pd.building) {
@@ -71,14 +80,14 @@ public class BarManager extends Fragment {
     }
 
     public void startPlayer() {
-        h.logD(TAG, "startPlayer");
+        h.logD(TAG, "start");
         pd.timeStartPlay = h.getNanoTime();
         playerAudio.onResume();
         getActivity().runOnUiThread(this.layoutUpdater);
     }
 
     public void stopPlayer() {
-        h.logD(TAG, "stopPlayer");
+        h.logD(TAG, "stop");
         pd.timeStop1 = h.getNanoTime();
         pd.playStatus = Keys.PLAYEND;
         playerAudio.onPause();
@@ -100,17 +109,19 @@ public class BarManager extends Fragment {
             case Keys.PLAYPLAY:
                 return true;
             default:
-                throw new RuntimeException("isPlaying status ongeldig " + pd.playStatus);
+                throw new RuntimeException("isPlaying status ongeldig "
+                        + pd.playStatus);
         }
     }
 
     public class LayoutUpdater implements Runnable {
         public void run() {
-
-            long timeLayout2 = h.getNanoTime();
-            h.logD(TAG, "LayoutUpdater " + h.deltaTime(pd.timeLayout1, timeLayout2)
-                    + "/" + h.deltaTime(pd.timeStartPlay, timeLayout2));
+            pd.timeLayoutUpdating = h.getNanoTime();
             trackFragment.updateLayout();
+            pd.timeLayoutUpdated = h.getNanoTime();
+            h.logD(TAG, "LayoutUpdater "
+                    + h.deltaTime(pd.timeStartPlay, pd.timeLayoutUpdating) + "|"
+                    + h.deltaTime(pd.timeLayoutUpdating, pd.timeLayoutUpdated));
         }
     }
 
@@ -125,7 +136,9 @@ public class BarManager extends Fragment {
             pd.timeStop2 = h.getNanoTime();
             trackFragment.doStopPlayer();
             pd.timeStop3 = h.getNanoTime();
-            h.logD(TAG, "Stopper time:" + h.deltaTime(pd.timeStop1, pd.timeStop2) + "|" + h.deltaTime(pd.timeStop2, pd.timeStop3));
+            h.logD(TAG, "Stopper time:"
+                    + h.deltaTime(pd.timeStop1, pd.timeStop2) + "|"
+                    + h.deltaTime(pd.timeStop2, pd.timeStop3));
         }
     }
 
@@ -133,22 +146,20 @@ public class BarManager extends Fragment {
         int thisBuildCounter;
 
         public void run() {
-            pd.timeBuild2 = h.getNanoTime();
+            pd.timeBuildRun = h.getNanoTime();
             pd.building = true;
             do {
                 thisBuildCounter = buildCounter;
                 pd.bmTrack.buildBeat(thisFrag, h);
-                pd.timeBuild3 = h.getNanoTime();
 
             } while (thisBuildCounter < buildCounter);
 
             pd.building = false;
-            pd.timeBuild4 = h.getNanoTime();
-            h.logD(TAG, "SoundBuilder: finished building beat and sound: " + buildCounter
-                    + " time:" + h.deltaTime(pd.timeBuild1, pd.timeBuild2)
-                    + "|" + h.deltaTime(pd.timeBuild2, pd.timeBuild3)
-                    + "|" + h.deltaTime(pd.timeBuild3, pd.timeBuild4));
-//            bmTrack.soundDump(thisFrag);
+            pd.timeBuildReady = h.getNanoTime();
+            h.logD(TAG, "SoundBuilder: finished building beat and sound: "
+                    + buildCounter
+                    + " time:" + h.deltaTime(pd.timeBuildStart, pd.timeBuildRun)
+                    + "|" + h.deltaTime(pd.timeBuildRun, pd.timeBuildReady));
         }
     }
 }
