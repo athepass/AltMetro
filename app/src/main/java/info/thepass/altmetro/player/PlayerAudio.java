@@ -94,6 +94,7 @@ public class PlayerAudio implements Runnable {
         // init track
         pd.trackBarCounter = 0;
         pd.lastCurrentBeat = -1;
+        pd.currentBeat = 1;
         // init study
         pd.studyCounter = 0;
         // init repeat
@@ -115,6 +116,7 @@ public class PlayerAudio implements Runnable {
         showStudyInfo();
         showRepeatInfo();
         showBeatInfo();
+        pv.onResume();
     }
 
     private void finishPlay() {
@@ -206,11 +208,12 @@ public class PlayerAudio implements Runnable {
     }
 
     private void showBeatInfo() {
-        String msg = "BEAT: " + pd.display();
-        h.logD(TAG, msg);
         pd.timeBeatAudio = h.getNanoTime();
         pd.timeBeatVideo = pd.timeBeatAudio + (pd.videoDelay * 1000000);
-        pv.onResume();
+        String msg = "beat a=" + h.deltaTime(pd.timeInitPlay, pd.timeBeatAudio)
+                + " v=" + h.deltaTime(pd.timeInitPlay, pd.timeBeatVideo)
+                + " " + pd.display();
+        h.logD(TAG, msg);
     }
 
     private void showSoundInfo() {

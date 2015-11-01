@@ -91,6 +91,7 @@ public class BarManager extends Fragment {
         pd.timeStop1 = h.getNanoTime();
         pd.playStatus = Keys.PLAYEND;
         playerAudio.onPause();
+        playerVideo.onPause();
     }
 
     private void initRunnables() {

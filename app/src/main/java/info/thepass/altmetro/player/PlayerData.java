@@ -85,12 +85,12 @@ public class PlayerData {
     public String display() {
         String s = "";
         s += "cBt" + currentBeat + "[nxt" + nextBeat + "]";
-        s += "|stat:" + playStatus;
-        s += "|stdC[" + studyCount + "]" + studyCounter;
-        s += "|rptLC[" + bmTrack.repeatList.size() + "]" + repeatListCounter;
-        s += "|rptBC[" + bmRepeat.barCount + "]" + repeatBarCounter;
-        s += "|btLC[" + bmRepeat.beatList.size() + "]" + beatListCounter;
-        s += "|sndLC[" + bmBeat.soundList.size() + "]" + soundListCounter;
+        s += ",stat:" + playStatus;
+        s += ",stdC[" + studyCount + "]" + studyCounter;
+        s += ",rptLC[" + bmTrack.repeatList.size() + "]" + repeatListCounter;
+        s += ",rptBC[" + bmRepeat.barCount + "]" + repeatBarCounter;
+        s += ",btLC[" + bmRepeat.beatList.size() + "]" + beatListCounter;
+        s += ",sndLC[" + bmBeat.soundList.size() + "]" + soundListCounter;
         return s;
     }
 
@@ -128,9 +128,9 @@ public class PlayerData {
             maxW = (int) ((svwWidth - ((bmPat.patBeats + 1) * svwAfstandH)) / bmPat.patBeats) / 2;
         }
         svwRadius = (maxH < maxW) ? maxH : maxW;
+        svwRadius = (int) Math.round(svwRadius *0.9);
         svwReady = true;
         svwEersteKeer = true;
         h.logD(TAG, "berekenPattern r v h " + svwRadius + " " + svwAfstandH + "." + svwAfstandV);
     }
-
 }

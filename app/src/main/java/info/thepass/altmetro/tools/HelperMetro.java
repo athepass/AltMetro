@@ -109,7 +109,11 @@ public class HelperMetro {
     }
 
     public String deltaTime(long time1, long time2) {
-        return String.format("%.3f", (float) (time2 - time1) / 1000000f) + "ms";
+        return String.format("%.1f", (float) (time2 - time1) / 1000000f) + "ms";
+    }
+
+    public String getMillisFormatted(long l) {
+        return String.format("%.1f", (float) l / 1000000f);
     }
 
     public long getTimeMillis() {
@@ -205,7 +209,7 @@ public class HelperMetro {
     }
 
     public int validatedTempo(int newTempo) {
-        int testedTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO: newTempo;
+        int testedTempo = (newTempo < Keys.MINTEMPO) ? Keys.MINTEMPO : newTempo;
         testedTempo = (testedTempo > getMaxTempo()) ? getMaxTempo() : testedTempo;
         return testedTempo;
     }

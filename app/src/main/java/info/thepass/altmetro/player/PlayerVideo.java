@@ -10,14 +10,16 @@ import info.thepass.altmetro.tools.Keys;
 
 public class PlayerVideo implements Runnable {
     public final static String TAG = "trak:PlayerVideo";
+    // runnable management
+    public final Object mPauseLock;
     // parent
     public HelperMetro h;
     public BarManager bm;
     public PlayerData pd;
-    // runnable management
-    public Object mPauseLock;
     private boolean mFinished;
     private boolean mPaused;
+
+    private int msgCounter = 0;
 
     public PlayerVideo(HelperMetro hh, BarManager bm) {
         h = hh;
@@ -46,8 +48,9 @@ public class PlayerVideo implements Runnable {
             try {
                 int nano = (int) time % 1000000;
                 long ms = (long) (time - nano) / 1000000;
-                Log.d(TAG,"time " + ms + "." + nano);
-                mPauseLock.wait(ms, nano);
+//                Log.d(TAG, "time " + ms + "." + nano);
+                if (ms > 0 && nano > 0)
+                    mPauseLock.wait(ms, nano);
             } catch (InterruptedException e) {
             }
         }
@@ -82,20 +85,29 @@ public class PlayerVideo implements Runnable {
 
     private void doStep() {
         pd.timeVideoDoStep = h.getNanoTime();
-        String msg = "doStep:" + h.deltaTime(pd.timeVideoResume, pd.timeVideoDoStep);
 
         long delay = pd.timeBeatVideo - pd.timeVideoDoStep;
-        h.logD(TAG,msg+ "\n"+delay + h.deltaTime(pd.timeStartPlay, pd.timeBeatVideo));
+        String msg = "doStep: t2: " + h.deltaTime(pd.timeInitPlay, pd.timeVideoDoStep);
+        msg += " t1:" + h.deltaTime(pd.timeInitPlay, pd.timeBeatVideo);
+        msg += " delay:" + h.getMillisFormatted(delay);
+
         this.doWaitTime(delay);
         pd.timeVideoDraw = h.getNanoTime();
         doDrawBeat();
         pd.timeVideoDrawed = h.getNanoTime();
-        msg = "timer:" + h.deltaTime(pd.timeVideoDoStep, pd.timeVideoDraw);
-        msg += " draw:" + h.deltaTime(pd.timeVideoDraw,pd.timeVideoDrawed);
-        h.logD(TAG,msg);
-        synchronized (mPauseLock) {
-            mPaused = true;
+        msg += " drawtime:" + h.deltaTime(pd.timeVideoResume, pd.timeVideoDraw);
+        msg += " lag:" + h.deltaTime(pd.timeVideoDraw, pd.timeVideoDrawed);
+
+        if (delay > 0) {
+            msgCounter=0;
+        } else {
+            msgCounter++;
         }
+        if (msgCounter<2)
+            h.logD(TAG, msg);
+
+        if (mPaused)
+            cleanCanvas();
     }
 
     private void doDrawBeat() {
@@ -124,10 +136,9 @@ public class PlayerVideo implements Runnable {
                         int cx = pd.svwAfstandH + +pd.svwRadius + (pd.svwAfstandH + 2 * pd.svwRadius) * i;
                         int cy = pd.svwAfstandV + pd.svwRadius;
                         int radiusB = (int) Math.round(pd.svwRadius * 0.75);
-                        int cxi = -1;
                         canvas.drawCircle(cx, cy, pd.svwRadius, paint);
                         if (pd.bmBeat.beatIndex == i) {
-                            cxi = pd.svwAfstandH + +pd.svwRadius + (pd.svwAfstandH + 2 * pd.svwRadius) * i;
+                            int cxi = pd.svwAfstandH + +pd.svwRadius + (pd.svwAfstandH + 2 * pd.svwRadius) * i;
                             canvas.drawCircle(cxi, cy, radiusB, pd.paintBeat);
                             canvas.drawText("" + (i + 1), cxi - radiusB / 3, cy + radiusB / 3, pd.paintText);
                         }
@@ -137,6 +148,17 @@ public class PlayerVideo implements Runnable {
                 if (canvas != null) {
                     bm.sh.unlockCanvasAndPost(canvas);
                 }
+            }
+        }
+    }
+
+    private void cleanCanvas() {
+        Log.d(TAG, "cleanCanvas");
+        if (pd.svwReady) {
+            Canvas canvas = bm.sh.lockCanvas();
+            if (canvas != null) {
+                canvas.drawColor(Color.BLACK);
+                bm.sh.unlockCanvasAndPost(canvas);
             }
         }
     }
